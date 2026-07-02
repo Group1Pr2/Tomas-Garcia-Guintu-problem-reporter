@@ -459,7 +459,7 @@
       return;
     }
     
-    // Create new report object
+   // Create new report object
     const newReport = { 
       id: Date.now(), 
       category: selCat, 
@@ -470,11 +470,71 @@
       date: new Date().toISOString().slice(0,10), 
       status: 'new' 
     };
+
+    // Add to local array
+    reports.push(newReport);
+
+    // Save to LocalStorage
+    localStorage.setItem('school_reports', JSON.stringify(reports));
+
+    // Send the data live to your MongoDB via Vercel
+    fetch('/api/report', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newReport),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Successfully saved to MongoDB:', data);
+    })
+    .catch(error => {
+      console.error('Error sending to MongoDB:', error);
+    });
+
+    // Add to local array
+    reports.push(newReport);
+
+    // Save to LocalStorage
+    localStorage.setItem('school_reports', JSON.stringify(reports));
+
+    // Send the data live to your MongoDB via Vercel
+    fetch('/api/report', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newReport),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Successfully saved to MongoDB:', data);
+    })
+    .catch(error => {
+      console.error('Error sending to MongoDB:', error);
+    });
     
     reports.unshift(newReport);
     
-    // Save to LocalStorage
-    localStorage.setItem('school_reports', JSON.stringify(reports));
+  // 1. Save to LocalStorage (Your existing line)
+localStorage.setItem('school_reports', JSON.stringify(reports));
+
+// 2. Add this to send it live to MongoDB via Vercel
+fetch('/api/report', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(newReport), // Note: Check if your code calls the new report variable 'newReport' or 'report'
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Successfully saved to MongoDB:', data);
+})
+.catch(error => {
+  console.error('Error sending to MongoDB:', error);
+});
     
     // Reset form elements
     document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
