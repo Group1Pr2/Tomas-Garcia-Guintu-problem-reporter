@@ -7,6 +7,7 @@
     "start": "node public/netlify/functions/report.js"
   },
   "dependencies": {
-    "couchbase": "^4.0.0"
+    "couchbase": "^4.0.0",
+    "mongodb": "^7.4.0"
   }
 }
