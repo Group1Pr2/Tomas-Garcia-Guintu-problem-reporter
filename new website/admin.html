@@ -200,11 +200,15 @@
       }
 
       tbody.innerHTML = '';
+      const totalItems = currentReports.length;
+
       currentReports.forEach((report, index) => {
         const tr = document.createElement('tr');
         const isFixed = report.status === 'fixed' || report.status === 'done' || report.status === 'Resolved';
-
         
+        // Dynamic continuous row numbering (e.g. #3, #2, #1)
+        const displayId = totalItems - index;
+
         const photoHTML = report.image_url 
           ? `<a href="${report.image_url}" target="_blank" title="Click to view full image">
                <img src="${report.image_url}" class="report-img" alt="Report Evidence">
@@ -212,7 +216,7 @@
           : `<span style="color: var(--text-muted); font-size: 0.8rem;">No Photo</span>`;
 
         tr.innerHTML = `
-          <td>#${report.id}</td>
+          <td>#${displayId}</td>
           <td>${photoHTML}</td>
           <td><strong>${report.category || 'General'}</strong></td>
           <td>${report.location || 'N/A'}</td>
@@ -276,7 +280,18 @@
       }
     }
 
+    // Subscribe to realtime database changes (Auto-update on row deletion or addition)
+    function setupRealtimeListener() {
+      supabaseClient
+        .channel('public:reports')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, () => {
+          fetchReports();
+        })
+        .subscribe();
+    }
+
     fetchReports();
+    setupRealtimeListener();
   </script>
 </body>
 </html>

@@ -102,7 +102,16 @@
       <form id="authForm" class="space-y-4">
         <div>
           <label for="userEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">School Email</label>
-          <input type="email" id="userEmail" name="userEmail" required placeholder="student@gmail.com" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors text-sm">
+          <input 
+            type="email" 
+            id="userEmail" 
+            name="userEmail" 
+            required 
+            pattern="[a-zA-Z0-9._%+-]+@gmail\.com$" 
+            placeholder="student@gmail.com"
+            title="Please enter a valid @gmail.com email address."
+            class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors text-sm"
+          />
         </div>
 
         <button type="submit" class="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold tracking-wide transition-all shadow-lg shadow-cyan-500/25">
@@ -198,7 +207,7 @@
               <option value="Air Conditioning & Fan">❄️ AC & Electric Fans</option>
               <option value="IT & Computer Lab">💻 Computer Lab Equipment</option>
               <option value="Cleanliness & Sanitation">🧹 Sanitation & Garbage</option>
-              <option value="Restroom Facilities">🚻 Restroom Maintenance</option>
+              <option value="Restroom Facilities">🚾 Restroom Maintenance</option>
               <option value="Other">❓ Other Concern</option>
             </select>
           </div>
@@ -275,7 +284,6 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_3cnd55pokjZcEfEtYGuDfA__Srk3gls';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    
     const welcomeModal = document.getElementById('welcomeModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
     const authModal = document.getElementById('authModal');
@@ -289,7 +297,6 @@
 
     let userAccount = {};
 
-   
     closeModalBtn.addEventListener('click', () => {
       welcomeModal.classList.add('opacity-0', 'pointer-events-none');
       setTimeout(() => { 
@@ -298,7 +305,6 @@
       }, 300);
     });
 
-    
     authForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('userEmail').value;
@@ -323,7 +329,6 @@
       }, 300);
     });
 
-    
     function previewSelectedImage(input) {
       const file = input.files[0];
       const uploadPrompt = document.getElementById('uploadPrompt');
@@ -343,7 +348,6 @@
       }
     }
 
-    
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -361,7 +365,6 @@
       const file = fileInput.files[0];
       let imageUrl = null;
 
-     
       if (file) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -374,7 +377,6 @@
         if (uploadError) {
           console.error('Image Upload Error:', uploadError);
         } else {
-          
           const { data: publicUrlData } = supabaseClient
             .storage
             .from('report-images')
@@ -384,7 +386,6 @@
         }
       }
 
-      
       const { data, error } = await supabaseClient
         .from('reports')
         .insert([
