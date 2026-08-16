@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusReport - Admin Dashboard</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #050a14;
+      --card-bg: rgba(10, 18, 32, 0.95);
+      --border-color: rgba(0, 180, 216, 0.2);
+      --text-main: #e2e8f0;
+      --text-muted: #64748b;
+      --accent-cyan: #00f2fe;
+      --accent-blue: #4facfe;
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      color: var(--text-main);
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background-color: var(--bg-color);
+      position: relative;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 20px;
+    }
+
+    header h1 { 
+      font-size: 1.75rem; 
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+
+    .table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    }
+
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    
+    th {
+      background-color: rgba(6, 14, 26, 0.9);
+      color: var(--accent-cyan);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 18px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    td { 
+      padding: 16px; 
+      border-bottom: 1px solid rgba(0, 180, 216, 0.08); 
+      font-size: 0.95rem; 
+      vertical-align: middle; 
+    }
+
+    .desc-cell {
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .badge-new { 
+      background: rgba(245, 158, 11, 0.12); 
+      color: var(--accent-yellow); 
+      border: 1px solid rgba(245, 158, 11, 0.3); 
+    }
+    
+    .badge-fixed { 
+      background: rgba(16, 185, 129, 0.12); 
+      color: var(--accent-green); 
+      border: 1px solid rgba(16, 185, 129, 0.3); 
+    }
+
+    .btn-fix {
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      color: #030712;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .btn-fix:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+    }
+
+    .report-img {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      transition: transform 0.2s ease;
+    }
+    
+    .report-img:hover {
+      transform: scale(1.15);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex; justify-content: center; align-items: center;
+      opacity: 0; visibility: hidden; transition: all 0.25s ease;
+      z-index: 999;
+    }
+    
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    
+    .modal-box {
+      background: #0a1220; 
+      border: 1px solid var(--border-color);
+      padding: 32px; 
+      border-radius: 16px; 
+      text-align: center; 
+      max-width: 400px; 
+      width: 90%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    }
+    
+    .modal-icon {
+      width: 56px; height: 56px; background: rgba(16, 185, 129, 0.15);
+      color: #10b981; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px auto;
+    }
+    
+    .modal-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
+    .modal-desc { font-size: 0.9rem; color: #94a3b8; margin-bottom: 24px; }
+    
+    .modal-btn {
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); 
+      color: #030712; 
+      border: none;
+      width: 100%; 
+      padding: 12px; 
+      border-radius: 8px; 
+      font-weight: 700; 
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>🛠️ NexusReport Admin</h1>
+      <p>Tomas Garcia Guintu SHS Maintenance Dashboard</p>
+    </header>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Photo</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Location</th>
+            <th>Reporter Email</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="reportsTable">
+          <tr><td colspan="8" style="text-align:center; padding: 40px; color: #94a3b8;">Loading campus reports...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="customModal">
+    <div class="modal-box">
+      <div class="modal-icon" id="modalIcon">✓</div>
+      <div class="modal-title" id="modalTitle">Issue Resolved!</div>
+      <div class="modal-desc" id="modalDesc">Notification processed.</div>
+      <button class="modal-btn" onclick="closeModal()">Awesome!</button>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://ihvbmvdecjixxcpslwza.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlodmJtdmRlY2ppeHhjcHNsd3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MTYyODAsImV4cCI6MjEwMTQ5MjI4MH0.fxKNSRCgHrFEmB9yv_NmKKO00Nkp5mSy7E_8RSlzhnk";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const EMAILJS_PUBLIC_KEY = "8apALGASJtUY7UXQp";
+    const EMAILJS_SERVICE_ID = "service_9k12g44";
+    const EMAILJS_TEMPLATE_ID = "template_7zb70js";
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+
+    let currentReports = [];
+
+    function showModal(title, message, isError = false) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalDesc').innerText = message;
+      document.getElementById('modalIcon').innerText = isError ? '✕' : '✓';
+      document.getElementById('customModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('customModal').classList.remove('active');
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('reportsTable');
+      if (!currentReports.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px; color: #94a3b8;">No reports found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      const totalItems = currentReports.length;
+
+      currentReports.forEach((report, index) => {
+        const tr = document.createElement('tr');
+        const isFixed = report.status === 'fixed' || report.status === 'done' || report.status === 'Resolved';
+        
+        const displayId = totalItems - index;
+
+        const photoHTML = report.image_url 
+          ? `<a href="${report.image_url}" target="_blank" title="Click to view full image">
+               <img src="${report.image_url}" class="report-img" alt="Report Evidence">
+             </a>`
+          : `<span style="color: var(--text-muted); font-size: 0.8rem;">No Photo</span>`;
+
+        const descriptionText = report.description || report.issue_description || 'No description provided';
+
+        tr.innerHTML = `
+          <td>#${displayId}</td>
+          <td>${photoHTML}</td>
+          <td><strong>${report.category || 'General'}</strong></td>
+          <td class="desc-cell" title="${descriptionText}">${descriptionText}</td>
+          <td>${report.location || 'N/A'}</td>
+          <td>${report.user_email || 'Anonymous'}</td>
+          <td>
+            <span class="badge ${isFixed ? 'badge-fixed' : 'badge-new'}">
+              ${isFixed ? 'Resolved' : (report.status || 'New')}
+            </span>
+          </td>
+          <td>
+            ${isFixed 
+              ? '<span style="color: var(--accent-green); font-weight: 600;">✅ Completed</span>' 
+              : `<button class="btn-fix" onclick="resolveReportByIndex(${index})">Mark as Fixed</button>`
+            }
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function fetchReports() {
+      const { data, error } = await supabaseClient.from('reports').select('*').order('id', { ascending: false });
+      if (error) console.error('Error fetching reports:', error);
+      currentReports = data || [];
+      renderTable();
+    }
+
+    async function resolveReportByIndex(index) {
+      const report = currentReports[index];
+      if (!report) return;
+
+      const { error } = await supabaseClient
+        .from('reports')
+        .update({ status: 'fixed' })
+        .eq('id', report.id);
+
+      if (error) {
+        console.error('Supabase Update Error:', error);
+        showModal('Update Failed', error.message || 'Database error occurred.', true);
+        return;
+      }
+
+      report.status = 'fixed';
+      renderTable();
+
+      try {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            to_email: report.user_email,
+            category: report.category || 'General',
+            location: report.location || 'Campus'
+          },
+          EMAILJS_PUBLIC_KEY
+        );
+        showModal('Issue Fixed!', `Resolved "${report.category}" and sent email notification.`);
+      } catch (err) {
+        console.error('EmailJS Error:', err);
+        showModal('Partial Success', 'Status saved to database, but email failed to send.');
+      }
+    }
+
+    function setupRealtimeListener() {
+      supabaseClient
+        .channel('public:reports')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, () => {
+          fetchReports();
+        })
+        .subscribe();
+    }
+
+    fetchReports();
+    setupRealtimeListener();
+  </script>
+</body>
+</html>
