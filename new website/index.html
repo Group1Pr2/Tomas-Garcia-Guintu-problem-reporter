@@ -51,6 +51,41 @@
       background-position: center;
       background-size: cover;
     }
+
+    .header-badges-container {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .header-badges-container {
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .badge-pill {
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+  }
+
+  .email-pill {
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen relative overflow-x-hidden selection:bg-cyan-500 selection:text-white">
