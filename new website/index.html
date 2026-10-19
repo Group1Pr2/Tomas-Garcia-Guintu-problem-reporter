@@ -50,12 +50,16 @@
       background-repeat: no-repeat;
       background-position: center;
       background-size: cover;
-      background-size: 1200px auto;
+      background-size: 1000px auto;
     }
-
+    @media (max-width: 600px) {
+    .bg-school-watermark {
+    background-size: 200px auto !important; 
+  }
+}
 
     .header-badges-container {
-      display: flex !important;
+      display: flex !important; 
       align-items: center;
       justify-content: center;
       gap: 8px;
