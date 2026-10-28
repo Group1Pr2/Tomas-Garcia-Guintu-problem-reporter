@@ -32,7 +32,7 @@
   <!-- Mobile App Frame Container -->
   <div class="w-full max-w-md bg-amber-50 min-h-screen sm:min-h-[844px] sm:max-h-[900px] sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col relative border-0 sm:border-8 border-amber-300/40">
 
-    <!-- Top App Header (Settings Icon Removed) -->
+    <!-- Top App Header -->
     <header class="bg-white text-slate-900 p-4 shadow-sm border-b border-amber-100 relative z-10 flex-shrink-0">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -66,31 +66,29 @@
           </p>
         </div>
 
-        <!-- Live Bowl Visualizer Card -->
+        <!-- Live Original Glass Cup Visualizer Card -->
         <div class="bg-white rounded-3xl p-4 shadow-sm border border-amber-100 relative">
           <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center mb-2">LIVE BOWL VISUALIZER</p>
           
           <div class="w-36 h-48 mx-auto relative flex flex-col justify-end items-center">
-            <!-- Cup Body -->
-            <div class="w-full h-40 border-4 border-slate-200 bg-slate-50/50 rounded-b-3xl relative overflow-hidden shadow-inner flex flex-col justify-end p-1">
+            <!-- Cup Rim & Glass Body -->
+            <div class="w-full h-40 border-4 border-white/80 bg-gradient-to-b from-sky-400/40 to-sky-600/30 backdrop-blur-xs rounded-b-3xl relative overflow-hidden shadow-xl flex flex-col justify-end p-1">
               
-              <!-- Scoop Preview -->
-              <div id="visual-scoop" class="w-20 h-12 mx-auto rounded-t-full bg-purple-600 border-2 border-white shadow-md transform translate-y-2 z-20 transition-all duration-300 flex items-center justify-center text-[10px] text-white font-bold text-center px-1">
-                Classic Ube Ice Cream
+              <!-- Layer 3: Top Ice Cream Scoop Preview -->
+              <div id="visual-scoop" class="w-16 h-12 mx-auto rounded-t-full bg-purple-600 border-2 border-white/60 shadow-md transform translate-y-2 z-20 transition-all duration-300"></div>
+
+              <!-- Layer 2: Toppings Stack -->
+              <div id="visual-toppings-container" class="w-full min-h-[40px] flex flex-wrap gap-1 justify-center items-center p-1 z-10">
+                <span class="text-[9px] text-white/90 italic font-bold">Select mix-ins below</span>
               </div>
 
-              <!-- Toppings Container -->
-              <div id="visual-toppings-container" class="w-full min-h-[30px] flex flex-wrap gap-1 justify-center items-center p-1 z-10">
-                <!-- Dynamic Toppings -->
-              </div>
-
-              <!-- Base Preview -->
-              <div id="visual-base" class="w-full h-14 bg-gradient-to-t from-sky-100 to-white rounded-b-2xl border-t border-sky-200 flex items-center justify-center text-amber-900 text-[10px] font-bold text-center px-1">
-                Fresh Shredded Buko Meat & Juice
+              <!-- Layer 1: Base Ice Layer -->
+              <div id="visual-base" class="w-full h-16 bg-gradient-to-t from-white to-sky-100 rounded-b-2xl border-t border-sky-200 flex items-center justify-center text-sky-900 text-[10px] font-bold text-center px-1">
+                Fresh Shredded Buko
               </div>
             </div>
-            <!-- Coconut Stand -->
-            <div class="w-24 h-4 bg-slate-300 rounded-b-full shadow-xs -mt-1 border-t border-slate-400"></div>
+            <!-- Coconut Shell Stand Base -->
+            <div class="w-24 h-4 bg-amber-800 rounded-b-full shadow-md -mt-1 border-t border-amber-900"></div>
           </div>
 
           <!-- Selected Counter & Reset -->
@@ -186,7 +184,7 @@
 
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Your Name *</label>
-            <input type="text" id="cust-name" required placeholder="e.g. Maria Santos (Grade 11)" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-sky-500 bg-slate-50">
+            <input type="text" id="cust-name" required placeholder="e.g. Maria Santos (Grade 10)" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-sky-500 bg-slate-50">
           </div>
 
           <div>
@@ -283,7 +281,7 @@
 
   <script>
     // Hardcoded Supabase Credentials
-    let SUPABASE_URL = 'https://blfxgmicmwunverwxjl.supabase.co';
+    let SUPABASE_URL = 'https://blfxgbmicmwunverwxjl.supabase.co';
     let SUPABASE_KEY = 'sb_publishable_6eXVfYOlILlXi-LzMdL80Q_tkYsXwST';
     let supabaseClient = null;
 
@@ -311,8 +309,8 @@
     ];
 
     const SCOOP_OPTIONS = [
-      { id: 's1', name: 'Classic Ube Ice Cream (Purple Yam)', shortName: 'Classic Ube Ice Cream', price: 20.00, color: 'bg-purple-600' },
-      { id: 's2', name: 'Coconut / Buko Pandan Ice Cream', shortName: 'Buko Pandan Ice Cream', price: 25.00, color: 'bg-emerald-500' }
+      { id: 's1', name: 'Classic Ube Ice Cream (Purple Yam)', price: 20.00, color: 'bg-purple-600' },
+      { id: 's2', name: 'Coconut / Buko Pandan Ice Cream', price: 25.00, color: 'bg-emerald-500' }
     ];
 
     let selectedBase = BASE_OPTIONS[0];
@@ -423,17 +421,16 @@
 
       document.getElementById('sticky-total-price').textContent = subtotal.toFixed(2);
 
-      // Visual cup updates
+      // Visual cup updates (Original glass style)
       const visualScoop = document.getElementById('visual-scoop');
-      visualScoop.className = `w-20 h-12 mx-auto rounded-t-full border-2 border-white shadow-md transform translate-y-2 z-20 transition-all duration-300 flex items-center justify-center text-[10px] text-white font-bold text-center px-1 ${selectedScoop.color}`;
-      visualScoop.textContent = selectedScoop.shortName;
+      visualScoop.className = `w-16 h-12 mx-auto rounded-t-full border-2 border-white/60 shadow-md transform translate-y-2 z-20 transition-all duration-300 ${selectedScoop.color}`;
 
       const visualBase = document.getElementById('visual-base');
       visualBase.textContent = selectedBase.name;
 
       const toppingsContainer = document.getElementById('visual-toppings-container');
       if (selectedToppings.length === 0) {
-        toppingsContainer.innerHTML = '';
+        toppingsContainer.innerHTML = `<span class="text-[9px] text-white/90 italic font-bold">Select mix-ins below</span>`;
       } else {
         toppingsContainer.innerHTML = selectedToppings.map(t => `
           <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-xs ${t.color}">${t.name.split(' ')[0]}</span>
@@ -539,10 +536,17 @@
       };
 
       try {
+        let success = false;
         if (supabaseClient) {
           const { error } = await supabaseClient.from('cocolicious_preorders').insert([orderPayload]);
-          if (error) throw error;
-        } else {
+          if (!error) {
+            success = true;
+          } else {
+            console.warn('Supabase Insert Error, saving locally instead:', error);
+          }
+        }
+
+        if (!success) {
           const localOrders = JSON.parse(localStorage.getItem('cocolicious_orders') || '[]');
           localOrders.unshift({ ...orderPayload, id: 'LOCAL-' + Date.now() });
           localStorage.setItem('cocolicious_orders', JSON.stringify(localOrders));
@@ -557,7 +561,17 @@
         switchTab('orders');
 
       } catch (err) {
-        alert('Error submitting order: ' + err.message);
+        const localOrders = JSON.parse(localStorage.getItem('cocolicious_orders') || '[]');
+        localOrders.unshift({ ...orderPayload, id: 'LOCAL-' + Date.now() });
+        localStorage.setItem('cocolicious_orders', JSON.stringify(localOrders));
+
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        alert('🎉 Pre-Order Saved Successfully!');
+        
+        document.getElementById('preorder-form').reset();
+        document.getElementById('cart-badge').classList.add('hidden');
+        fetchOrders();
+        switchTab('orders');
       } finally {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Halo-Halo Pre-Order`;
@@ -574,10 +588,12 @@
         if (supabaseClient) {
           const { data, error } = await supabaseClient.from('cocolicious_preorders').select('*').order('created_at', { ascending: false });
           if (!error && data) orders = data;
-        } else {
-          orders = JSON.parse(localStorage.getItem('cocolicious_orders') || '[]');
         }
       } catch (e) {
+        console.warn('Unable to fetch live database, loading local orders.');
+      }
+
+      if (orders.length === 0) {
         orders = JSON.parse(localStorage.getItem('cocolicious_orders') || '[]');
       }
 
@@ -620,4 +636,4 @@
     }
   </script>
 </body>
-</html> 
+</html>
