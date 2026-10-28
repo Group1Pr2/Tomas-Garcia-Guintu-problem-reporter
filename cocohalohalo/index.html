@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cocolicious Halo-Halo | Pre-Order</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap');
+    
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 35%, #38bdf8 100%);
+      min-height: 100vh;
+    }
+    
+    .font-heading {
+      font-family: 'Fredoka', cursive;
+    }
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen p-0 sm:p-4">
+
+  <!-- Mobile App Frame Container -->
+  <div class="w-full max-w-md bg-amber-50 min-h-screen sm:min-h-[844px] sm:max-h-[900px] sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col relative border-0 sm:border-8 border-amber-300/40">
+
+    <!-- Top App Header (Settings Icon Removed) -->
+    <header class="bg-white text-slate-900 p-4 shadow-sm border-b border-amber-100 relative z-10 flex-shrink-0">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-amber-600 text-xl shadow-xs">
+            <img src="https://img.icons8.com/color/48/coconut.png" alt="Logo" class="w-6 h-6">
+          </div>
+          <div>
+            <h1 class="font-heading text-xl font-bold tracking-wide leading-none text-rose-500">Cocolicious</h1>
+            <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">HALO-HALO PRE-ORDER</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scrollable Main Content -->
+    <main class="flex-1 overflow-y-auto pb-36 relative">
+      
+      <!-- ================= BUILD TAB ================= -->
+      <section id="tab-build" class="p-4 space-y-4">
+        
+        <!-- Hero Banner Card -->
+        <div class="bg-gradient-to-br from-orange-50 via-pink-50 to-amber-50 rounded-3xl p-4 shadow-sm border border-amber-200/60 relative overflow-hidden">
+          <span class="inline-block bg-rose-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-1.5 shadow-xs">
+            BUILD-YOUR-OWN
+          </span>
+          <h2 class="font-heading text-xl font-bold text-amber-950 flex items-center gap-1.5">
+            Craft Your Dream Halo-Halo 🍧
+          </h2>
+          <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+            Pick your favorite base shaved ice, custom mix-ins, and artisanal ice cream scoop!
+          </p>
+        </div>
+
+        <!-- Live Bowl Visualizer Card -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-amber-100 relative">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center mb-2">LIVE BOWL VISUALIZER</p>
+          
+          <div class="w-36 h-48 mx-auto relative flex flex-col justify-end items-center">
+            <!-- Cup Body -->
+            <div class="w-full h-40 border-4 border-slate-200 bg-slate-50/50 rounded-b-3xl relative overflow-hidden shadow-inner flex flex-col justify-end p-1">
+              
+              <!-- Scoop Preview -->
+              <div id="visual-scoop" class="w-20 h-12 mx-auto rounded-t-full bg-purple-600 border-2 border-white shadow-md transform translate-y-2 z-20 transition-all duration-300 flex items-center justify-center text-[10px] text-white font-bold text-center px-1">
+                Classic Ube Ice Cream
+              </div>
+
+              <!-- Toppings Container -->
+              <div id="visual-toppings-container" class="w-full min-h-[30px] flex flex-wrap gap-1 justify-center items-center p-1 z-10">
+                <!-- Dynamic Toppings -->
+              </div>
+
+              <!-- Base Preview -->
+              <div id="visual-base" class="w-full h-14 bg-gradient-to-t from-sky-100 to-white rounded-b-2xl border-t border-sky-200 flex items-center justify-center text-amber-900 text-[10px] font-bold text-center px-1">
+                Fresh Shredded Buko Meat & Juice
+              </div>
+            </div>
+            <!-- Coconut Stand -->
+            <div class="w-24 h-4 bg-slate-300 rounded-b-full shadow-xs -mt-1 border-t border-slate-400"></div>
+          </div>
+
+          <!-- Selected Counter & Reset -->
+          <div class="flex justify-between items-center mt-4 pt-3 border-t border-slate-100 text-xs">
+            <span class="font-bold text-slate-700">Selected Ingredients: <span id="selected-count" class="text-rose-500 font-black">0</span></span>
+            <button onclick="resetAllSelections()" class="text-slate-400 font-bold hover:underline text-[11px]">Reset All</button>
+          </div>
+        </div>
+
+        <!-- STEP 1: Choose Shaved Ice Base -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-amber-100">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-6 h-6 rounded-full bg-rose-500 text-white font-bold text-xs flex items-center justify-center">1</span>
+            <h3 class="font-heading font-bold text-amber-900 text-sm">Choose Shaved Ice Base (Includes Bowl: ₱120)</h3>
+          </div>
+          <div class="space-y-2" id="base-options-container"></div>
+        </div>
+
+        <!-- STEP 2: Custom Mix-Ins & Toppings -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-amber-100">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-rose-500 text-white font-bold text-xs flex items-center justify-center">2</span>
+              <h3 class="font-heading font-bold text-amber-900 text-sm">Custom Mix-Ins & Toppings</h3>
+            </div>
+            <span class="text-xs text-amber-600 font-semibold" id="toppings-count-badge">0 selected</span>
+          </div>
+          
+          <div class="space-y-4">
+            <div>
+              <p class="text-[11px] font-bold text-amber-700 uppercase tracking-wider mb-2">Signature Coconuts & Jellies</p>
+              <div class="grid grid-cols-1 gap-2" id="toppings-cat-jellies"></div>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-amber-700 uppercase tracking-wider mb-2">Sweet Preserves & Legumes</p>
+              <div class="grid grid-cols-1 gap-2" id="toppings-cat-preserves"></div>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-amber-700 uppercase tracking-wider mb-2">Decadent Layers & Crunch</p>
+              <div class="grid grid-cols-1 gap-2" id="toppings-cat-decadent"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Top Ice Cream Scoop -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-amber-100">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-6 h-6 rounded-full bg-rose-500 text-white font-bold text-xs flex items-center justify-center">3</span>
+            <h3 class="font-heading font-bold text-amber-900 text-sm">Top Ice Cream Scoop</h3>
+          </div>
+          <div class="space-y-2" id="scoop-options-container"></div>
+        </div>
+
+      </section>
+
+      <!-- ================= CART / CHECKOUT TAB ================= -->
+      <section id="tab-cart" class="p-4 space-y-4 hidden">
+        <h2 class="font-heading text-xl font-bold text-amber-900 mb-2">Review Your Pre-Order</h2>
+        
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-amber-100 space-y-3">
+          <div class="flex justify-between items-start border-b border-amber-50 pb-3">
+            <div>
+              <h3 class="font-heading font-bold text-amber-900 text-base">Custom Cocolicious Bowl</h3>
+              <p class="text-xs text-amber-600" id="summary-base-name">Base: Fresh Shredded Buko</p>
+            </div>
+            <button onclick="switchTab('build')" class="text-xs text-sky-600 font-bold hover:underline">Edit</button>
+          </div>
+
+          <div class="text-xs space-y-1 text-slate-600">
+            <p class="font-bold text-amber-800">Toppings & Mix-Ins:</p>
+            <ul id="summary-toppings-list" class="list-disc list-inside space-y-0.5 pl-1">
+              <li class="italic text-slate-400">No extra mix-ins selected</li>
+            </ul>
+          </div>
+
+          <div class="text-xs pt-1">
+            <span class="font-bold text-amber-800">Ice Cream Scoop: </span>
+            <span id="summary-scoop-name" class="text-slate-700 font-semibold">Classic Ube Ice Cream</span>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-amber-50">
+            <span class="text-xs font-bold text-amber-900">Quantity:</span>
+            <div class="flex items-center gap-3 bg-amber-50 rounded-full px-3 py-1 border border-amber-200">
+              <button onclick="updateQuantity(-1)" class="w-6 h-6 rounded-full bg-white text-amber-800 font-bold shadow flex items-center justify-center">-</button>
+              <span id="summary-qty" class="font-bold text-amber-900 text-sm">1</span>
+              <button onclick="updateQuantity(1)" class="w-6 h-6 rounded-full bg-white text-amber-800 font-bold shadow flex items-center justify-center">+</button>
+            </div>
+          </div>
+        </div>
+
+        <form id="preorder-form" onsubmit="handleOrderSubmit(event)" class="bg-white rounded-3xl p-4 shadow-sm border border-amber-100 space-y-3">
+          <h3 class="font-heading font-bold text-amber-900 text-sm mb-1">Customer & Delivery Details</h3>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Your Name *</label>
+            <input type="text" id="cust-name" required placeholder="e.g. Maria Santos (Grade 11)" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-sky-500 bg-slate-50">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Contact Number / Messenger *</label>
+            <input type="tel" id="cust-phone" required placeholder="0917XXXXXXX or Messenger Name" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-sky-500 bg-slate-50">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Fulfillment Option *</label>
+            <select id="fulfillment-type" onchange="toggleDeliveryAddress()" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-sky-500 bg-slate-50 font-medium">
+              <option value="pickup">School Campus Pick-up / Delivery (Free)</option>
+              <option value="delivery">Outside School Delivery (+₱20.00)</option>
+            </select>
+          </div>
+
+          <div id="address-container" class="hidden">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Outside School Delivery Address *</label>
+            <input type="text" id="cust-address" placeholder="House No., Street, Landmark near school" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-sky-500 bg-slate-50">
+          </div>
+
+          <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center gap-2">
+            <i class="fa-solid fa-coins text-amber-600 text-base"></i>
+            <div>
+              <p class="font-bold">Payment Method: <span id="payment-method-label">Cash on Pick-up</span></p>
+              <p class="text-[10px] text-amber-700">Please prepare exact cash amount upon receiving your halo-halo.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 space-y-1.5 text-xs">
+            <div class="flex justify-between text-slate-600">
+              <span>Subtotal:</span>
+              <span>₱<span id="summary-subtotal">49.00</span></span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Delivery Fee:</span>
+              <span>₱<span id="summary-delivery-fee">0.00</span></span>
+            </div>
+            <div class="flex justify-between font-bold text-sm text-amber-900 pt-1 border-t border-dashed">
+              <span>Total Payable:</span>
+              <span class="text-emerald-600">₱<span id="summary-grand-total">49.00</span></span>
+            </div>
+          </div>
+
+          <button type="submit" id="submit-btn" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3.5 px-6 rounded-2xl font-heading font-bold text-base shadow-lg hover:brightness-105 active:scale-[0.98] transition mt-2 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Submit Halo-Halo Pre-Order
+          </button>
+        </form>
+      </section>
+
+      <!-- ================= ORDERS TRACKER TAB ================= -->
+      <section id="tab-orders" class="p-4 space-y-4 hidden">
+        <div class="flex justify-between items-center">
+          <h2 class="font-heading text-xl font-bold text-amber-900">Pre-Order List</h2>
+          <button onclick="fetchOrders()" class="text-xs text-sky-600 bg-sky-50 px-3 py-1.5 rounded-full font-bold hover:bg-sky-100">
+            <i class="fa-solid fa-rotate-right mr-1"></i> Refresh
+          </button>
+        </div>
+
+        <div id="orders-list-container" class="space-y-3"></div>
+      </section>
+
+    </main>
+
+    <!-- Sticky Floating Bottom Action Bar -->
+    <div id="sticky-action-bar" class="absolute bottom-16 left-4 right-4 bg-slate-900/95 backdrop-blur-md rounded-2xl p-3 shadow-2xl flex items-center justify-between z-20 border border-slate-800">
+      <div>
+        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">TOTAL PRICE</p>
+        <p class="font-heading text-xl font-extrabold text-amber-400">₱<span id="sticky-total-price">69.00</span></p>
+      </div>
+      <button onclick="proceedToCartTab()" class="bg-gradient-to-r from-rose-500 to-pink-600 text-white font-heading font-bold px-5 py-3 rounded-xl text-xs shadow-md hover:brightness-105 flex items-center gap-1.5 active:scale-95 transition">
+        <span>Pre-Order Bowl</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <!-- Bottom Sticky Tab Navigation -->
+    <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-2.5 flex justify-around items-center z-30 shadow-lg">
+      <button onclick="switchTab('build')" id="nav-btn-build" class="flex flex-col items-center gap-1 text-rose-500 font-bold text-xs">
+        <i class="fa-solid fa-ice-cream text-lg"></i>
+        <span>Build</span>
+      </button>
+      <button onclick="switchTab('cart')" id="nav-btn-cart" class="flex flex-col items-center gap-1 text-slate-400 font-medium text-xs relative">
+        <i class="fa-solid fa-cart-shopping text-lg"></i>
+        <span>Cart</span>
+        <span id="cart-badge" class="absolute -top-1 right-2 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">1</span>
+      </button>
+      <button onclick="switchTab('orders')" id="nav-btn-orders" class="flex flex-col items-center gap-1 text-slate-400 font-medium text-xs">
+        <i class="fa-solid fa-receipt text-lg"></i>
+        <span>Orders</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script>
+    // Hardcoded Supabase Credentials
+    let SUPABASE_URL = 'https://blfxgmicmwunverwxjl.supabase.co';
+    let SUPABASE_KEY = 'sb_publishable_6eXVfYOlILlXi-LzMdL80Q_tkYsXwST';
+    let supabaseClient = null;
+
+    const BASE_OPTIONS = [
+      { id: 'b1', name: 'Fresh Shredded Buko Meat & Juice Base', price: 49.00, desc: 'Young coconut meat paired with a chilled coconut water base' },
+      { id: 'b2', name: 'Classic Evaporated Milk & Shaved Ice Base', price: 49.00, desc: 'Traditional shaved ice drenched in creamy evaporated milk' },
+      { id: 'b3', name: 'Coconut Milk (Gata) & Shaved Ice Base', price: 49.00, desc: '100% dairy-free rich coconut milk base' },
+      { id: 'b4', name: 'Condensed Milk Ice Base', price: 49.00, desc: 'Extra sweet shaved ice blended with rich condensed milk' }
+    ];
+
+    const TOPPING_OPTIONS = [
+      { id: 't1', category: 'jellies', name: 'Macapuno Strings', price: 12.00, color: 'bg-amber-100 text-amber-800' },
+      { id: 't2', category: 'jellies', name: 'Nata de Coco', price: 10.00, color: 'bg-red-100 text-red-700' },
+      { id: 't3', category: 'jellies', name: 'Kaong (Palm Fruit)', price: 10.00, color: 'bg-emerald-100 text-emerald-800' },
+      { id: 't4', category: 'jellies', name: 'Pandan Jelly', price: 10.00, color: 'bg-green-100 text-green-800' },
+      { id: 't5', category: 'jellies', name: 'Gulaman Cubes', price: 10.00, color: 'bg-rose-100 text-rose-800' },
+      { id: 't6', category: 'preserves', name: 'Sweetened Saba Bananas', price: 12.00, color: 'bg-yellow-100 text-yellow-800' },
+      { id: 't7', category: 'preserves', name: 'Langka Preserves (Jackfruit)', price: 15.00, color: 'bg-amber-200 text-amber-900' },
+      { id: 't8', category: 'preserves', name: 'Sweet Red Monggo Beans', price: 10.00, color: 'bg-red-200 text-red-900' },
+      { id: 't9', category: 'preserves', name: 'Sweet White Beans / Garbanzo', price: 10.00, color: 'bg-slate-200 text-slate-800' },
+      { id: 't10', category: 'preserves', name: 'Sweet Corn Kernels', price: 10.00, color: 'bg-yellow-200 text-yellow-900' },
+      { id: 't11', category: 'decadent', name: 'Leche Flan Slice', price: 15.00, color: 'bg-amber-300 text-amber-950 font-bold' },
+      { id: 't12', category: 'decadent', name: 'Ube Halaya Jam', price: 15.00, color: 'bg-purple-200 text-purple-900 font-bold' },
+      { id: 't13', category: 'decadent', name: 'Toasted Pinipig Crunch', price: 10.00, color: 'bg-orange-100 text-orange-900' }
+    ];
+
+    const SCOOP_OPTIONS = [
+      { id: 's1', name: 'Classic Ube Ice Cream (Purple Yam)', shortName: 'Classic Ube Ice Cream', price: 20.00, color: 'bg-purple-600' },
+      { id: 's2', name: 'Coconut / Buko Pandan Ice Cream', shortName: 'Buko Pandan Ice Cream', price: 25.00, color: 'bg-emerald-500' }
+    ];
+
+    let selectedBase = BASE_OPTIONS[0];
+    let selectedToppings = [];
+    let selectedScoop = SCOOP_OPTIONS[0];
+    let bowlQuantity = 1;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initSupabase();
+      renderMenuOptions();
+      updateCalculations();
+      fetchOrders();
+    });
+
+    function initSupabase() {
+      if (SUPABASE_URL && SUPABASE_KEY) {
+        try {
+          supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (e) {
+          console.error('Supabase init error:', e);
+        }
+      }
+    }
+
+    function renderMenuOptions() {
+      const baseContainer = document.getElementById('base-options-container');
+      baseContainer.innerHTML = BASE_OPTIONS.map(b => `
+        <label class="flex items-start gap-3 p-3.5 rounded-2xl border-2 ${selectedBase.id === b.id ? 'border-teal-500 bg-teal-50/20' : 'border-slate-100 bg-slate-50/50'} cursor-pointer transition">
+          <input type="radio" name="base" value="${b.id}" ${selectedBase.id === b.id ? 'checked' : ''} onchange="selectBase('${b.id}')" class="mt-1 accent-teal-600">
+          <div class="flex-1">
+            <div class="flex justify-between font-bold text-xs text-slate-800">
+              <span>${b.name}</span>
+              <span class="text-teal-700 font-bold">₱${b.price.toFixed(0)}</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">${b.desc}</p>
+          </div>
+        </label>
+      `).join('');
+
+      const renderToppingItem = (t) => {
+        const isChecked = selectedToppings.some(item => item.id === t.id);
+        return `
+          <label class="flex items-center justify-between p-2.5 rounded-xl border ${isChecked ? 'border-teal-400 bg-teal-50/40' : 'border-slate-100 bg-slate-50'} cursor-pointer text-xs">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleTopping('${t.id}')" class="accent-teal-600 rounded">
+              <span class="font-bold text-slate-800">${t.name}</span>
+            </div>
+            <span class="font-bold text-teal-700">+₱${t.price.toFixed(2)}</span>
+          </label>
+        `;
+      };
+
+      document.getElementById('toppings-cat-jellies').innerHTML = TOPPING_OPTIONS.filter(t => t.category === 'jellies').map(renderToppingItem).join('');
+      document.getElementById('toppings-cat-preserves').innerHTML = TOPPING_OPTIONS.filter(t => t.category === 'preserves').map(renderToppingItem).join('');
+      document.getElementById('toppings-cat-decadent').innerHTML = TOPPING_OPTIONS.filter(t => t.category === 'decadent').map(renderToppingItem).join('');
+
+      const scoopContainer = document.getElementById('scoop-options-container');
+      scoopContainer.innerHTML = SCOOP_OPTIONS.map(s => `
+        <label class="flex items-center justify-between p-3 rounded-2xl border ${selectedScoop.id === s.id ? 'border-teal-500 bg-teal-50/30' : 'border-slate-100 bg-slate-50/50'} cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <input type="radio" name="scoop" value="${s.id}" ${selectedScoop.id === s.id ? 'checked' : ''} onchange="selectScoop('${s.id}')" class="accent-teal-600">
+            <div class="w-3.5 h-3.5 rounded-full ${s.color}"></div>
+            <span class="font-bold text-xs text-slate-800">${s.name}</span>
+          </div>
+          <span class="font-bold text-xs text-teal-800">+₱${s.price.toFixed(2)}</span>
+        </label>
+      `).join('');
+
+      document.getElementById('selected-count').textContent = selectedToppings.length;
+      document.getElementById('toppings-count-badge').textContent = `${selectedToppings.length} selected`;
+    }
+
+    function selectBase(id) {
+      selectedBase = BASE_OPTIONS.find(b => b.id === id);
+      renderMenuOptions();
+      updateCalculations();
+    }
+
+    function toggleTopping(id) {
+      const exists = selectedToppings.some(t => t.id === id);
+      if (exists) {
+        selectedToppings = selectedToppings.filter(t => t.id !== id);
+      } else {
+        const item = TOPPING_OPTIONS.find(t => t.id === id);
+        selectedToppings.push(item);
+      }
+      renderMenuOptions();
+      updateCalculations();
+    }
+
+    function selectScoop(id) {
+      selectedScoop = SCOOP_OPTIONS.find(s => s.id === id);
+      renderMenuOptions();
+      updateCalculations();
+    }
+
+    function resetAllSelections() {
+      selectedBase = BASE_OPTIONS[0];
+      selectedToppings = [];
+      selectedScoop = SCOOP_OPTIONS[0];
+      renderMenuOptions();
+      updateCalculations();
+    }
+
+    function updateCalculations() {
+      const singleBowlPrice = selectedBase.price + selectedToppings.reduce((acc, curr) => acc + curr.price, 0) + selectedScoop.price;
+      const subtotal = singleBowlPrice * bowlQuantity;
+
+      document.getElementById('sticky-total-price').textContent = subtotal.toFixed(2);
+
+      // Visual cup updates
+      const visualScoop = document.getElementById('visual-scoop');
+      visualScoop.className = `w-20 h-12 mx-auto rounded-t-full border-2 border-white shadow-md transform translate-y-2 z-20 transition-all duration-300 flex items-center justify-center text-[10px] text-white font-bold text-center px-1 ${selectedScoop.color}`;
+      visualScoop.textContent = selectedScoop.shortName;
+
+      const visualBase = document.getElementById('visual-base');
+      visualBase.textContent = selectedBase.name;
+
+      const toppingsContainer = document.getElementById('visual-toppings-container');
+      if (selectedToppings.length === 0) {
+        toppingsContainer.innerHTML = '';
+      } else {
+        toppingsContainer.innerHTML = selectedToppings.map(t => `
+          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-xs ${t.color}">${t.name.split(' ')[0]}</span>
+        `).join('');
+      }
+
+      // Summary Details
+      document.getElementById('summary-base-name').textContent = `Base: ${selectedBase.name}`;
+      document.getElementById('summary-scoop-name').textContent = selectedScoop.name;
+      document.getElementById('summary-qty').textContent = bowlQuantity;
+
+      const summaryList = document.getElementById('summary-toppings-list');
+      if (selectedToppings.length === 0) {
+        summaryList.innerHTML = `<li class="italic text-slate-400">No extra mix-ins selected</li>`;
+      } else {
+        summaryList.innerHTML = selectedToppings.map(t => `
+          <li>${t.name} (+₱${t.price.toFixed(2)})</li>
+        `).join('');
+      }
+
+      const isDelivery = document.getElementById('fulfillment-type').value === 'delivery';
+      const deliveryFee = isDelivery ? 20.00 : 0.00;
+      const grandTotal = subtotal + deliveryFee;
+
+      document.getElementById('summary-subtotal').textContent = subtotal.toFixed(2);
+      document.getElementById('summary-delivery-fee').textContent = deliveryFee.toFixed(2);
+      document.getElementById('summary-grand-total').textContent = grandTotal.toFixed(2);
+    }
+
+    function updateQuantity(change) {
+      bowlQuantity = Math.max(1, bowlQuantity + change);
+      updateCalculations();
+    }
+
+    function toggleDeliveryAddress() {
+      const type = document.getElementById('fulfillment-type').value;
+      const addrContainer = document.getElementById('address-container');
+      const addrInput = document.getElementById('cust-address');
+      const paymentLabel = document.getElementById('payment-method-label');
+
+      if (type === 'delivery') {
+        addrContainer.classList.remove('hidden');
+        addrInput.required = true;
+        paymentLabel.textContent = "Cash on Delivery (COD)";
+      } else {
+        addrContainer.classList.add('hidden');
+        addrInput.required = false;
+        paymentLabel.textContent = "Cash on Pick-up";
+      }
+      updateCalculations();
+    }
+
+    function switchTab(tab) {
+      document.getElementById('tab-build').classList.add('hidden');
+      document.getElementById('tab-cart').classList.add('hidden');
+      document.getElementById('tab-orders').classList.add('hidden');
+      document.getElementById('sticky-action-bar').classList.add('hidden');
+
+      document.getElementById('nav-btn-build').className = "flex flex-col items-center gap-1 text-slate-400 font-medium text-xs";
+      document.getElementById('nav-btn-cart').className = "flex flex-col items-center gap-1 text-slate-400 font-medium text-xs relative";
+      document.getElementById('nav-btn-orders').className = "flex flex-col items-center gap-1 text-slate-400 font-medium text-xs";
+
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      document.getElementById(`nav-btn-${tab}`).className = "flex flex-col items-center gap-1 text-rose-500 font-bold text-xs relative";
+
+      if (tab === 'build') {
+        document.getElementById('sticky-action-bar').classList.remove('hidden');
+      }
+    }
+
+    function proceedToCartTab() {
+      switchTab('cart');
+      document.getElementById('cart-badge').classList.remove('hidden');
+    }
+
+    async function handleOrderSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting Order...`;
+
+      const singleBowlPrice = selectedBase.price + selectedToppings.reduce((acc, curr) => acc + curr.price, 0) + selectedScoop.price;
+      const subtotal = singleBowlPrice * bowlQuantity;
+      const fulfillmentType = document.getElementById('fulfillment-type').value;
+      const isDelivery = fulfillmentType === 'delivery';
+      const deliveryFee = isDelivery ? 20.00 : 0.00;
+      const grandTotal = subtotal + deliveryFee;
+
+      const orderPayload = {
+        customer_name: document.getElementById('cust-name').value,
+        customer_phone: document.getElementById('cust-phone').value,
+        fulfillment_type: fulfillmentType === 'delivery' ? 'Outside School Delivery' : 'School Campus Pick-up',
+        delivery_location: isDelivery ? document.getElementById('cust-address').value : 'School Campus',
+        base_name: selectedBase.name,
+        toppings: selectedToppings.map(t => t.name),
+        scoop_name: selectedScoop.name,
+        quantity: bowlQuantity,
+        unit_price: singleBowlPrice,
+        total_price: grandTotal,
+        payment_method: isDelivery ? 'Cash on Delivery (COD)' : 'Cash on Pick-up',
+        status: 'Pending',
+        created_at: new Date().toISOString()
+      };
+
+      try {
+        if (supabaseClient) {
+          const { error } = await supabaseClient.from('cocolicious_preorders').insert([orderPayload]);
+          if (error) throw error;
+        } else {
+          const localOrders = JSON.parse(localStorage.getItem('cocolicious_orders') || '[]');
+          localOrders.unshift({ ...orderPayload, id: 'LOCAL-' + Date.now() });
+          localStorage.setItem('cocolicious_orders', JSON.stringify(localOrders));
+        }
+
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        alert('🎉 Pre-Order Submitted Successfully!');
+        
+        document.getElementById('preorder-form').reset();
+        document.getElementById('cart-badge').classList.add('hidden');
+        fetchOrders();
+        switchTab('orders');
+
+      } catch (err) {
+        alert('Error submitting order: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Halo-Halo Pre-Order`;
+      }
+    }
+
+    async function fetchOrders() {
+      const container = document.getElementById('orders-list-container');
+      container.innerHTML = `<p class="text-xs text-center text-slate-400 py-6"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Loading orders...</p>`;
+
+      let orders = [];
+
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('cocolicious_preorders').select('*').order('created_at', { ascending: false });
+          if (!error && data) orders = data;
+        } else {
+          orders = JSON.parse(localStorage.getItem('cocolicious_orders') || '[]');
+        }
+      } catch (e) {
+        orders = JSON.parse(localStorage.getItem('cocolicious_orders') || '[]');
+      }
+
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 bg-white rounded-3xl p-4 border border-dashed border-amber-200">
+            <i class="fa-solid fa-basket-shopping text-3xl text-amber-300 mb-2"></i>
+            <p class="text-xs font-bold text-amber-900">No Pre-Orders Yet</p>
+            <p class="text-[11px] text-slate-500">Build your custom bowl and place your first pre-order!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = orders.map(o => `
+        <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-amber-100 text-xs space-y-2">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="font-bold text-amber-950 text-sm">${o.customer_name}</span>
+              <p class="text-[10px] text-slate-400">${new Date(o.created_at).toLocaleString()}</p>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full font-bold text-[10px] ${o.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              ${o.status || 'Pending'}
+            </span>
+          </div>
+
+          <div class="bg-amber-50/60 p-2 rounded-xl text-slate-700 space-y-1">
+            <p class="font-bold text-amber-900">${o.quantity}x Custom Halo-Halo Bowl</p>
+            <p class="text-[11px]"><strong>Base:</strong> ${o.base_name}</p>
+            <p class="text-[11px]"><strong>Toppings:</strong> ${Array.isArray(o.toppings) ? o.toppings.join(', ') : o.toppings || 'None'}</p>
+            <p class="text-[11px]"><strong>Scoop:</strong> ${o.scoop_name}</p>
+          </div>
+
+          <div class="flex justify-between items-center text-[11px] border-t border-slate-100 pt-2 font-medium">
+            <span class="text-slate-500"><i class="fa-solid fa-truck-fast text-amber-600 mr-1"></i>${o.fulfillment_type}</span>
+            <span class="font-bold text-emerald-600 text-xs">₱${Number(o.total_price).toFixed(2)} (${o.payment_method})</span>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html> 
