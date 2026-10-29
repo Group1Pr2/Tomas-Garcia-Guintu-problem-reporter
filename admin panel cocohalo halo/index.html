@@ -58,9 +58,9 @@
     let supabaseClient = null;
 
     // EmailJS Configuration
-    const EMAILJS_PUBLIC_KEY = 'service_1nk1xre'; // Public Key set
-    const EMAILJS_SERVICE_ID = 'service_1nk1xre'; // Service ID
-    const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID'; // Replace with your Template ID
+    const EMAILJS_PUBLIC_KEY = '8apALGASJtUY7UXQp'; // Active Public Key
+    const EMAILJS_SERVICE_ID = 'service_1nk1xre';   // Active Service ID
+    const EMAILJS_TEMPLATE_ID = 'template_15y596q';  // Active Template ID
 
     window.addEventListener('DOMContentLoaded', () => {
       try {
@@ -188,11 +188,6 @@
         fetchAllAdminOrders();
 
         // 2. Trigger automated email via EmailJS
-        if (EMAILJS_TEMPLATE_ID === 'YOUR_EMAILJS_TEMPLATE_ID') {
-          alert(`Status updated to "${newStatus}". Enter your EmailJS Template ID to enable automatic email dispatch!`);
-          return;
-        }
-
         const templateParams = {
           to_email: customerEmail,
           to_name: customerName,
@@ -201,10 +196,10 @@
         };
 
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-        alert(`✅ Status updated & email sent to ${customerEmail}!`);
+        alert(`✅ Status updated & email successfully sent to ${customerEmail}!`);
 
       } catch (err) {
-        alert('Error: ' + (err.text || err.message));
+        alert('Error sending email: ' + (err.text || err.message));
       }
     }
   </script>
