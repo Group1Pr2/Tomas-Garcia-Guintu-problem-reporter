@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cocolicious | Admin Pre-Order Manager</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap');
+    body { font-family: 'Quicksand', sans-serif; background: #f8fafc; }
+    .font-heading { font-family: 'Fredoka', cursive; }
+  </style>
+</head>
+<body class="min-h-screen p-4 sm:p-6 max-w-4xl mx-auto">
+
+  <!-- Admin Header -->
+  <header class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6 rounded-3xl shadow-md mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-amber-600 text-2xl shadow">
+        <i class="fa-solid fa-gauge-high"></i>
+      </div>
+      <div>
+        <h1 class="font-heading text-2xl font-bold">Cocolicious Admin Panel</h1>
+        <p class="text-xs text-amber-100 font-semibold uppercase tracking-wider">Manage & Email Pre-Orders</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="fetchAllAdminOrders()" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl text-xs font-bold backdrop-blur-md transition flex items-center gap-2">
+        <i class="fa-solid fa-rotate-right"></i> Refresh Orders
+      </button>
+    </div>
+  </header>
+
+  <!-- Orders Dashboard Feed -->
+  <main class="space-y-4">
+    <div class="flex justify-between items-center px-2">
+      <h2 class="font-heading font-bold text-slate-800 text-lg">Incoming Pre-Orders Feed</h2>
+      <span id="order-count-badge" class="bg-amber-100 text-amber-800 font-bold text-xs px-3 py-1 rounded-full">0 Orders</span>
+    </div>
+
+    <div id="admin-orders-container" class="space-y-3">
+      <p class="text-center text-slate-400 py-12"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Connecting to database...</p>
+    </div>
+  </main>
+
+  <script>
+    // Supabase Credentials
+    const SUPABASE_URL = 'https://blfxgbmicmwunverwxjl.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_6eXVfYOlILlXi-LzMdL80Q_tkYsXwST';
+    let supabaseClient = null;
+
+    // EmailJS Configuration
+    const EMAILJS_PUBLIC_KEY = 'service_1nk1xre'; // Public Key set
+    const EMAILJS_SERVICE_ID = 'service_1nk1xre'; // Service ID
+    const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID'; // Replace with your Template ID
+
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      } catch (e) {
+        console.error('Supabase init error:', e);
+      }
+
+      // Initialize EmailJS
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+
+      fetchAllAdminOrders();
+      setInterval(fetchAllAdminOrders, 15000);
+    });
+
+    async function fetchAllAdminOrders() {
+      const container = document.getElementById('admin-orders-container');
+      let orders = [];
+
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient
+            .from('cocolicious_preorders')
+            .select('*')
+            .order('created_at', { ascending: false });
+            
+          if (!error && data) orders = data;
+        }
+      } catch (err) {
+        console.warn('Network error:', err);
+      }
+
+      if (orders.length === 0) {
+        orders = JSON.parse(localStorage.getItem('cocolicious_orders') || '[]');
+      }
+
+      document.getElementById('order-count-badge').textContent = `${orders.length} Orders`;
+
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl p-8 text-center border border-slate-200">
+            <i class="fa-solid fa-clipboard-list text-4xl text-slate-300 mb-2"></i>
+            <p class="font-bold text-slate-700 text-sm">No Pre-Orders Found</p>
+            <p class="text-xs text-slate-400">Orders placed on your pre-order app will appear here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = orders.map(o => {
+        const orderId = o.id || 'LOCAL-' + o.created_at;
+        const status = o.status || 'Pending';
+        const email = o.customer_phone || 'No Email Provided';
+        
+        let statusColor = 'bg-amber-100 text-amber-800 border-amber-200';
+        if (status === 'Preparing ⏳') statusColor = 'bg-sky-100 text-sky-800 border-sky-200';
+        if (status === 'Out for Delivery 🛵') statusColor = 'bg-purple-100 text-purple-800 border-purple-800';
+        if (status === 'Completed ✅') statusColor = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+        return `
+          <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 space-y-3">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-heading font-bold text-slate-900 text-base">${o.customer_name}</h3>
+                  <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-md"><i class="fa-regular fa-envelope mr-1 text-[10px]"></i>${email}</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-regular fa-clock mr-1"></i>${new Date(o.created_at).toLocaleString()}</p>
+              </div>
+              <span class="px-3 py-1 rounded-full font-bold text-xs border ${statusColor}">
+                ${status}
+              </span>
+            </div>
+
+            <!-- Order Details Box -->
+            <div class="bg-amber-50/50 rounded-2xl p-3 text-xs text-slate-700 space-y-1.5 border border-amber-100">
+              <div class="flex justify-between font-bold text-amber-950">
+                <span>${o.quantity}x Custom Halo-Halo Bowl</span>
+                <span class="text-emerald-600">₱${Number(o.total_price).toFixed(2)}</span>
+              </div>
+              <p><strong>Base:</strong> ${o.base_name}</p>
+              <p><strong>Toppings:</strong> ${Array.isArray(o.toppings) ? o.toppings.join(', ') : o.toppings || 'None'}</p>
+              <p><strong>Scoop:</strong> ${o.scoop_name}</p>
+              <p><strong>Fulfillment:</strong> ${o.fulfillment_type} ${o.delivery_location ? '(' + o.delivery_location + ')' : ''}</p>
+              <p><strong>Payment:</strong> ${o.payment_method}</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+              <div class="flex flex-wrap gap-1.5">
+                <button onclick="updateStatusAndEmail('${orderId}', '${email}', '${o.customer_name}', 'Preparing ⏳')" class="bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-bold px-3 py-1.5 rounded-xl transition">
+                  ⏳ Prepare
+                </button>
+                <button onclick="updateStatusAndEmail('${orderId}', '${email}', '${o.customer_name}', 'Out for Delivery 🛵')" class="bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1.5 rounded-xl transition">
+                  🛵 Deliver
+                </button>
+                <button onclick="updateStatusAndEmail('${orderId}', '${email}', '${o.customer_name}', 'Completed ✅')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-xl transition">
+                  ✅ Complete
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function updateStatusAndEmail(id, customerEmail, customerName, newStatus) {
+      try {
+        // 1. Update status in Supabase & LocalStorage
+        if (supabaseClient && !id.startsWith('LOCAL-')) {
+          await supabaseClient
+            .from('cocolicious_preorders')
+            .update({ status: newStatus })
+            .eq('id', id);
+        }
+
+        let orders = JSON.parse(localStorage.getItem('cocolicious_orders') || '[]');
+        orders = orders.map(o => {
+          if ((o.id && o.id === id) || ('LOCAL-' + o.created_at === id)) {
+            o.status = newStatus;
+          }
+          return o;
+        });
+        localStorage.setItem('cocolicious_orders', JSON.stringify(orders));
+        fetchAllAdminOrders();
+
+        // 2. Trigger automated email via EmailJS
+        if (EMAILJS_TEMPLATE_ID === 'YOUR_EMAILJS_TEMPLATE_ID') {
+          alert(`Status updated to "${newStatus}". Enter your EmailJS Template ID to enable automatic email dispatch!`);
+          return;
+        }
+
+        const templateParams = {
+          to_email: customerEmail,
+          to_name: customerName,
+          order_status: newStatus,
+          message: `Hello ${customerName}, your Cocolicious Halo-Halo pre-order status has been updated to: ${newStatus}. Thank you!`
+        };
+
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        alert(`✅ Status updated & email sent to ${customerEmail}!`);
+
+      } catch (err) {
+        alert('Error: ' + (err.text || err.message));
+      }
+    }
+  </script>
+</body>
+</html>
