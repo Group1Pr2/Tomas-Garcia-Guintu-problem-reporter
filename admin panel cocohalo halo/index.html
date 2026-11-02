@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cocolicious | Admin Pre-Order Manager</title>
-  <!-- Tailwind CSS -->
+ 
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
+ 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Supabase JS Client -->
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- EmailJS SDK -->
+ 
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   
   <style>
@@ -21,7 +21,7 @@
 </head>
 <body class="min-h-screen p-4 sm:p-6 max-w-4xl mx-auto">
 
-  <!-- Admin Header -->
+ 
   <header class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6 rounded-3xl shadow-md mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
     <div class="flex items-center gap-3">
       <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-amber-600 text-2xl shadow">
@@ -39,7 +39,7 @@
     </div>
   </header>
 
-  <!-- Orders Dashboard Feed -->
+ 
   <main class="space-y-4">
     <div class="flex justify-between items-center px-2">
       <h2 class="font-heading font-bold text-slate-800 text-lg">Incoming Pre-Orders Feed</h2>
@@ -52,12 +52,12 @@
   </main>
 
   <script>
-    // Supabase Credentials
+
     const SUPABASE_URL = 'https://blfxgbmicmwunverwxjl.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_6eXVfYOlILlXi-LzMdL80Q_tkYsXwST';
     let supabaseClient = null;
 
-    // EmailJS Configuration
+   
     const EMAILJS_PUBLIC_KEY = '8apALGASJtUY7UXQp'; // Active Public Key
     const EMAILJS_SERVICE_ID = 'service_1nk1xre';   // Active Service ID
     const EMAILJS_TEMPLATE_ID = 'template_15y596q';  // Active Template ID
@@ -69,7 +69,7 @@
         console.error('Supabase init error:', e);
       }
 
-      // Initialize EmailJS
+   
       emailjs.init(EMAILJS_PUBLIC_KEY);
 
       fetchAllAdminOrders();
@@ -187,7 +187,7 @@
         localStorage.setItem('cocolicious_orders', JSON.stringify(orders));
         fetchAllAdminOrders();
 
-        // 2. Trigger automated email via EmailJS
+      
         const templateParams = {
           to_email: customerEmail,
           to_name: customerName,
