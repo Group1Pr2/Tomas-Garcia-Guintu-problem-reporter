@@ -41,10 +41,6 @@
     .glow-effect {
       box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.25);
     }
-    .blend-logo {
-      mix-blend-mode: lighten;
-      filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.3));
-    }
     .bg-school-watermark {
       background-image: url('logo.jpg');
       background-repeat: no-repeat;
@@ -52,7 +48,6 @@
       background-size: 1035px auto;
     }
 
-   
     .sidebar-glass {
       background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(2, 6, 23, 0.95) 100%);
       backdrop-filter: blur(24px);
@@ -60,7 +55,6 @@
       border-right: 1px solid rgba(6, 182, 212, 0.25);
       box-shadow: 10px 0 40px rgba(0, 0, 0, 0.8), inset -1px 0 0 rgba(255, 255, 255, 0.05);
     }
-
 
     .sidebar-link {
       position: relative;
@@ -107,6 +101,62 @@
       white-space: nowrap;
     }
 
+    
+    @keyframes assembleLeft {
+      0% { transform: translate(-90px, -50px) scale(0.7); opacity: 0; }
+      100% { transform: translate(0, 0) scale(1); opacity: 1; }
+    }
+
+    @keyframes assembleRight {
+      0% { transform: translate(90px, 50px) scale(0.7); opacity: 0; }
+      100% { transform: translate(0, 0) scale(1); opacity: 1; }
+    }
+
+    @keyframes assembleCore {
+      0% { transform: scale(0.1); opacity: 0; }
+      50% { opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes intenseGlowPulse {
+      0%, 100% {
+        filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 35px rgba(34, 211, 238, 0.6));
+      }
+      50% {
+        filter: drop-shadow(0 0 25px rgba(34, 211, 238, 1)) drop-shadow(0 0 55px rgba(6, 182, 212, 0.8));
+      }
+    }
+
+    @keyframes slowLaser {
+      0% { stroke-dashoffset: 320; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    .logo-animated-container {
+      animation: intenseGlowPulse 3.5s ease-in-out infinite;
+    }
+
+    .part-left {
+      animation: assembleLeft 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: center;
+    }
+
+    .part-right {
+      animation: assembleRight 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: center;
+    }
+
+    .part-core {
+      animation: assembleCore 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: center;
+    }
+
+    .laser-slow {
+      stroke-dasharray: 90 230;
+      animation: slowLaser 3.2s linear infinite;
+    }
+    /* ------------------------ */
+
     @media (max-width: 600px) {
       .bg-school-watermark {
         background-size: 320px auto !important;
@@ -136,7 +186,6 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen relative overflow-x-hidden selection:bg-cyan-500 selection:text-white">
 
- 
   <div class="fixed inset-0 pointer-events-none z-0">
     <div class="absolute inset-0 bg-school-watermark opacity-40"></div>
     <div class="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/70 to-slate-950"></div>
@@ -152,8 +201,46 @@
     <div class="glass-card max-w-md w-full rounded-3xl p-6 md:p-8 text-center glow-effect relative overflow-hidden transform transition-all">
       <div class="absolute -top-12 -right-12 w-32 h-32 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none"></div>
 
+     
       <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-slate-900/90 p-1.5 flex items-center justify-center border border-cyan-500/30 shadow-lg shadow-cyan-500/20 overflow-hidden">
-        <img src="logo.png" alt="Nexus Wolf Logo" class="w-full h-full object-cover rounded-xl">
+        <svg class="w-16 h-16 logo-animated-container" viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="metalBodyModal" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#334155" />
+              <stop offset="30%" stop-color="#1e293b" />
+              <stop offset="70%" stop-color="#0f172a" />
+              <stop offset="100%" stop-color="#020617" />
+            </linearGradient>
+            <linearGradient id="metalBorderModal" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#64748b" />
+              <stop offset="100%" stop-color="#0f172a" />
+            </linearGradient>
+            <linearGradient id="cyanGlowModal" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#a5f3fc" />
+              <stop offset="50%" stop-color="#22d3ee" />
+              <stop offset="100%" stop-color="#06b6d4" />
+            </linearGradient>
+          </defs>
+          <g class="part-left">
+            <path d="M10 20 L58 5 L58 205 L25 215 L10 215 Z" fill="url(#metalBodyModal)" stroke="url(#metalBorderModal)" stroke-width="1.5" />
+            <rect x="44" y="45" width="6" height="120" fill="url(#cyanGlowModal)" rx="3" />
+            <rect x="46" y="50" width="2" height="110" fill="#ffffff" rx="1" />
+          </g>
+          <g class="part-right">
+            <path d="M190 5 L190 195 L155 215 L142 200 L142 20 Z" fill="url(#metalBodyModal)" stroke="url(#metalBorderModal)" stroke-width="1.5" />
+            <rect x="150" y="45" width="6" height="120" fill="url(#cyanGlowModal)" rx="3" />
+            <rect x="152" y="50" width="2" height="110" fill="#ffffff" rx="1" />
+          </g>
+          <g class="part-core">
+            <path d="M42 5 L158 190 L138 215 L22 30 Z" fill="#090e1a" stroke="#1e293b" stroke-width="2" />
+            <path d="M42 20 L158 190 L148 170 L32 0 Z" fill="url(#metalBodyModal)" opacity="0.95" />
+            <path d="M40 18 L160 202" stroke="#00f0ff" stroke-width="26" stroke-linecap="square" opacity="0.5" />
+            <path d="M40 18 L160 202" stroke="#0284c7" stroke-width="18" stroke-linecap="square" />
+            <path d="M40 18 L160 202" stroke="#22d3ee" stroke-width="10" stroke-linecap="square" />
+            <path d="M40 18 L160 202" stroke="#a5f3fc" stroke-width="6" stroke-linecap="square" />
+            <path class="laser-slow" d="M40 18 L160 202" stroke="#ffffff" stroke-width="7" stroke-linecap="square" />
+          </g>
+        </svg>
       </div>
 
       <span class="text-xs font-bold uppercase tracking-widest text-cyan-400 block mb-1">System Gateway</span>
@@ -170,7 +257,7 @@
     </div>
   </div>
 
-  
+ 
   <div id="authModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-opacity duration-300">
     <div class="glass-card max-w-md w-full rounded-3xl p-6 md:p-8 glow-effect relative overflow-hidden transform transition-all">
       <div class="text-center mb-6">
@@ -204,7 +291,7 @@
     </div>
   </div>
 
-  
+ 
   <div id="successModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-opacity duration-300">
     <div class="glass-card max-w-md w-full rounded-3xl p-6 md:p-8 text-center glow-effect relative overflow-hidden transform transition-all">
       <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-3xl font-bold shadow-lg shadow-emerald-500/20">
@@ -224,11 +311,11 @@
     </div>
   </div>
 
-  
+ 
   <div id="suggestModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
     <div class="glass-card max-w-md w-full rounded-3xl p-6 md:p-8 glow-effect relative">
       <h2 class="text-xl font-bold text-white mb-2">💡 Suggestion Box</h2>
-      <p class="text-slate-300 text-xs mb-4">Have an idea to improve the school or this portal? Let us know below! </p>
+      <p class="text-slate-300 text-xs mb-4">Have an idea to improve the school or this portal? Let us know below!</p>
       <textarea id="suggestionText" rows="3" placeholder="Type your suggestion..." class="w-full bg-slate-900/80 border border-slate-700 rounded-xl p-3 text-slate-100 text-sm mb-4 focus:outline-none focus:border-cyan-400"></textarea>
       <div class="flex gap-3">
         <button onclick="closeModal('suggestModal')" class="w-1/2 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-sm font-semibold">Cancel</button>
@@ -253,12 +340,10 @@
     </div>
   </div>
 
-
   <div id="sidebarOverlay" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden transition-opacity duration-300" onclick="toggleSidebar()"></div>
 
   <div id="appSidebar" class="fixed top-0 left-0 bottom-0 w-80 z-50 sidebar-glass p-6 transform -translate-x-full transition-transform duration-300 flex flex-col justify-between shadow-2xl">
     <div>
-      
       <div class="flex items-center justify-between pb-6 mb-6 border-b border-cyan-500/20">
         <div class="flex items-center gap-3">
           <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 p-0.5 shadow-lg shadow-cyan-500/30 flex items-center justify-center overflow-hidden">
@@ -276,7 +361,6 @@
         </button>
       </div>
 
-     
       <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3.5 mb-6 shadow-inner">
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold text-xs flex-shrink-0">
@@ -289,7 +373,6 @@
         </div>
       </div>
 
-    
       <nav class="space-y-2.5">
         <a href="#" onclick="toggleSidebar();" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 text-cyan-400 font-semibold border border-cyan-500/30 shadow-lg shadow-cyan-500/10">
           <span class="text-base">🏠</span> Home / Report Issue
@@ -303,12 +386,10 @@
       </nav>
     </div>
 
-  
     <div class="text-center pt-4 border-t border-slate-800/80">
       <span class="text-[11px] text-slate-500 font-mono">Tomas Garcia Guintu SHS • v2.0</span>
     </div>
   </div>
-
 
   <div id="mainContent" class="relative z-10 max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8 hidden">
     <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 mb-6 sm:mb-8 border-b border-slate-800/80 gap-4">
@@ -318,8 +399,56 @@
           <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         </button>
 
-        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900 flex items-center justify-center border-2 border-cyan-500/50 shadow-[0_0_15px_-3px_rgba(6,182,212,0.6)] overflow-hidden flex-shrink-0">
-          <img src="logo.png" alt="Nexus Wolf Logo" class="w-full h-full object-cover">
+        
+        <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center flex-shrink-0">
+          <svg class="w-12 h-12 sm:w-14 sm:h-14 logo-animated-container" viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="metalBody" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#334155" />
+                <stop offset="30%" stop-color="#1e293b" />
+                <stop offset="70%" stop-color="#0f172a" />
+                <stop offset="100%" stop-color="#020617" />
+              </linearGradient>
+
+              <linearGradient id="metalBorder" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#64748b" />
+                <stop offset="100%" stop-color="#0f172a" />
+              </linearGradient>
+
+              <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#a5f3fc" />
+                <stop offset="50%" stop-color="#22d3ee" />
+                <stop offset="100%" stop-color="#06b6d4" />
+              </linearGradient>
+            </defs>
+
+           
+            <g class="part-left">
+              <path d="M10 20 L58 5 L58 205 L25 215 L10 215 Z" fill="url(#metalBody)" stroke="url(#metalBorder)" stroke-width="1.5" />
+              <rect x="44" y="45" width="6" height="120" fill="url(#cyanGlow)" rx="3" />
+              <rect x="46" y="50" width="2" height="110" fill="#ffffff" rx="1" />
+            </g>
+
+            
+            <g class="part-right">
+              <path d="M190 5 L190 195 L155 215 L142 200 L142 20 Z" fill="url(#metalBody)" stroke="url(#metalBorder)" stroke-width="1.5" />
+              <rect x="150" y="45" width="6" height="120" fill="url(#cyanGlow)" rx="3" />
+              <rect x="152" y="50" width="2" height="110" fill="#ffffff" rx="1" />
+            </g>
+
+            
+            <g class="part-core">
+              <path d="M42 5 L158 190 L138 215 L22 30 Z" fill="#090e1a" stroke="#1e293b" stroke-width="2" />
+              <path d="M42 20 L158 190 L148 170 L32 0 Z" fill="url(#metalBody)" opacity="0.95" />
+              
+              <path d="M40 18 L160 202" stroke="#00f0ff" stroke-width="26" stroke-linecap="square" opacity="0.5" />
+              <path d="M40 18 L160 202" stroke="#0284c7" stroke-width="18" stroke-linecap="square" />
+              <path d="M40 18 L160 202" stroke="#22d3ee" stroke-width="10" stroke-linecap="square" />
+              <path d="M40 18 L160 202" stroke="#a5f3fc" stroke-width="6" stroke-linecap="square" />
+              
+              <path class="laser-slow" d="M40 18 L160 202" stroke="#ffffff" stroke-width="7" stroke-linecap="square" />
+            </g>
+          </svg>
         </div>
         
         <div>
@@ -382,8 +511,8 @@
               <option value="Air Conditioning & Fan">❄️ AC & Electric Fans</option>
               <option value="IT & Computer Lab">💻 Computer Lab Equipment</option>
               <option value="Cleanliness & Sanitation">🧹 Sanitation & Garbage</option>
-              <option value="Restroom Facilities">🚾 Restroom Maintenance</option>
-              <option value="Other">❓ Other Concern</option>
+              <option value="Restroom Facilities">🚻 Restroom Maintenance</option>
+              <option value="Other">Jhumel</option>
             </select>
           </div>
 
@@ -433,7 +562,7 @@
             </div>
             <div id="imagePreviewContainer" class="hidden flex items-center justify-between bg-slate-900 p-2 rounded-lg border border-cyan-500/40">
               <div class="flex items-center gap-3">
-                <img id="imagePreview" src="#" alt="Preview" class="w-10 h-10 object-cover rounded-md border border-slate-700">
+                <img id="imagePreview" alt="Preview" class="w-10 h-10 object-cover rounded-md border border-slate-700">
                 <span id="imageFileName" class="text-xs text-slate-300 font-mono truncate max-w-[140px] sm:max-w-[200px]"></span>
               </div>
               <span class="text-[10px] sm:text-xs text-cyan-400 font-semibold px-2 py-1 bg-cyan-500/10 rounded">Photo Selected</span>
