@@ -6,6 +6,16 @@
   <title>Nexus Report | Tomas Garcia Guintu SHS</title>
   
   <link rel="icon" type="image/png" href="logos.png">
+<!-- PWA & Mobile App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#020617">
+  
+  <!-- iOS Specific App Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nexus Report">
+  <link rel="apple-touch-icon" href="logos.png">
+
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -755,6 +765,15 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
       `;
     });
+
+    // Register Service Worker for App Installation
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(() => console.log('Nexus Report App Ready'))
+          .catch((err) => console.error('SW Registration Failed:', err));
+      });
+    }
   </script>
 </body>
 </html>
