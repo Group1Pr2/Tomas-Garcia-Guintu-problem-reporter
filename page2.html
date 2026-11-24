@@ -1,12 +1,1049 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
- <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2a55f5">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>window.SERVIRE_STANDALONE=true</script>
+<title>Servire Classroom</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: top bar with role switch, left nav (bottom tabs on phones), one content column. Playful Fredoka headings, calm Nunito body, yellow reserved for XP and rewards. */
+:root{
+  --bg:#f2f5fb; --surface:#ffffff; --surface2:#e9eef9; --fg:#15203b; --muted:#56637f; --line:#d8dfee;
+  --accent:#2a55f5; --accent-fg:#ffffff; --pop:#ffc21a; --pop-fg:#3a2a00;
+  --good:#0b8a6a; --good-bg:#dcf5ec; --warn:#9a5b00; --warn-bg:#fff0d1; --bad:#c62f40; --bad-bg:#fde3e6; --info:#2a55f5; --info-bg:#e1e9ff;
+  --c1:#0b8a6a; --c2:#d9531e; --c3:#6a4cf0; --c4:#cf2c6b; --on-c:#ffffff;
+  --font-display:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+  --font-body:'Nunito','Segoe UI',system-ui,sans-serif;
+  --shadow:0 1px 2px rgba(21,32,59,.06),0 8px 24px rgba(21,32,59,.07);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1426; --surface:#172039; --surface2:#1f2b4b; --fg:#eaf0ff; --muted:#9eacd0; --line:#2b3961;
+  --accent:#86a2ff; --accent-fg:#0b1230; --pop:#ffc21a; --pop-fg:#3a2a00;
+  --good:#46d3a8; --good-bg:#12372f; --warn:#f2b04a; --warn-bg:#3b2c10; --bad:#ff8a94; --bad-bg:#40181f; --info:#86a2ff; --info-bg:#1d2b5c;
+  --c1:#46d3a8; --c2:#ff9b69; --c3:#a995ff; --c4:#ff77ab; --on-c:#0b1230;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1426; --surface:#172039; --surface2:#1f2b4b; --fg:#eaf0ff; --muted:#9eacd0; --line:#2b3961;
+  --accent:#86a2ff; --accent-fg:#0b1230; --pop:#ffc21a; --pop-fg:#3a2a00;
+  --good:#46d3a8; --good-bg:#12372f; --warn:#f2b04a; --warn-bg:#3b2c10; --bad:#ff8a94; --bad-bg:#40181f; --info:#86a2ff; --info-bg:#1d2b5c;
+  --c1:#46d3a8; --c2:#ff9b69; --c3:#a995ff; --c4:#ff77ab; --on-c:#0b1230;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
 
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.5;
+  padding-block:16px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;line-height:1.2;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.5rem,4.5vw,2.1rem)} h2{font-size:1.3rem} h3{font-size:1.05rem}
+p{margin:0} small{color:var(--muted);font-size:.85rem}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:1.35rem}
+.logo{width:36px;height:36px;border-radius:12px;background:var(--pop);color:var(--pop-fg);display:grid;place-items:center}
+.seg{display:inline-flex;background:var(--surface2);border-radius:999px;padding:4px;gap:2px}
+.seg button{border:0;background:transparent;padding:8px 16px;border-radius:999px;font-weight:800;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+
+/* shell */
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start}
+.side{position:sticky;top:16px;display:flex;flex-direction:column;gap:6px}
+.side .who{padding:12px;border-radius:16px;background:var(--surface);box-shadow:var(--shadow);margin-bottom:8px;display:flex;gap:10px;align-items:center}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-family:var(--font-display);font-weight:700;flex:none}
+.nav{display:flex;align-items:center;gap:12px;padding:11px 14px;border:0;border-radius:14px;background:transparent;font-weight:800;color:var(--muted);text-align:left;width:100%}
+.nav svg{width:22px;height:22px;flex:none}
+.nav:hover{background:var(--surface2)}
+.nav[aria-current="page"]{background:var(--accent);color:var(--accent-fg)}
+.reset{margin-top:12px;background:none;border:0;color:var(--muted);text-decoration:underline;font-size:.85rem;text-align:left;padding:4px 14px}
+main{display:flex;flex-direction:column;gap:20px;min-width:0}
+
+/* cards and parts */
+.card{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:20px;min-width:0}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:16px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0;display:flex;flex-direction:column}
+.muted{color:var(--muted)}
+.btn{border:0;border-radius:14px;padding:11px 18px;font-weight:800;background:var(--surface2);color:var(--fg)}
+.btn:hover{filter:brightness(.97)}
+.btn.primary{background:var(--accent);color:var(--accent-fg)}
+.btn.pop{background:var(--pop);color:var(--pop-fg)}
+.btn.small{padding:7px 12px;font-size:.9rem;border-radius:12px}
+.btn[disabled]{opacity:.55;cursor:default}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:.8rem;font-weight:800;white-space:nowrap}
+.pill.good{background:var(--good-bg);color:var(--good)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+.pill.info{background:var(--info-bg);color:var(--info)} .pill.warn{background:var(--warn-bg);color:var(--warn)}
+.eyebrow{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+
+.hero{background:var(--accent);color:var(--accent-fg);border-radius:24px;padding:24px;display:flex;gap:24px;justify-content:space-between;flex-wrap:wrap;align-items:center}
+.hero>div:first-child{flex:1 1 300px;display:flex;flex-direction:column;gap:10px}
+.xpbar{height:14px;border-radius:99px;background:rgba(255,255,255,.28);overflow:hidden;max-width:420px}
+:root[data-theme="dark"] .xpbar{background:rgba(11,18,48,.25)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .xpbar{background:rgba(11,18,48,.25)}}
+.xpbar i{display:block;height:100%;background:var(--pop);border-radius:99px;transition:width .5s}
+.hero-stats{display:flex;gap:12px}
+.hero-stats div{background:rgba(255,255,255,.18);border-radius:16px;padding:12px 18px;text-align:center;min-width:92px}
+:root[data-theme="dark"] .hero-stats div{background:rgba(11,18,48,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero-stats div{background:rgba(11,18,48,.18)}}
+.hero-stats b{display:block;font-family:var(--font-display);font-size:1.7rem;line-height:1.1}
+.hero-stats span{font-size:.8rem;font-weight:700}
+
+.item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:16px;padding:12px 14px}
+.item:hover{border-color:var(--accent)}
+.item b{display:block}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--cc);flex:none}
+.chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:transparent}
+.chk.on{background:var(--good);border-color:var(--good);color:#fff}
+.chk svg{width:16px;height:16px}
+
+.course{padding:0;overflow:hidden;display:flex;flex-direction:column;text-align:left;border:0;width:100%}
+.course .band{background:var(--cc);color:var(--on-c);padding:16px;display:flex;justify-content:space-between;align-items:center}
+.course .band span{font-family:var(--font-display);font-weight:700;font-size:1.6rem}
+.course .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.course:hover{transform:translateY(-2px)}
+.bar{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--cc,var(--accent));border-radius:99px}
+
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.badge{border:2px dashed var(--line);border-radius:16px;padding:12px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center;opacity:.7}
+.badge.on{border:2px solid var(--pop);opacity:1;background:var(--surface)}
+.badge .star{width:40px;height:40px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;color:var(--muted)}
+.badge.on .star{background:var(--pop);color:var(--pop-fg)}
+.badge svg{width:22px;height:22px}
+
+/* forms */
+label{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.9rem}
+input,select,textarea{border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;width:100%}
+textarea{min-height:120px;resize:vertical}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px}
+.form .full{grid-column:1/-1}
+
+/* quiz */
+.dots{display:flex;gap:6px}
+.dots i{height:8px;flex:1;border-radius:9px;background:var(--surface2)}
+.dots i.now{background:var(--accent)} .dots i.ok{background:var(--good)} .dots i.no{background:var(--bad)}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:16px;padding:14px;font-weight:700;font-size:1.05rem}
+.opt:hover:not([disabled]){border-color:var(--accent);background:var(--info-bg)}
+.opt .l{width:30px;height:30px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;font-family:var(--font-display);flex:none}
+.opt.right{border-color:var(--good);background:var(--good-bg)} .opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.opt[disabled]{cursor:default}
+.feedback{border-radius:16px;padding:14px;background:var(--surface2)}
+.big{font-family:var(--font-display);font-size:3rem;line-height:1}
+
+/* tables and charts */
+.scroll{overflow-x:auto;border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:620px;font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--line);font-size:.92rem}
+th{font-size:.8rem;color:var(--muted);font-weight:800}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);font-weight:800}
+td.hi{color:var(--good);font-weight:800} td.mid{color:var(--warn);font-weight:800} td.lo{color:var(--bad);font-weight:800} td.wait{color:var(--info);font-weight:800}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bars .b{display:grid;grid-template-columns:minmax(90px,1.2fr) 3fr 44px;gap:10px;align-items:center;font-size:.9rem;font-weight:700}
+.bars .t{height:14px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.bars .t i{display:block;height:100%;background:var(--cc,var(--accent));border-radius:99px}
+.bars .n{text-align:right;font-variant-numeric:tabular-nums}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:14px}
+.tile{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:16px}
+.tile b{display:block;font-family:var(--font-display);font-size:2rem;line-height:1.1}
+.tile.pop{background:var(--pop);color:var(--pop-fg)} .tile.pop small{color:var(--pop-fg)}
+.split{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;align-items:start}
+.sub-text{background:var(--bg);border-radius:14px;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.news{border-left:5px solid var(--cc,var(--accent));padding:4px 0 4px 14px}
+
+/* overlay, toast, fx */
+.overlay{position:fixed;inset:0;background:rgba(10,16,36,.55);display:grid;place-items:center;padding:16px;z-index:50}
+.dialog{background:var(--surface);border-radius:24px;max-width:560px;width:100%;max-height:85vh;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:99px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;z-index:70;max-width:calc(100vw - 32px);text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+
+.auth{max-width:440px;margin:16px auto;display:flex;flex-direction:column;gap:16px}
+.auth .seg{align-self:center}
+.err{color:var(--bad);font-weight:800;min-height:1.4em;font-size:.92rem}
+.demo{background:var(--surface2);border-radius:14px;padding:12px 14px;font-size:.9rem;overflow-wrap:anywhere}
+.acct{display:flex;align-items:center;gap:10px}
+.linkbtn{background:none;border:0;color:var(--accent);font-weight:800;text-decoration:underline;padding:0}
+a.btn{text-decoration:none;display:inline-block;text-align:center}
+.dz{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;border:2px dashed var(--line);border-radius:16px;padding:22px 16px;cursor:pointer;background:var(--bg)}
+.dz:hover,.dz.over{border-color:var(--accent);background:var(--info-bg)}
+.dz:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.dz input{position:absolute;opacity:0;width:1px;height:1px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border-radius:12px;padding:6px 10px;font-weight:700;font-size:.88rem;max-width:100%;overflow-wrap:anywhere}
+.chip button{border:0;background:none;color:var(--bad);font-weight:800;padding:0}
+.media{display:flex;flex-direction:column;gap:12px}
+.media img,.media video{width:100%;max-height:420px;object-fit:contain;border-radius:14px;background:var(--surface2)}
+.fileline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface2);border-radius:14px;padding:10px 12px}
+.ftag{font-family:var(--font-display);font-weight:700;font-size:.75rem;letter-spacing:.05em;border-radius:8px;padding:3px 8px;background:var(--accent);color:var(--accent-fg)}
+.lec{border:2px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.lec p{white-space:pre-wrap;overflow-wrap:anywhere}
+@media (max-width:820px){
+  body{padding-bottom:96px}
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;left:0;right:0;bottom:0;top:auto;flex-direction:row;gap:2px;background:var(--surface);border-top:1px solid var(--line);z-index:40;
+    padding:6px max(6px,env(safe-area-inset-left,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-right,0px))}
+  .side .who,.reset{display:none}
+  .nav{flex-direction:column;gap:2px;padding:6px 2px;font-size:.72rem;text-align:center;flex:1;justify-content:center}
+  .split{grid-template-columns:minmax(0,1fr)}
+  .hero{padding:20px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.nav[aria-disabled="true"]{opacity:.45}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.wd{text-align:center;font-weight:800;font-size:.75rem;color:var(--muted);padding:4px 0}
+.cd{min-height:68px;border:1px solid var(--line);border-radius:10px;padding:5px;display:flex;flex-direction:column;gap:4px;min-width:0;background:var(--surface)}
+.cd.blank{border-color:transparent;background:transparent}
+.cd.today{border-color:var(--accent);background:var(--info-bg)}
+.dn{font-weight:800;font-size:.85rem}
+.dots{display:flex;gap:3px;flex-wrap:wrap}
+.dots i{width:9px;height:9px;border-radius:50%;display:block}
+.qb{border:2px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px}
+@media (max-width:820px){.side{overflow-x:auto}.nav{flex:0 0 auto;min-width:74px;padding:6px 8px}.cd{min-height:54px}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,.btn,.nav,.opt,.item{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media (pointer:coarse){.btn,.opt,.item{min-height:46px}.btn.small{min-height:42px}.seg button{min-height:42px}.nav{min-height:50px}input,select{min-height:46px}}
+.dialog{max-height:85vh;max-height:85dvh}
+@media (max-width:480px){.card{padding:16px;border-radius:18px}.hero{padding:18px;border-radius:20px}.hero-stats{width:100%}.hero-stats div{flex:1;min-width:0}.brand{font-size:1.15rem}.tile b{font-size:1.6rem}.big{font-size:2.4rem}.cd{padding:3px}.dn{font-size:.75rem}.dots i{width:7px;height:7px}.bars .b{grid-template-columns:minmax(70px,1fr) 2fr 40px}.form{grid-template-columns:minmax(0,1fr)}}
+</style>
 </head>
-<bo
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.1 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg></span>Servire Classroom</div>
+    <div class="acct" id="acct"></div>
+  </header>
+  <div id="login"></div>
+  <div class="shell" id="shell" hidden>
+    <nav class="side" id="side" aria-label="Main"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+<div id="overlay-root"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*60000);return z.toISOString().slice(0,10)};
+const addDays=n=>{const d=new Date();d.setDate(d.getDate()+n);return iso(d)};
+const diffDays=s=>Math.round((new Date(s+'T00:00:00')-new Date(iso(new Date())+'T00:00:00'))/86400000);
+const fmtDate=s=>new Date(s+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+function dueText(s){const d=diffDays(s);if(d<0)return Math.abs(d)+(Math.abs(d)===1?' day':' days')+' late';if(d===0)return 'Due today';if(d===1)return 'Due tomorrow';return 'Due in '+d+' days'}
+
+const ICON={
+  home:'<path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-6h6v6"/>',
+  book:'<path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 20V8"/>',
+  check:'<path d="m8 12 3 3 5-6"/><rect x="3.5" y="3.5" width="17" height="17" rx="4"/>',
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  chart:'<path d="M5 20V11M11 20V4M17 20v-6M2 20h20"/>',
+  pencil:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m14 6 4 4"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  star:'<path d="m12 3 2.7 5.8 6.3.7-4.7 4.3 1.3 6.3-5.6-3.2-5.6 3.2 1.3-6.3L3 9.5l6.3-.7z"/>',
+  tick:'<path d="m5 12 5 5 9-10"/>',
+  cal:'<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  bell:'<path d="M6 17v-6a6 6 0 0 1 12 0v6l1.5 2h-15z"/><path d="M10 21h4"/>',
+  people:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M17.5 14.5A5.5 5.5 0 0 1 21.5 20"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'
+};
+const ic=(n,sz)=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"'+(sz?' width="'+sz+'" height="'+sz+'"':'')+'>'+ICON[n]+'</svg>';
+
+/* ---------- data ---------- */
+let ME=null;
+const BASE_STUDENTS=[{id:'s1',name:'Maya'},{id:'s2',name:'Josh'},{id:'s3',name:'Bea'},{id:'s4',name:'Carlo'},{id:'s5',name:'Tina'},{id:'s6',name:'Miguel'}];
+const STUDENTS=BASE_STUDENTS.map(x=>({...x}));
+const DEMO_S={email:'maya@servire.demo',pw:'maya1234',name:'Maya Santos',sid:'s1',role:'student',salt:'tala-demo-s'};
+const DEMO_T={email:'teacher@servire.demo',pw:'teacher1234',name:'Ms. Reyes',sid:null,role:'teacher',salt:'tala-demo-t'};
+const COURSES=[
+  {id:'sci',name:'Science 7',topic:'Ecosystems and Energy',c:'--c1',init:'Sc'},
+  {id:'mat',name:'Math 7',topic:'Fractions and Ratios',c:'--c2',init:'Ma'},
+  {id:'eng',name:'English 7',topic:'Reading Short Stories',c:'--c3',init:'En'},
+  {id:'ap',name:'Araling Panlipunan 7',topic:'Asya at Pilipinas',c:'--c4',init:'AP'}
+];
+const LESSONS={
+  sci:[
+    {id:'sci1',t:'Who eats whom? Food chains',body:'A food chain shows how energy moves from one living thing to the next. It starts with a producer, like grass, which makes its own food from sunlight. A rabbit eats the grass, and a snake eats the rabbit. Each step passes along a little of the original energy.'},
+    {id:'sci2',t:'Producers, consumers, decomposers',body:'Producers make food. Consumers eat other living things. Decomposers, like mushrooms and bacteria, break down dead plants and animals and return nutrients to the soil, which helps new plants grow.'}
+  ],
+  mat:[
+    {id:'mat1',t:'Adding fractions with unlike denominators',body:'To add 1/2 and 1/4, first find a common denominator. Rewrite 1/2 as 2/4. Now add the numerators: 2/4 + 1/4 = 3/4. The denominator stays the same because the pieces are the same size.'},
+    {id:'mat2',t:'Ratios in real life',body:'A ratio compares two amounts. If a recipe uses 2 cups of rice for every 3 cups of water, the ratio is 2:3. Double the recipe and you get 4:6, which is the same ratio.'}
+  ],
+  eng:[
+    {id:'eng1',t:'Setting, character, conflict',body:'Every story has a setting (where and when it happens), characters (who is in it), and a conflict (the problem the main character must face). Spot these three and you can summarize almost any story.'},
+    {id:'eng2',t:'Figurative language',body:'Writers use figurative language to paint a picture. A simile compares with like or as. A metaphor says one thing is another. Personification gives human actions to non-human things, such as "the wind whispered."'}
+  ],
+  ap:[
+    {id:'ap1',t:'The three island groups',body:'The Philippines has more than 7,000 islands, grouped into Luzon, the Visayas, and Mindanao. Manila, the capital, is on Luzon. The country sits between the Pacific Ocean on the east and the South China Sea on the west.'},
+    {id:'ap2',t:'Reading a map',body:'A map has a title, a compass rose for direction, a scale for distance, and a legend that explains the symbols. Always check the legend first so you know what each color and icon means.'}
+  ]
+};
+const BUILTIN_Q=[
+  {id:'q1',cid:'sci',t:'Ecosystem Check',qs:[
+    {q:'Which organism is the producer in a food chain?',o:['Grass','Rabbit','Hawk','Mushroom'],a:0,w:'Producers make their own food using sunlight. Grass does that.'},
+    {q:'What do decomposers do?',o:['Hunt other animals','Break down dead matter','Make food from sunlight','Store water'],a:1,w:'Decomposers recycle nutrients from dead plants and animals back into the soil.'},
+    {q:'Where does the energy in most food chains come from?',o:['The soil','The ocean','The Sun','The wind'],a:2,w:'Plants capture sunlight, and that energy moves up the chain.'},
+    {q:'A rabbit eats grass and a snake eats the rabbit. What is the snake?',o:['Producer','Decomposer','Primary consumer','Secondary consumer'],a:3,w:'The rabbit is the primary consumer. The snake eats it, so it is a secondary consumer.'},
+    {q:'If all the frogs in a pond disappeared, what would likely happen to the insects they eat?',o:['They would increase','They would disappear','They would stay the same','They would turn into fish'],a:0,w:'With fewer predators, the insect population usually grows.'}]},
+  {id:'q2',cid:'mat',t:'Fraction Face-off',qs:[
+    {q:'What is 1/2 + 1/4?',o:['2/6','3/4','1/6','2/4'],a:1,w:'1/2 = 2/4, and 2/4 + 1/4 = 3/4.'},
+    {q:'Simplify 6/8.',o:['2/3','1/2','3/4','4/6'],a:2,w:'Divide the top and bottom by 2 to get 3/4.'},
+    {q:'The ratio of boys to girls is 3:5 in a class of 40. How many girls are there?',o:['15','25','24','20'],a:1,w:'3 + 5 = 8 parts. 40 ÷ 8 = 5 per part. Girls: 5 × 5 = 25.'},
+    {q:'What is 2/3 of 12?',o:['6','9','8','4'],a:2,w:'12 ÷ 3 = 4, and 4 × 2 = 8.'},
+    {q:'Which fraction is the greatest?',o:['3/5','2/3','5/8','7/10'],a:3,w:'As decimals: 0.6, 0.667, 0.625, and 0.7. So 7/10 is greatest.'}]},
+  {id:'q3',cid:'eng',t:'Story Elements',qs:[
+    {q:'What is the "setting" of a story?',o:['The main problem','Where and when it happens','The author','The ending'],a:1,w:'Setting is the time and place of the story.'},
+    {q:'"The wind whispered through the trees" is an example of…',o:['Simile','Metaphor','Personification','Rhyme'],a:2,w:'Wind cannot whisper. Giving it a human action is personification.'},
+    {q:'The main problem a character faces is called the…',o:['Theme','Conflict','Setting','Title'],a:1,w:'Conflict drives the plot.'},
+    {q:'Which word is closest in meaning to "enormous"?',o:['Tiny','Gigantic','Quiet','Ordinary'],a:1,w:'Gigantic and enormous both mean extremely large.'}]},
+  {id:'q4',cid:'ap',t:'Map Masters',qs:[
+    {q:'Which ocean lies east of the Philippines?',o:['Indian Ocean','Atlantic Ocean','Pacific Ocean','Arctic Ocean'],a:2,w:'The Philippine Sea and the Pacific Ocean are to the east.'},
+    {q:'What is the capital of the Philippines?',o:['Cebu City','Davao City','Quezon City','Manila'],a:3,w:'Manila is the capital. Quezon City is the largest city by population.'},
+    {q:'Which is NOT one of the three main island groups?',o:['Luzon','Visayas','Mindanao','Borneo'],a:3,w:'The groups are Luzon, the Visayas, and Mindanao. Borneo is a separate island.'},
+    {q:'What part of a map explains its symbols?',o:['Legend','Compass rose','Scale','Title'],a:0,w:'The legend (or key) tells you what each symbol and color means.'}]}
+];
+const QUIZZES=BUILTIN_Q.slice();
+let QDB=[],Q_SIG='';
+function syncQuizzes(){QUIZZES.length=BUILTIN_Q.length;QDB.forEach(q=>QUIZZES.push(q))}
+const BADGES=[
+  {id:'first',t:'First Steps',d:'Finish a lesson'},
+  {id:'ontime',t:'Turned It In',d:'Submit an assignment'},
+  {id:'whiz',t:'Quiz Whiz',d:'Score 100% on a quiz'},
+  {id:'streak',t:'Hot Streak',d:'4 days in a row'}
+];
+const COURSE=id=>COURSES.find(c=>c.id===id);
+const STUDENT=id=>STUDENTS.find(s=>s.id===id);
+
+function seed(){
+  const g=(score,fb)=>({status:'graded',score,fb:fb||'',text:'Submitted.'});
+  const t=text=>({status:'submitted',text});
+  return {
+    role:'student',xp:135,streak:4,done:{},badges:['streak'],quizBest:{},
+    students:BASE_STUDENTS.map(x=>({...x})),accounts:[],prog:{s1:{xp:135,streak:4,done:{},badges:['streak'],quizBest:{}}},
+    assignments:[
+      {id:'a1',cid:'sci',title:'Food web poster plan',due:addDays(2),pts:20,desc:'Pick a habitat (pond, forest, or coral reef). List at least six living things and describe who eats whom in two or three sentences.'},
+      {id:'a2',cid:'sci',title:'Lab report: pond water',due:addDays(-3),pts:30,desc:'Write up what you observed under the microscope. Include your data table and one question you still have.'},
+      {id:'a3',cid:'mat',title:'Fractions practice set',due:addDays(1),pts:25,desc:'Solve problems 1 to 10 on adding and simplifying fractions. Show your steps for each one.'},
+      {id:'a4',cid:'mat',title:'Ratio word problems',due:addDays(-6),pts:20,desc:'Solve the five ratio word problems from class.'},
+      {id:'a5',cid:'eng',title:'Book reflection (150 words)',due:addDays(4),pts:20,desc:'Write about a character you liked in our short story unit. Say what the conflict was and how it ended.'},
+      {id:'a6',cid:'ap',title:'Map of Luzon provinces',due:addDays(6),pts:15,desc:'Label ten provinces of Luzon on the blank map. Add a title, a compass rose, and a legend.'}
+    ],
+    subs:{
+      a1:{},
+      a2:{s1:g(26,'Clear data table. Next time, explain why the water looked cloudy.'),s2:g(24),s3:g(28,'Excellent detail.'),s4:g(21),s5:g(27),s6:g(25)},
+      a3:{s2:t('1) 3/4  2) 5/6  3) 1/2 ... I showed my steps on paper and typed the answers here.'),s3:t('Answers: 3/4, 5/6, 1/2, 7/8, 2/3, 1/4, 5/8, 9/10, 3/5, 1/3. I used common denominators.'),s4:t('I finished 1 to 8 and I need help with 9 and 10.')},
+      a4:{s1:g(18,'Good work. Check problem 4 again.'),s2:g(17),s3:g(20,'Perfect.'),s4:g(15),s5:g(16),s6:g(19)},
+      a5:{s3:t('My favorite character was Lina because she stayed brave even when the storm scared her. The conflict was getting home before dark. In the end she asked a neighbor for help.'),s5:t('I liked Mang Tomas. His conflict was a broken boat. He fixed it with the help of his son and learned to ask for help.')},
+      a6:{}
+    },
+    news:[
+      {id:'n1',cid:null,t:'Welcome back!',body:'Remember to turn in your work before the due date. Quizzes can be replayed as many times as you like, and your best score counts.',when:addDays(-5)},
+      {id:'n2',cid:'mat',t:'Fractions quiz is open',body:'Try Fraction Face-off to warm up for Friday. Aim for a perfect score to earn the Quiz Whiz badge.',when:addDays(-1)},
+      {id:'n3',cid:'sci',t:'Pond water lab graded',body:'Reports are graded. Read the comments and ask me if anything is unclear.',when:addDays(-1)}
+    ]
+  };
+}
+const KEY='tala-classroom-v1';
+function load(){try{const s=localStorage.getItem(KEY);if(s){const o=JSON.parse(s);if(o&&o.assignments){
+  if(!o.accounts)o.accounts=[];
+  if(!o.students)o.students=BASE_STUDENTS.map(x=>({...x}));
+  if(!o.prog)o.prog={s1:{xp:o.xp||0,streak:o.streak||0,done:o.done||{},badges:o.badges||[],quizBest:o.quizBest||{}}};
+  return o}}}catch(e){}return seed()}
+function save(){
+  if(ME&&U.user&&U.user.role==='student')S.prog[ME]={xp:S.xp,streak:S.streak,done:S.done,badges:S.badges,quizBest:S.quizBest,active:S.active||null};
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+}
+let S=load();
+let U={view:'home',lt:'lec',sel:null,course:null,quiz:null,modal:null,gsel:null,user:null,auth:{mode:'login',role:'student'}};
+function syncStudents(){STUDENTS.length=0;S.students.forEach(x=>STUDENTS.push(x))}
+function loadProg(sid){const p=S.prog[sid]||{xp:0,streak:0,done:{},badges:[],quizBest:{}};S.xp=p.xp;S.streak=p.streak;S.done=p.done;S.badges=p.badges;S.quizBest=p.quizBest;S.active=p.active||null}
+
+/* ---------- lecture files shared through the page's db and assets ---------- */
+const CAP={db:null,assets:null,downloads:null,ready:false};
+let LEC=[],LEC_ERR=null,LEC_SIG='',STAGED=[];
+const MB=1048576;
+const TYPES={pdf:{k:'pdf',m:'application/pdf'},png:{k:'image',m:'image/png'},jpg:{k:'image',m:'image/jpeg'},jpeg:{k:'image',m:'image/jpeg'},gif:{k:'image',m:'image/gif'},webp:{k:'image',m:'image/webp'},mp4:{k:'video',m:'video/mp4'},webm:{k:'video',m:'video/webm'},pptx:{k:'pptx',m:'text/plain'}};
+const extOf=n=>String(n).split('.').pop().toLowerCase();
+const fmtSize=b=>b>=MB?(b/MB).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';
+const STANDALONE=!!window.SERVIRE_STANDALONE;
+const BLOBS={};
+function idb(){return new Promise((res,rej)=>{try{const r=indexedDB.open('servire-files',1);r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error||new Error('idb'))}catch(e){rej(e)}})}
+async function idbPut(id,blob){const d=await idb();return new Promise((res,rej)=>{const tx=d.transaction('f','readwrite');tx.objectStore('f').put(blob,id);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+async function idbGet(id){const d=await idb();return new Promise((res,rej)=>{const r=d.transaction('f').objectStore('f').get(id);r.onsuccess=()=>res(r.result||null);r.onerror=()=>rej(r.error)})}
+async function idbDel(id){const d=await idb();return new Promise((res,rej)=>{const tx=d.transaction('f','readwrite');tx.objectStore('f').delete(id);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+function makeLocalDb(){
+  const K='servire-db-v1',subs=[];
+  const read=()=>{try{return JSON.parse(localStorage.getItem(K))||{}}catch(e){return {}}};
+  const write=o=>{try{localStorage.setItem(K,JSON.stringify(o))}catch(e){throw {code:'quota_exceeded'}}};
+  const fire=()=>subs.forEach(f=>f());
+  return {
+    collection(name){
+      const q={
+        orderBy(){return q},
+        onSnapshot(next){
+          const f=()=>{const rows=(read()[name]||[]).slice().sort((a,b)=>(b.data.ts||0)-(a.data.ts||0));next({docs:rows.map(r=>({id:r.id,data:()=>r.data}))})};
+          subs.push(f);f();return ()=>{};
+        },
+        async add(data){const o=read();(o[name]=o[name]||[]).push({id:'d'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),data});write(o);fire()}
+      };
+      return q;
+    },
+    doc(path){const p=path.split('/');return {async delete(){const o=read();o[p[0]]=(o[p[0]]||[]).filter(r=>r.id!==p[1]);write(o);fire()}}}
+  };
+}
+function makeLocalAssets(){
+  return {
+    async upload(blob){const id=rand()+rand();await idbPut(id,blob);BLOBS[id]=URL.createObjectURL(blob);return {id,url:BLOBS[id],sizeBytes:blob.size,contentType:blob.type}},
+    async delete(id){await idbDel(id);if(BLOBS[id]){URL.revokeObjectURL(BLOBS[id]);delete BLOBS[id]}return {deleted:true}}
+  };
+}
+async function prepBlobs(list){
+  let changed=false;
+  for(const l of list)for(const f of (l.files||[])){
+    if(BLOBS[f.id])continue;
+    try{const b=await idbGet(f.id);if(b){BLOBS[f.id]=URL.createObjectURL(b);changed=true}}catch(e){}
+  }
+  if(changed)softRender();
+}
+function toB64(buf){const u=new Uint8Array(buf);let s='';const n=0x8000;for(let i=0;i<u.length;i+=n)s+=String.fromCharCode.apply(null,u.subarray(i,i+n));return btoa(s)}
+function errText(e){
+  const c=e&&e.code;
+  if(c==='too_large')return 'That file is over the size limit. Compress it and try again.';
+  if(c==='unsupported_type')return 'This file type is not supported.';
+  if(c==='quota_or_state')return 'This page is out of file storage. Delete older lectures and try again.';
+  if(c==='quota_exceeded')return 'This device is out of storage. Delete older lectures and try again.';
+  if(c==='rate_limited')return 'Too many requests at once. Wait a moment and try again.';
+  if(c==='invalid_argument')return 'Your claude.ai account can not publish here. Ask the page owner for Editor access.';
+  if(c==='not_granted'||c==='capability_disabled'||c==='capability_removed')return 'This view can not upload files.';
+  return 'Something went wrong. Please try again.';
+}
+async function initCaps(){
+  try{
+    const c=window.claude;
+    if(c&&typeof c.use==='function'){
+      const r=await Promise.all([c.use('db'),c.use('assets'),c.use('downloads')]);
+      CAP.db=r[0];CAP.assets=r[1];CAP.downloads=r[2];
+    }
+    if(STANDALONE&&!CAP.db){CAP.db=makeLocalDb();CAP.assets=makeLocalAssets()}
+  }catch(e){}
+  CAP.ready=true;
+  if(CAP.db){
+    try{
+      CAP.db.collection('lectures').orderBy('ts','desc').onSnapshot(snap=>{
+        const next=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
+        const sig=JSON.stringify(next);LEC_ERR=null;
+        if(sig===LEC_SIG)return;
+        LEC=next;LEC_SIG=sig;softRender();
+        if(STANDALONE)prepBlobs(next);
+      },err=>{LEC_ERR=(err&&err.code)||'error';softRender()});
+    }catch(e){LEC_ERR='error'}
+    try{
+      CAP.db.collection('quizzes').orderBy('ts','desc').onSnapshot(snap=>{
+        const ok=z=>z&&typeof z.q==='string'&&Array.isArray(z.o)&&z.o.length>=2&&Number.isInteger(z.a)&&z.a>=0&&z.a<z.o.length;
+        const next=snap.docs.map(d=>{const x=d.data()||{};return {id:d.id,cid:x.cid,t:x.title||'Quiz',qs:(Array.isArray(x.qs)?x.qs:[]).filter(ok),ts:x.ts||0}}).filter(x=>x.qs.length&&COURSE(x.cid));
+        const sig=JSON.stringify(next);if(sig===Q_SIG)return;
+        Q_SIG=sig;QDB=next;syncQuizzes();softRender();
+      },err=>{});
+    }catch(e){}
+  }
+  softRender();
+}
+function softRender(){
+  if(!U.user||U.busy)return;
+  const a=document.activeElement;
+  if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT'))return;
+  render();
+}
+function fileHTML(f){
+  const src=BLOBS[f.id]||'/_blob/'+encodeURIComponent(f.id),nm=esc(f.name),sz=fmtSize(f.size||0);
+  if(f.kind==='image')return '<img src="'+src+'" alt="'+nm+'" loading="lazy">';
+  if(f.kind==='video')return '<video controls preload="metadata" src="'+src+'" aria-label="'+nm+'"></video>';
+  if(f.kind==='pdf')return '<div class="fileline"><span class="ftag">PDF</span><span class="grow"><b>'+nm+'</b><small>'+sz+'</small></span><a class="btn small primary" href="'+src+'" target="_blank" rel="noopener">Open</a></div>';
+  return '<div class="fileline"><span class="ftag">PPTX</span><span class="grow"><b>'+nm+'</b><small>'+sz+'</small></span><button class="btn small primary" data-a="dlPptx" data-id="'+esc(f.id)+'" data-name="'+nm+'">Download</button></div>';
+}
+function lecHTML(l,manage){
+  const c=COURSE(l.cid)||{name:''};
+  const files=(l.files||[]).map(fileHTML).join('');
+  const del=manage?(U.confirmDel===l.id
+    ?'<button class="btn small" style="color:var(--bad)" data-a="delDo" data-id="'+esc(l.id)+'">Confirm delete</button><button class="btn small" data-a="delCancel">Cancel</button>'
+    :'<button class="btn small" data-a="delAsk" data-id="'+esc(l.id)+'">Delete</button>'):'';
+  const when=new Date(l.ts||Date.now()).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  return '<article class="lec"><div class="row"><div class="grow"><h3>'+esc(l.title)+'</h3><small>'+(manage?esc(c.name)+' · ':'')+when+'</small></div>'+del+'</div>'+(l.body?'<p>'+esc(l.body)+'</p>':'')+(files?'<div class="media">'+files+'</div>':'')+'</article>';
+}
+function lecturesCard(cid){
+  const list=LEC.filter(l=>l.cid===cid);
+  let body;
+  if(list.length)body=list.map(l=>lecHTML(l,false)).join('');
+  else if(CAP.ready&&(!CAP.db||LEC_ERR))body='<p class="muted">Files from your teacher can not load in this view. Open the page in claude.ai while signed in.</p>';
+  else body='<p class="muted">Your teacher has not shared any files for this subject yet.</p>';
+  return '<section class="card"><h2 style="margin-bottom:12px">From your teacher</h2><div class="stack">'+body+'</div></section>';
+}
+function stagedHTML(){
+  return STAGED.map((f,i)=>'<span class="chip"><span class="ftag">'+esc(extOf(f.name).toUpperCase())+'</span>'+esc(f.name)+' · '+fmtSize(f.size)+'<button type="button" data-a="unstage" data-i="'+i+'" aria-label="Remove '+esc(f.name)+'">Remove</button></span>').join('');
+}
+function stage(list){
+  for(const f of list){
+    const t=TYPES[extOf(f.name)];
+    if(!t){toast(f.name+' is not supported. Use PPTX, PDF, PNG, JPG, MP4 or WebM.');continue}
+    if(!f.size){toast(f.name+' is empty.');continue}
+    if(!STANDALONE&&t.k==='pptx'&&f.size>14*MB){toast('PowerPoint files over 14 MB can not be shared. Export it as a PDF instead.');continue}
+    if(f.size>20*MB){toast(f.name+' is over 20 MB. Compress it and try again.');continue}
+    if(STAGED.some(x=>x.name===f.name&&x.size===f.size))continue;
+    STAGED.push(f);
+  }
+  const s=$('#staged');if(s)s.innerHTML=stagedHTML();
+}
+async function uploadOne(f){
+  const t=TYPES[extOf(f.name)];let blob=f,type=t.m;
+  if(STANDALONE){
+    if(t.k==='pptx')type='application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    blob=new Blob([f],{type});
+  }else if(t.k==='pptx')blob=new Blob([toB64(await f.arrayBuffer())],{type:'text/plain'});
+  const r=await CAP.assets.upload(blob,{type});
+  return {id:r.id,name:f.name,kind:t.k,size:f.size};
+}
+function tLecFiles(){
+  const d=U.draft||{cid:'sci',title:'',body:''};
+  const opts=COURSES.map(c=>'<option value="'+c.id+'"'+(d.cid===c.id?' selected':'')+'>'+esc(c.name)+'</option>').join('');
+  let notice='';
+  if(!CAP.ready)notice='<span class="pill">Checking upload access…</span>';
+  else if(!CAP.db)notice='<div class="feedback"><b>Lectures can not be saved in this view.</b><p>Open this page in claude.ai while signed in. Students also need the page shared with them.</p></div>';
+  else if(!CAP.assets)notice='<div class="feedback"><b>Your claude.ai account can not upload files here.</b><p>Ask the page owner to give you Editor access. Until then you can only read the lectures below.</p></div>';
+  return '<h1>Lectures</h1><p class="muted">Share slides, handouts, pictures and videos. Students see them under the matching subject.</p>'+notice
+    +'<section class="card stack" style="gap:14px" id="l-form"><h2>New lecture</h2><div class="form"><label for="l-course">Subject<select id="l-course">'+opts+'</select></label><label for="l-title">Title<input id="l-title" value="'+esc(d.title)+'" placeholder="Example: Food webs, part 1"></label><label class="full" for="l-body">Description (optional)<textarea id="l-body" placeholder="What should students look at first?">'+esc(d.body)+'</textarea></label></div>'
+    +'<label class="dz" id="dz" for="l-files"><b>Drop files here or choose files</b><small>PowerPoint, PDF, PNG, JPG, MP4 or WebM. Up to 20 MB each, PowerPoint up to 14 MB.</small><input id="l-files" type="file" multiple accept=".pptx,.pdf,.png,.jpg,.jpeg,.gif,.webp,.mp4,.webm"></label>'
+    +'<div class="chips" id="staged">'+stagedHTML()+'</div><div id="l-status" role="status" class="muted"></div>'
+    +'<button class="btn primary" style="align-self:flex-start" data-a="pubLec">Publish lecture</button></section>'
+    +'<section class="card"><h2 style="margin-bottom:12px">Published lectures ('+LEC.length+')</h2><div class="stack">'+(LEC.map(l=>lecHTML(l,true)).join('')||'<p class="muted">Nothing published yet.</p>')+'</div></section>';
+}
+
+/* ---------- helpers ---------- */
+const subOf=(aid,sid)=>(S.subs[aid]||{})[sid];
+const lvl=()=>Math.floor(S.xp/100)+1;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2400)}
+function gain(n){const b=Math.floor(S.xp/100);S.xp+=n;const a=Math.floor(S.xp/100);toast('+'+n+' XP'+(a>b?' · You reached level '+(a+1)+'!':''));if(a>b)confetti(60)}
+function award(id){if(!S.badges.includes(id)){S.badges.push(id);const b=BADGES.find(x=>x.id===id);setTimeout(()=>{toast('New badge: '+b.t);confetti(70)},700)}}
+function confetti(n){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cv=$('#fx');cv.width=innerWidth;cv.height=innerHeight;const ctx=cv.getContext('2d');
+  const cols=['#ffc21a','#2a55f5','#0b8a6a','#ff7a3d','#e0397a'];
+  const ps=Array.from({length:n||90},()=>({x:innerWidth/2+(Math.random()-.5)*220,y:innerHeight*.4,vx:(Math.random()-.5)*11,vy:-Math.random()*11-3,s:6+Math.random()*6,c:cols[(Math.random()*cols.length)|0],r:Math.random()*6,vr:(Math.random()-.5)*.4}));
+  let f=0;(function step(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{p.vy+=.36;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);ctx.restore()});if(++f<110)requestAnimationFrame(step);else ctx.clearRect(0,0,cv.width,cv.height)})();
+}
+function courseProgress(cid){
+  const ls=LESSONS[cid],qs=QUIZZES.filter(x=>x.cid===cid);
+  const total=ls.length+qs.length,done=ls.filter(l=>S.done[l.id]).length+qs.filter(q=>S.quizBest[q.id]).length;
+  return {done,total,pct:total?Math.round(done/total*100):0};
+}
+function gradeOf(sid,cid){
+  let sc=0,pt=0;S.assignments.forEach(a=>{if(cid&&a.cid!==cid)return;const s=subOf(a.id,sid);if(s&&s.status==='graded'){sc+=s.score;pt+=a.pts}});
+  return pt?Math.round(sc/pt*100):null;
+}
+function pending(){const r=[];S.assignments.forEach(a=>STUDENTS.forEach(st=>{const s=subOf(a.id,st.id);if(s&&s.status==='submitted')r.push({a,sid:st.id})}));return r}
+function classAvg(aid){const a=S.assignments.find(x=>x.id===aid);const v=STUDENTS.map(s=>subOf(aid,s.id)).filter(s=>s&&s.status==='graded').map(s=>s.score/a.pts);return v.length?Math.round(v.reduce((x,y)=>x+y,0)/v.length*100):null}
+const gcls=p=>p>=85?'hi':p>=70?'mid':'lo';
+
+/* ---------- shared views ---------- */
+function newsList(limit){
+  return '<div class="stack">'+S.news.slice(0,limit||5).map(n=>{const c=n.cid?COURSE(n.cid):null;
+    return '<div class="news" style="--cc:var('+(c?c.c:'--accent')+')"><b>'+esc(n.t)+'</b><div class="muted">'+esc(n.body)+'</div><small>'+(c?esc(c.name):'All classes')+' · '+fmtDate(n.when)+'</small></div>'}).join('')+'</div>';
+}
+function aRow(a){
+  const c=COURSE(a.cid),s=subOf(a.id,ME);
+  const st=s?(s.status==='graded'?'<span class="pill good">'+s.score+'/'+a.pts+'</span>':'<span class="pill info">Turned in</span>'):(diffDays(a.due)<0?'<span class="pill bad">Missing</span>':'<span class="pill">To do</span>');
+  const due=s?fmtDate(a.due):dueText(a.due)+' · '+fmtDate(a.due);
+  return '<button class="item" data-a="openA" data-id="'+a.id+'"><span class="dot" style="--cc:var('+c.c+')"></span><span class="grow"><b>'+esc(a.title)+'</b><small>'+esc(c.name)+' · '+due+'</small></span>'+st+'</button>';
+}
+function courseCard(c){
+  const p=courseProgress(c.id);
+  return '<button class="card course" style="--cc:var('+c.c+')" data-a="course" data-id="'+c.id+'"><div class="band"><span>'+c.init+'</span><small style="color:inherit;font-weight:800">'+p.pct+'%</small></div><div class="body"><h3>'+esc(c.name)+'</h3><small>'+esc(c.topic)+'</small><div class="bar" role="progressbar" aria-valuenow="'+p.pct+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+p.pct+'%"></i></div><small>'+p.done+' of '+p.total+' steps done</small></div></button>';
+}
+
+/* ---------- student views ---------- */
+function sHome(){
+  const todo=S.assignments.filter(a=>!subOf(a.id,ME)).sort((x,y)=>x.due<y.due?-1:1);
+  const week=todo.filter(a=>diffDays(a.due)<=7).length;
+  const into=S.xp%100;
+  return '<section class="hero"><div><span class="eyebrow">Level '+lvl()+'</span><h1>Hi '+esc(U.user.name.split(' ')[0])+'! '+(week?'You have '+week+' thing'+(week>1?'s':'')+' due this week.':'You are all caught up.')+'</h1><div class="xpbar" role="progressbar" aria-valuenow="'+into+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+into+'%"></i></div><small style="color:inherit">'+into+' of 100 XP to level '+(lvl()+1)+'</small></div><div class="hero-stats"><div><b>'+S.streak+'</b><span>day streak</span></div><div><b>'+S.xp+'</b><span>total XP</span></div></div></section>'
+  +'<div class="cols"><section class="card"><div class="card-head"><h2>Up next</h2><button class="btn small" data-a="nav" data-v="todo">See all</button></div><div class="stack">'+(todo.slice(0,4).map(aRow).join('')||'<p class="muted">Nothing to turn in. Try a quiz!</p>')+'</div></section>'
+  +'<section class="card"><div class="card-head"><h2>Announcements</h2></div>'+newsList(3)+'</section></div>'
+  +'<section><div class="card-head"><h2>My courses</h2></div><div class="grid">'+COURSES.map(courseCard).join('')+'</div></section>'
+  +'<section class="card"><div class="card-head"><h2>Badges</h2><small>'+S.badges.length+' of '+BADGES.length+' earned</small></div><div class="badges">'+BADGES.map(b=>'<div class="badge'+(S.badges.includes(b.id)?' on':'')+'"><span class="star">'+ic('star')+'</span><b>'+b.t+'</b><small>'+b.d+'</small></div>').join('')+'</div></section>';
+}
+function sCourses(){
+  if(!U.course)return '<h1>Lectures</h1><p class="muted">Pick a subject to read its lectures. Quizzes are in the Quizzes tab.</p><div class="grid">'+COURSES.map(courseCard).join('')+'</div>';
+  const c=COURSE(U.course),p=courseProgress(c.id),qs=QUIZZES.filter(x=>x.cid===c.id);
+  return '<div class="row"><button class="btn small" data-a="nav" data-v="courses">Back</button></div>'
+  +'<section class="hero" style="background:var('+c.c+');color:var(--on-c)"><div><span class="eyebrow">'+esc(c.topic)+'</span><h1>'+esc(c.name)+'</h1><div class="xpbar"><i style="width:'+p.pct+'%"></i></div><small style="color:inherit">'+p.done+' of '+p.total+' steps done</small></div></section>'
+  +'<div class="cols"><section class="card"><h2 style="margin-bottom:12px">Modules</h2><div class="stack">'
+  +LESSONS[c.id].map(l=>'<button class="item" data-a="lesson" data-id="'+l.id+'"><span class="chk'+(S.done[l.id]?' on':'')+'">'+ic('tick')+'</span><span class="grow"><b>'+esc(l.t)+'</b><small>Lesson · +10 XP</small></span></button>').join('')
+  +qs.map(q=>{const b=S.quizBest[q.id];return b
+    ?'<div class="item" style="cursor:default"><span class="chk on">'+ic('tick')+'</span><span class="grow"><b>'+esc(q.t)+'</b><small>Quiz · Score '+b.score+' of '+b.total+'</small></span><span class="pill good">Done</span></div>'
+    :'<button class="item" data-a="playQuiz" data-id="'+q.id+'"><span class="chk">'+ic('tick')+'</span><span class="grow"><b>'+esc(q.t)+'</b><small>Quiz · '+q.qs.length+' questions · one try</small></span><span class="pill warn">Start</span></button>'}).join('')
+  +'</div></section>'+lecturesCard(c.id)+'</div>';
+}
+function sTodo(){
+  if(U.sel)return assignmentDetail(U.sel);
+  const mine=S.assignments.slice().sort((x,y)=>x.due<y.due?-1:1);
+  const todo=mine.filter(a=>!subOf(a.id,ME)),sub=mine.filter(a=>{const s=subOf(a.id,ME);return s&&s.status==='submitted'}),gr=mine.filter(a=>{const s=subOf(a.id,ME);return s&&s.status==='graded'});
+  const sec=(t,l)=>'<section class="card"><h2 style="margin-bottom:12px">'+t+' <small>('+l.length+')</small></h2><div class="stack">'+(l.map(aRow).join('')||'<p class="muted">Nothing here.</p>')+'</div></section>';
+  return '<h1>Assignments</h1>'+sec('To do',todo)+sec('Turned in',sub)+sec('Graded',gr);
+}
+function assignmentDetail(id){
+  const a=S.assignments.find(x=>x.id===id);if(!a)return '';
+  const c=COURSE(a.cid),s=subOf(a.id,ME);
+  let body;
+  if(!s)body='<label for="sub-text">Your answer<textarea id="sub-text" placeholder="Type your work here"></textarea></label><div class="row"><button class="btn primary" data-a="submitA" data-id="'+a.id+'">Turn in (+15 XP)</button><small>You cannot edit after turning in.</small></div>';
+  else if(s.status==='submitted')body='<div><b>Your answer</b><div class="sub-text" style="margin-top:6px">'+esc(s.text)+'</div></div><p class="pill info" style="align-self:flex-start">Turned in. Waiting for Ms. Reyes to grade it.</p>';
+  else body='<div class="row"><span class="big" style="color:var(--good)">'+s.score+'<small style="font-size:1.2rem"> / '+a.pts+'</small></span><span class="pill good">'+Math.round(s.score/a.pts*100)+'%</span></div>'+(s.fb?'<div class="feedback"><b>Feedback from Ms. Reyes</b><p>'+esc(s.fb)+'</p></div>':'');
+  return '<div class="row"><button class="btn small" data-a="nav" data-v="todo">Back</button></div><section class="card stack" style="gap:16px"><div class="row"><span class="dot" style="--cc:var('+c.c+')"></span><small>'+esc(c.name)+'</small><span class="pill">'+a.pts+' points</span><span class="pill'+(!s&&diffDays(a.due)<0?' bad':'')+'">'+(s?'Due '+fmtDate(a.due):dueText(a.due)+' · '+fmtDate(a.due))+'</span></div><h1>'+esc(a.title)+'</h1><p>'+esc(a.desc)+'</p>'+body+'</section>';
+}
+function sQuizzes(){
+  if(U.quiz)return quizView();
+  return '<h1>Quiz arena</h1><p class="muted">You get one try at each quiz. While a quiz is open, lectures and the rest of the site stay locked until you finish.</p><div class="grid">'+QUIZZES.map(q=>{const c=COURSE(q.cid)||COURSES[0],b=S.quizBest[q.id];
+    return '<section class="card stack" style="--cc:var('+c.c+')"><div class="row"><span class="dot" style="--cc:var('+c.c+')"></span><small>'+esc(c.name)+'</small></div><h3>'+esc(q.t)+'</h3><small>'+q.qs.length+' questions</small>'
+    +(b?'<div class="bar"><i style="width:'+Math.round(b.score/b.total*100)+'%"></i></div><small>Your score: '+b.score+' of '+b.total+'</small><span class="pill good" style="align-self:flex-start">Completed</span>':'<button class="btn pop" data-a="playQuiz" data-id="'+q.id+'">Start quiz</button>')+'</section>'}).join('')+'</div>';
+}
+function quizView(){
+  const Q=U.quiz,q=Q.snap;
+  if(Q.done){
+    const pct=Math.round(Q.score/q.qs.length*100);
+    const msg=pct===100?'Perfect score!':pct>=80?'Great job!':pct>=50?'Nice work.':'Keep practicing.';
+    return '<section class="card stack" style="align-items:center;text-align:center;gap:14px;padding:32px 20px"><span class="eyebrow">'+esc(q.t)+'</span><div class="big">'+Q.score+' / '+q.qs.length+'</div><h2>'+msg+'</h2>'+(Q.gained?'<span class="pill warn">+'+Q.gained+' XP earned</span>':'')+'<p class="muted">Your answers are final. Lectures and the rest of the site are open again.</p><div class="row" style="justify-content:center"><button class="btn pop" data-a="nav" data-v="courses">Open lectures</button><button class="btn" data-a="nav" data-v="quizzes">All quizzes</button></div></section>';
+  }
+  const cur=q.qs[Q.i];
+  const dots=q.qs.map((_,i)=>'<i class="'+(i<Q.i?(Q.res[i]?'ok':'no'):i===Q.i?'now':'')+'"></i>').join('');
+  const opts=cur.o.map((o,i)=>{let cl='';if(Q.picked!==null){if(i===cur.a)cl=' right';else if(i===Q.picked)cl=' wrong'}return '<button class="opt'+cl+'" data-a="pick" data-i="'+i+'"'+(Q.picked!==null?' disabled':'')+'><span class="l">'+'ABCD'[i]+'</span>'+esc(o)+'</button>'}).join('');
+  const fb=Q.picked===null?'':'<div class="feedback"><b>'+(Q.picked===cur.a?'Correct!':'Not quite.')+'</b><p>'+esc(cur.w||'')+'</p></div><button class="btn primary" style="align-self:flex-start" data-a="nextQ">'+(Q.i+1<q.qs.length?'Next question':'Finish quiz')+'</button>';
+  return '<div class="feedback row" style="gap:8px">'+ic('lock',18)+'<span><b>Quiz in progress.</b> Lectures and other pages are locked until you finish.</span></div><small>'+esc(q.t)+' · Question '+(Q.i+1)+' of '+q.qs.length+'</small><section class="card stack" style="gap:16px"><div class="dots">'+dots+'</div><h2>'+esc(cur.q)+'</h2><div class="stack">'+opts+'</div>'+fb+'</section>';
+}
+function calView(role){
+  const now=new Date(),m=U.cal||(U.cal={y:now.getFullYear(),m:now.getMonth()});
+  const first=new Date(m.y,m.m,1),days=new Date(m.y,m.m+1,0).getDate(),lead=first.getDay();
+  const label=first.toLocaleDateString('en-US',{month:'long',year:'numeric'}),today=iso(now),ev={};
+  S.assignments.forEach(a=>{(ev[a.due]=ev[a.due]||[]).push(a)});
+  let cells=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(w=>'<div class="wd">'+w+'</div>').join('');
+  for(let i=0;i<lead;i++)cells+='<div class="cd blank"></div>';
+  for(let d=1;d<=days;d++){
+    const ds=iso(new Date(m.y,m.m,d)),list=ev[ds]||[];
+    cells+='<div class="cd'+(ds===today?' today':'')+'"><span class="dn">'+d+'</span><span class="dots">'+list.slice(0,6).map(a=>'<i style="background:var('+COURSE(a.cid).c+')"></i>').join('')+'</span></div>';
+  }
+  const key=m.y+'-'+String(m.m+1).padStart(2,'0');
+  const list=S.assignments.filter(a=>a.due.slice(0,7)===key).sort((x,y)=>x.due<y.due?-1:1);
+  const rows=list.map(a=>role==='student'?aRow(a):'<div class="item" style="cursor:default"><span class="dot" style="--cc:var('+COURSE(a.cid).c+')"></span><span class="grow"><b>'+esc(a.title)+'</b><small>'+esc(COURSE(a.cid).name)+' · '+fmtDate(a.due)+' · '+a.pts+' pts</small></span><span class="pill info">'+STUDENTS.filter(s=>subOf(a.id,s.id)).length+'/'+STUDENTS.length+' turned in</span></div>').join('')||'<p class="muted">Nothing due this month.</p>';
+  return '<h1>Calendar</h1><section class="card"><div class="card-head"><h2>'+label+'</h2><div class="row"><button class="btn small" data-a="calNav" data-d="-1" aria-label="Previous month">Prev</button><button class="btn small" data-a="calToday">Today</button><button class="btn small" data-a="calNav" data-d="1" aria-label="Next month">Next</button></div></div><div class="cal">'+cells+'</div></section><section class="card"><h2 style="margin-bottom:12px">Due this month</h2><div class="stack">'+rows+'</div></section>';
+}
+function sNews(){return '<h1>Announcements</h1><section class="card">'+newsList(50)+'</section>'}
+function sPeople(){
+  const mates=STUDENTS.filter(s=>s.id!==ME);
+  return '<h1>People</h1><section class="card"><h2 style="margin-bottom:12px">Teacher</h2><div class="row"><span class="avatar">M</span><div class="grow"><b>Ms. Reyes</b><small>Grade 7 teacher</small></div></div></section><section class="card"><h2 style="margin-bottom:12px">Classmates ('+mates.length+')</h2><div class="chips">'+mates.map(s=>'<span class="chip">'+esc(s.name)+'</span>').join('')+'</div></section>';
+}
+function tPeople(){
+  const rows=STUDENTS.map(st=>{const p=S.prog[st.id]||{},g=gradeOf(st.id);return '<tr><td>'+esc(st.name)+'</td><td>'+(g==null?'–':g+'%')+'</td><td>'+Object.keys(p.quizBest||{}).length+'</td><td>'+(p.xp||0)+'</td></tr>'}).join('');
+  return '<h1>People</h1><section class="card"><div class="scroll"><table style="min-width:420px"><thead><tr><th>Student</th><th>Average</th><th>Quizzes taken</th><th>XP</th></tr></thead><tbody>'+rows+'</tbody></table></div><small>Quiz and XP numbers come from this browser.</small></section>';
+}
+function sGrades(){
+  const all=gradeOf(ME);
+  const rows=COURSES.map(c=>{const g=gradeOf(ME,c.id);return '<div class="b" style="--cc:var('+c.c+')"><span>'+esc(c.name)+'</span><span class="t"><i style="width:'+(g||0)+'%"></i></span><span class="n">'+(g==null?'–':g+'%')+'</span></div>'}).join('');
+  const graded=S.assignments.filter(a=>{const s=subOf(a.id,ME);return s&&s.status==='graded'});
+  return '<h1>My grades</h1><div class="tiles"><div class="tile pop"><b>'+(all==null?'–':all+'%')+'</b><small>Overall average</small></div><div class="tile"><b>'+graded.length+'</b><small>Graded so far</small></div><div class="tile"><b>'+Object.keys(S.quizBest).length+'</b><small>Quizzes played</small></div></div>'
+  +'<section class="card"><h2 style="margin-bottom:14px">By course</h2><div class="bars">'+rows+'</div></section>'
+  +'<section class="card"><h2 style="margin-bottom:12px">Graded work</h2><div class="stack">'+(graded.map(aRow).join('')||'<p class="muted">No graded work yet.</p>')+'</div></section>';
+}
+
+/* ---------- teacher views ---------- */
+function tHome(){
+  const pd=pending(),avgs=STUDENTS.map(s=>gradeOf(s.id)).filter(x=>x!=null),avg=avgs.length?Math.round(avgs.reduce((a,b)=>a+b,0)/avgs.length):null;
+  const bars=S.assignments.map(a=>{const c=COURSE(a.cid),p=classAvg(a.id);return '<div class="b" style="--cc:var('+c.c+')"><span>'+esc(a.title)+'</span><span class="t"><i style="width:'+(p||0)+'%"></i></span><span class="n">'+(p==null?'–':p+'%')+'</span></div>'}).join('');
+  return '<section class="hero"><div><span class="eyebrow">Teacher</span><h1>Good day, Ms. Reyes. '+(pd.length?pd.length+' submission'+(pd.length>1?'s are':' is')+' waiting for you.':'Everything is graded.')+'</h1></div><div><button class="btn pop" data-a="nav" data-v="grading">Start grading</button></div></section>'
+  +'<div class="tiles"><div class="tile pop"><b>'+pd.length+'</b><small>To grade</small></div><div class="tile"><b>'+(avg==null?'–':avg+'%')+'</b><small>Class average</small></div><div class="tile"><b>'+STUDENTS.length+'</b><small>Students</small></div><div class="tile"><b>'+S.assignments.length+'</b><small>Assignments</small></div></div>'
+  +'<div class="cols"><section class="card"><h2 style="margin-bottom:12px">Grading queue</h2><div class="stack">'+(pd.slice(0,5).map(p=>'<button class="item" data-a="gradeOpen" data-aid="'+p.a.id+'" data-sid="'+p.sid+'"><span class="avatar" style="width:34px;height:34px;font-size:.9rem">'+STUDENT(p.sid).name[0]+'</span><span class="grow"><b>'+esc(STUDENT(p.sid).name)+'</b><small>'+esc(p.a.title)+'</small></span><span class="pill info">Grade</span></button>').join('')||'<p class="muted">No submissions waiting.</p>')+'</div></section>'
+  +'<section class="card"><h2 style="margin-bottom:12px">Class average by assignment</h2><div class="bars">'+bars+'</div></section></div>'
+  +'<section class="card"><h2 style="margin-bottom:12px">Announcements</h2>'+newsList(4)+'</section>';
+}
+function tGrading(){
+  const pd=pending();
+  if(!U.gsel&&pd.length)U.gsel={aid:pd[0].a.id,sid:pd[0].sid};
+  const list='<div class="stack">'+(pd.map(p=>{const on=U.gsel&&U.gsel.aid===p.a.id&&U.gsel.sid===p.sid;return '<button class="item" style="'+(on?'border-color:var(--accent)':'')+'" data-a="gradeOpen" data-aid="'+p.a.id+'" data-sid="'+p.sid+'"><span class="grow"><b>'+esc(STUDENT(p.sid).name)+'</b><small>'+esc(p.a.title)+'</small></span></button>'}).join('')||'<p class="muted">All caught up. Nice work!</p>')+'</div>';
+  let detail='<div class="card"><p class="muted">Pick a submission to start grading.</p></div>';
+  if(U.gsel){
+    const a=S.assignments.find(x=>x.id===U.gsel.aid),s=a&&subOf(a.id,U.gsel.sid);
+    if(a&&s&&s.status==='submitted'){const c=COURSE(a.cid);
+      detail='<section class="card stack" style="gap:14px"><div class="row"><span class="dot" style="--cc:var('+c.c+')"></span><small>'+esc(c.name)+'</small><span class="pill">'+a.pts+' points</span></div><h2>'+esc(a.title)+'</h2><small>Submitted by '+esc(STUDENT(U.gsel.sid).name)+'</small><div class="sub-text">'+esc(s.text)+'</div><div class="form"><label for="g-score">Score (out of '+a.pts+')<input id="g-score" type="number" min="0" max="'+a.pts+'" inputmode="numeric"></label><label class="full" for="g-fb">Feedback for the student<textarea id="g-fb" placeholder="What went well? What should they try next?"></textarea></label></div><div class="row"><button class="btn primary" data-a="saveGrade">Save grade</button></div></section>';
+    }
+  }
+  return '<h1>Grading</h1><div class="split"><section class="card"><h3 style="margin-bottom:10px">Waiting ('+pd.length+')</h3>'+list+'</section>'+detail+'</div>';
+}
+function tBook(){
+  const head='<tr><th>Student</th>'+S.assignments.map(a=>'<th title="'+esc(a.title)+'">'+esc(COURSE(a.cid).init)+' · '+esc(a.title.length>16?a.title.slice(0,15)+'…':a.title)+'<br>'+a.pts+' pts</th>').join('')+'<th>Average</th></tr>';
+  const body=STUDENTS.map(st=>'<tr><td>'+esc(st.name)+'</td>'+S.assignments.map(a=>{const s=subOf(a.id,st.id);if(!s)return '<td class="muted">–</td>';if(s.status==='submitted')return '<td class="wait">Turned in</td>';return '<td class="'+gcls(s.score/a.pts*100)+'">'+s.score+'</td>'}).join('')+'<td><b>'+(gradeOf(st.id)==null?'–':gradeOf(st.id)+'%')+'</b></td></tr>').join('');
+  const foot='<tr><td>Class average</td>'+S.assignments.map(a=>{const p=classAvg(a.id);return '<td><b>'+(p==null?'–':p+'%')+'</b></td>'}).join('')+'<td></td></tr>';
+  return '<h1>Gradebook</h1><section class="card"><div class="scroll"><table><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div><small>Green is 85% or higher, orange is 70 to 84%, red is below 70%.</small></section>';
+}
+function tCreate(){
+  const opts=COURSES.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('');
+  return '<h1>Create</h1><div class="cols"><section class="card stack" style="gap:14px"><h2>New assignment</h2><div class="form"><label class="full" for="n-title">Title<input id="n-title" placeholder="Example: Water cycle diagram"></label><label for="n-course">Course<select id="n-course">'+opts+'</select></label><label for="n-pts">Points<input id="n-pts" type="number" min="1" value="20" inputmode="numeric"></label><label class="full" for="n-due">Due date<input id="n-due" type="date" value="'+addDays(7)+'"></label><label class="full" for="n-desc">Instructions<textarea id="n-desc" placeholder="Tell students what to do"></textarea></label></div><button class="btn primary" style="align-self:flex-start" data-a="newA">Publish assignment</button></section>'
+  +'<section class="card stack" style="gap:14px"><h2>Post an announcement</h2><div class="form"><label class="full" for="p-title">Headline<input id="p-title" placeholder="Example: Quiz on Friday"></label><label class="full" for="p-course">Send to<select id="p-course"><option value="">All classes</option>'+opts+'</select></label><label class="full" for="p-body">Message<textarea id="p-body"></textarea></label></div><button class="btn primary" style="align-self:flex-start" data-a="postNews">Post</button></section></div>'
+  +'<section class="card"><h2 style="margin-bottom:12px">Published assignments</h2><div class="stack">'+S.assignments.slice().reverse().map(a=>'<div class="item" style="cursor:default"><span class="dot" style="--cc:var('+COURSE(a.cid).c+')"></span><span class="grow"><b>'+esc(a.title)+'</b><small>'+esc(COURSE(a.cid).name)+' · '+fmtDate(a.due)+' · '+a.pts+' pts</small></span></div>').join('')+'</div></section>';
+}
+
+/* ---------- modal ---------- */
+function modalHTML(){
+  if(U.startQuiz){
+    const sq=QUIZZES.find(x=>x.id===U.startQuiz);if(!sq){U.startQuiz=null;return ''}
+    return '<div class="overlay"><div class="dialog" role="dialog" aria-modal="true" aria-label="Start quiz"><h2>Start '+esc(sq.t)+'?</h2><p>This quiz has '+sq.qs.length+' questions. You get one try and can not go back to a question. Lectures and other pages stay locked until you finish.</p><div class="row"><button class="btn pop" data-a="beginQuiz">Start now</button><button class="btn" data-a="cancelStart">Not yet</button></div></div></div>';
+  }
+  if(!U.modal)return '';
+  const id=U.modal.id,cid=Object.keys(LESSONS).find(k=>LESSONS[k].some(l=>l.id===id)),l=LESSONS[cid].find(x=>x.id===id),c=COURSE(cid),done=S.done[id];
+  return '<div class="overlay" data-a="closeModal" data-overlay="1"><div class="dialog" role="dialog" aria-modal="true" aria-label="'+esc(l.t)+'"><div class="row"><span class="dot" style="--cc:var('+c.c+')"></span><small>'+esc(c.name)+'</small></div><h2>'+esc(l.t)+'</h2><p style="font-size:1.1rem">'+esc(l.body)+'</p><div class="row"><button class="btn '+(done?'':'pop')+'" data-a="completeLesson" data-id="'+id+'"'+(done?' disabled':'')+'>'+(done?'Completed':'Mark complete (+10 XP)')+'</button><button class="btn" data-a="closeModal">Close</button></div></div></div>';
+}
+
+/* ---------- render ---------- */
+const NAV={
+  student:[['home','Dashboard','home'],['courses','Lectures','book'],['cal','Calendar','cal'],['todo','Assignments','check'],['quizzes','Quizzes','bolt'],['grades','Grades','chart'],['news','Announcements','bell'],['people','People','people']],
+  teacher:[['home','Dashboard','home'],['lec','Lectures','book'],['cal','Calendar','cal'],['grading','Grading','pencil'],['book','Gradebook','chart'],['create','Create','plus'],['people','People','people']]
+};
+const VIEWS={
+  student:{home:sHome,courses:sCourses,cal:()=>calView('student'),todo:sTodo,quizzes:sQuizzes,grades:sGrades,news:sNews,people:sPeople},
+  teacher:{home:tHome,lec:tLectures,cal:()=>calView('teacher'),grading:tGrading,book:tBook,create:tCreate,people:tPeople}
+};
+function loginHTML(){
+  const a=U.auth,teacher=a.role==='teacher',signup=a.mode==='signup'&&!teacher;
+  const tabs=teacher?'':'<div class="seg" role="group" aria-label="Log in or create an account"><button type="button" data-a="authMode" data-m="login" aria-pressed="'+!signup+'">Log in</button><button type="button" data-a="authMode" data-m="signup" aria-pressed="'+signup+'">Create account</button></div>';
+  const title=teacher?'Teacher log in':signup?'Create your student account':'Welcome back';
+  const sub=teacher?'Sign in to grade work and post announcements.':signup?'Sign up to read lectures and take quizzes.':'Log in to read lectures and take quizzes.';
+  const demo=teacher?DEMO_T:DEMO_S;
+  return '<div class="auth">'+tabs
+    +'<form id="auth-form" class="card stack" style="gap:14px" novalidate><div><h1>'+title+'</h1><p class="muted">'+sub+'</p></div>'
+    +(signup?'<label for="f-name">Full name<input id="f-name" autocomplete="name" placeholder="Example: Ana Reyes"></label>':'')
+    +'<label for="f-email">Email<input id="f-email" type="email" autocomplete="email" inputmode="email" placeholder="you@school.edu"></label>'
+    +'<label for="f-pw">Password<input id="f-pw" type="password" autocomplete="'+(signup?'new-password':'current-password')+'"></label>'
+    +(signup?'<label for="f-pw2">Confirm password<input id="f-pw2" type="password" autocomplete="new-password"></label>':'')
+    +'<div class="err" id="auth-err" role="alert"></div><button class="btn primary" type="submit">'+(signup?'Create account':'Log in')+'</button></form>'
+    +'<div class="demo">Try the demo '+(teacher?'teacher':'student')+' account: <b>'+demo.email+'</b> with password <b>'+demo.pw+'</b> <button type="button" class="linkbtn" data-a="fillDemo">Fill it in</button></div>'
+    +'<div class="row" style="justify-content:center">'+(teacher?'<button type="button" class="linkbtn" data-a="authRole" data-r="student">Back to student log in</button>':'<button type="button" class="linkbtn" data-a="authRole" data-r="teacher">I am a teacher</button>')+'</div>'
+    +'<small style="text-align:center">This is a prototype. Accounts are saved only in this browser.</small></div>';
+}
+function render(){
+  const user=U.user;
+  $('#shell').hidden=!user;$('#login').hidden=!!user;
+  if(!user){$('#acct').innerHTML='';$('#overlay-root').innerHTML='';$('#login').innerHTML=loginHTML();return}
+  const role=user.role,views=VIEWS[role];
+  const lock=role==='student'&&!!U.quiz&&!U.quiz.done;
+  if(lock){U.view='quizzes';U.modal=null;U.sel=null;U.course=null}
+  if(!views[U.view])U.view='home';
+  const fn=views[U.view],first=user.name.split(' ')[0];
+  $('#acct').innerHTML='<span class="avatar" style="width:34px;height:34px;font-size:.9rem">'+esc(first.charAt(0).toUpperCase())+'</span><b>'+esc(first)+'</b><button class="btn small" data-a="logout">Log out</button>';
+  const sub=role==='student'?'Student · Level '+lvl()+' · '+S.xp+' XP':'Teacher';
+  $('#side').innerHTML='<div class="who"><span class="avatar">'+esc(first.charAt(0).toUpperCase())+'</span><div class="grow"><b>'+esc(user.name)+'</b><small>'+sub+'</small></div></div>'
+    +NAV[role].map(n=>{const off=lock&&n[0]!=='quizzes';return '<button class="nav" data-a="nav" data-v="'+n[0]+'"'+(U.view===n[0]?' aria-current="page"':'')+(off?' aria-disabled="true"':'')+'>'+ic(off?'lock':n[2])+n[1]+'</button>'}).join('');
+  $('#main').innerHTML=fn();
+  $('#overlay-root').innerHTML=modalHTML();
+}
+
+/* ---------- actions ---------- */
+const val=id=>{const e=document.getElementById(id);return e?e.value:''};
+const A={
+  nav(d){U.view=d.v;U.sel=null;U.course=null;U.quiz=null;U.modal=null;render();window.scrollTo(0,0)},
+  role(d){S.role=d.r;U.view='home';U.sel=null;U.course=null;U.quiz=null;U.modal=null;U.gsel=null;save();render();window.scrollTo(0,0)},
+  course(d){U.view='courses';U.course=d.id;render();window.scrollTo(0,0)},
+  lesson(d){U.modal={id:d.id};render()},
+  closeModal(d,el,e){if(el.dataset.overlay&&e.target!==el)return;U.modal=null;render()},
+  completeLesson(d){if(!S.done[d.id]){S.done[d.id]=1;gain(10);award('first');save()}render()},
+  openA(d){U.view=S.role==='student'?'todo':U.view;U.sel=d.id;U.course=null;render();window.scrollTo(0,0)},
+  submitA(d){
+    const text=val('sub-text').trim();if(text.length<3){toast('Write a short answer first.');return}
+    S.subs[d.id]=S.subs[d.id]||{};S.subs[d.id][ME]={status:'submitted',text};
+    gain(15);award('ontime');confetti(50);save();render();
+  },
+  playQuiz(d){U.view='quizzes';U.course=null;U.sel=null;U.quiz={id:d.id,i:0,picked:null,score:0,res:[]};render();window.scrollTo(0,0)},
+  pick(d){
+    const Q=U.quiz;if(Q.picked!==null)return;const q=QUIZZES.find(x=>x.id===Q.id);
+    Q.picked=+d.i;const ok=Q.picked===q.qs[Q.i].a;Q.res[Q.i]=ok;if(ok)Q.score++;render();
+  },
+  nextQ(){
+    const Q=U.quiz,q=QUIZZES.find(x=>x.id===Q.id);
+    if(Q.i+1<q.qs.length){Q.i++;Q.picked=null;render();return}
+    const prev=(S.quizBest[q.id]||{score:0}).score,gained=Math.max(0,Q.score-prev)*5;
+    if(Q.score>prev)S.quizBest[q.id]={score:Q.score,total:q.qs.length};
+    Q.done=true;Q.gained=gained;
+    if(gained)gain(gained);
+    if(Q.score===q.qs.length){award('whiz');confetti(120)}else if(Q.score/q.qs.length>=.8)confetti(60);
+    save();render();
+  },
+  quitQuiz(){U.quiz=null;render()},
+  gradeOpen(d){U.view='grading';U.gsel={aid:d.aid,sid:d.sid};render();window.scrollTo(0,0)},
+  saveGrade(){
+    const g=U.gsel;if(!g)return;const a=S.assignments.find(x=>x.id===g.aid);
+    const raw=val('g-score');const n=Number(raw);
+    if(raw===''||isNaN(n)||n<0||n>a.pts){toast('Enter a score from 0 to '+a.pts+'.');return}
+    const s=subOf(g.aid,g.sid);s.status='graded';s.score=Math.round(n);s.fb=val('g-fb').trim();
+    U.gsel=null;save();toast('Grade saved for '+STUDENT(g.sid).name);render();
+  },
+  newA(){
+    const title=val('n-title').trim(),due=val('n-due'),pts=parseInt(val('n-pts'),10);
+    if(!title){toast('Add a title first.');return}
+    if(!due){toast('Pick a due date.');return}
+    if(!(pts>0)){toast('Points must be more than 0.');return}
+    const id='a'+Date.now();
+    S.assignments.push({id,cid:val('n-course'),title,due,pts,desc:val('n-desc').trim()||'See your teacher for instructions.'});
+    S.subs[id]={};save();toast('Assignment published. Students can see it now.');render();
+  },
+  postNews(){
+    const t=val('p-title').trim(),b=val('p-body').trim();
+    if(!t||!b){toast('Add a headline and a message.');return}
+    S.news.unshift({id:'n'+Date.now(),cid:val('p-course')||null,t,body:b,when:addDays(0)});
+    save();toast('Announcement posted.');render();
+  },
+  reset(){try{localStorage.removeItem(KEY)}catch(e){}S=seed();U={view:'home',sel:null,course:null,quiz:null,modal:null,gsel:null};toast('Demo data reset.');render()}
+};
+/* ---------- accounts ---------- */
+async function hash(s){
+  try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+  catch(e){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return 'x'+(h>>>0).toString(16)}
+}
+function rand(){try{return Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>b.toString(16).padStart(2,'0')).join('')}catch(e){return String(Math.random()).slice(2)+Date.now()}}
+const SESSION='tala-session-v1';
+async function ensureDemo(){
+  let changed=false;
+  for(const d of [DEMO_S,DEMO_T]){
+    if(!S.accounts.some(x=>x.email===d.email)){S.accounts.push({email:d.email,name:d.name,role:d.role,sid:d.sid,salt:d.salt,hash:await hash(d.salt+d.pw)});changed=true}
+  }
+  if(changed)save();
+}
+function startSession(acc,silent){
+  ME=acc.sid||null;
+  U.user={email:acc.email,name:acc.name,role:acc.role,sid:ME};
+  S.role=acc.role;
+  if(acc.role==='student')loadProg(ME);
+  U.view='home';U.sel=null;U.course=null;U.modal=null;U.gsel=null;U.startQuiz=null;U.quiz=(acc.role==='student'&&S.active)||null;if(U.quiz&&!U.quiz.done)U.view='quizzes';
+  try{localStorage.setItem(SESSION,acc.email)}catch(e){}
+  save();render();window.scrollTo(0,0);
+  if(!silent)toast('Welcome, '+acc.name.split(' ')[0]+'!');
+}
+async function submitAuth(){
+  const a=U.auth,email=val('f-email').trim().toLowerCase(),pw=val('f-pw');
+  const err=m=>{const e=$('#auth-err');if(e)e.textContent=m};
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return err('Enter a valid email address.');
+  if(!pw)return err('Enter your password.');
+  if(a.mode==='signup'&&a.role==='student'){
+    const name=val('f-name').trim();
+    if(name.length<2)return err('Enter your full name.');
+    if(pw.length<6)return err('Use at least 6 characters for your password.');
+    if(pw!==val('f-pw2'))return err('The two passwords do not match.');
+    if(S.accounts.some(x=>x.email===email))return err('That email already has an account. Try logging in.');
+    const salt=rand(),sid='s'+Date.now().toString(36);
+    const acc={email,name,role:'student',sid,salt,hash:await hash(salt+pw)};
+    S.accounts.push(acc);S.students.push({id:sid,name});syncStudents();
+    S.prog[sid]={xp:0,streak:0,done:{},badges:[],quizBest:{}};
+    startSession(acc);return;
+  }
+  const acc=S.accounts.find(x=>x.email===email&&x.role===a.role);
+  if(!acc||acc.hash!==await hash(acc.salt+pw))return err('Email or password is incorrect.');
+  startSession(acc);
+}
+A.authMode=d=>{U.auth={mode:d.m,role:'student'};render()};
+A.authRole=d=>{U.auth={mode:'login',role:d.r};render()};
+A.fillDemo=()=>{const d=U.auth.role==='teacher'?DEMO_T:DEMO_S;$('#f-email').value=d.email;$('#f-pw').value=d.pw};
+A.logout=()=>{
+  save();ME=null;U.user=null;U.sel=null;U.course=null;U.quiz=null;U.modal=null;U.gsel=null;U.auth={mode:'login',role:'student'};
+  try{localStorage.removeItem(SESSION)}catch(e){}
+  render();window.scrollTo(0,0);
+};
+document.addEventListener('submit',e=>{if(e.target.id!=='auth-form')return;e.preventDefault();submitAuth()});
+
+/* Students can only read lectures and play quizzes. Teacher actions and editing are blocked for them. */
+const OPEN_ACTIONS=['authMode','authRole','fillDemo'];
+const TEACHER_ONLY=['gradeOpen','saveGrade','newA','postNews','pubLec','unstage','delAsk','delDo','delCancel','lt','addQ','delQ','pubQuiz','qDelAsk','qDelDo','qDelCancel'];
+const STUDENT_ONLY=['lesson','completeLesson','playQuiz','beginQuiz','cancelStart','pick','nextQ','course','submitA','openA'];
+const DISABLED=['reset','role'];
+const LOCK_OK=['pick','nextQ','logout'];
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-a]');if(!el)return;
+  const name=el.dataset.a,role=U.user&&U.user.role;
+  if(DISABLED.includes(name))return;
+  if(!role&&!OPEN_ACTIONS.includes(name))return;
+  if(role==='student'&&TEACHER_ONLY.includes(name))return;
+  if(role==='teacher'&&STUDENT_ONLY.includes(name))return;
+  if(role==='student'&&U.quiz&&!U.quiz.done&&!LOCK_OK.includes(name)){toast('Finish your quiz first. Lectures and other pages are locked until you are done.');return}
+  const fn=A[name];if(fn)fn(el.dataset,el,e);
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&(U.modal||U.startQuiz)){U.modal=null;U.startQuiz=null;render()}});
+
+/* ---------- lecture actions (teacher) and downloads (everyone) ---------- */
+const setStatus=t=>{const e=$('#l-status');if(e)e.textContent=t};
+A.unstage=d=>{STAGED.splice(+d.i,1);const s=$('#staged');if(s)s.innerHTML=stagedHTML()};
+A.pubLec=async()=>{
+  if(U.busy)return;
+  const d={cid:val('l-course'),title:val('l-title').trim(),body:val('l-body').trim()};
+  U.draft=d;
+  if(!d.title){toast('Add a lecture title.');return}
+  if(!d.body&&!STAGED.length){toast('Add a description or attach a file.');return}
+  if(!CAP.db){toast('Lectures can not be saved in this view.');return}
+  if(STAGED.length&&!CAP.assets){toast('This account can not upload files.');return}
+  U.busy=true;
+  const btn=document.querySelector('[data-a="pubLec"]');if(btn)btn.disabled=true;
+  const files=[];
+  try{
+    for(let i=0;i<STAGED.length;i++){
+      setStatus('Uploading '+STAGED[i].name+' ('+(i+1)+' of '+STAGED.length+')…');
+      files.push(await uploadOne(STAGED[i]));
+    }
+    setStatus('Publishing…');
+    await CAP.db.collection('lectures').add({cid:d.cid,title:d.title,body:d.body,files,ts:Date.now(),by:U.user.name});
+    STAGED=[];U.draft={cid:d.cid,title:'',body:''};
+    toast('Lecture published. Students can see it now.');
+  }catch(e){
+    for(const f of files){try{await CAP.assets.delete(f.id)}catch(x){}}
+    toast(errText(e));
+  }
+  U.busy=false;render();
+};
+A.delAsk=d=>{U.confirmDel=d.id;render()};
+A.delCancel=()=>{U.confirmDel=null;render()};
+A.delDo=async d=>{
+  const l=LEC.find(x=>x.id===d.id);U.confirmDel=null;
+  if(!l||!CAP.db){render();return}
+  try{
+    await CAP.db.doc('lectures/'+l.id).delete();
+    if(CAP.assets)for(const f of (l.files||[])){try{await CAP.assets.delete(f.id)}catch(x){}}
+    toast('Lecture deleted.');
+  }catch(e){toast(errText(e))}
+  render();
+};
+A.dlPptx=async d=>{
+  if(STANDALONE){
+    try{
+      const b=await idbGet(d.id);if(!b)throw new Error('missing');
+      const u=URL.createObjectURL(b),a=document.createElement('a');
+      a.href=u;a.download=/\.pptx$/i.test(d.name)?d.name:d.name+'.pptx';document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(u),4000);
+    }catch(e){toast('Could not download this file.')}
+    return;
+  }
+  if(!CAP.downloads){toast('Downloads are not available in this view.');return}
+  try{
+    toast('Preparing your file…');
+    const r=await fetch('/_blob/'+encodeURIComponent(d.id));
+    if(!r.ok)throw new Error('missing');
+    const bin=atob((await r.text()).trim());
+    const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    const name=/\.pptx$/i.test(d.name)?d.name:d.name+'.pptx';
+    await CAP.downloads.save({filename:name,data:u});
+    toast('Saved.');
+  }catch(e){toast(e&&e.code==='declined'?'Download cancelled.':'Could not download this file.')}
+};
+/* ---------- quizzes: teacher builder and student attempts ---------- */
+const blankQ=()=>({q:'',o:['','','',''],a:0,w:''});
+function collectQ(){
+  const d=U.qdraft;if(!d||!document.getElementById('q-title'))return;
+  d.cid=val('q-course');d.title=val('q-title');
+  d.qs=d.qs.map((x,i)=>({q:val('q'+i+'-q'),o:[0,1,2,3].map(j=>val('q'+i+'-o'+j)),a:parseInt(val('q'+i+'-a'),10)||0,w:val('q'+i+'-w')}));
+}
+function tLectures(){
+  const m=U.lt||'lec';
+  const tabs='<div class="seg" role="group" aria-label="Lectures or quizzes"><button type="button" data-a="lt" data-m="lec" aria-pressed="'+(m==='lec')+'">Lectures</button><button type="button" data-a="lt" data-m="quiz" aria-pressed="'+(m==='quiz')+'">Quizzes</button></div>';
+  return '<div class="stack" style="align-items:flex-start">'+tabs+'</div>'+(m==='quiz'?tQuizzes():tLecFiles());
+}
+function tQuizzes(){
+  const d=U.qdraft||(U.qdraft={cid:'sci',title:'',qs:[blankQ()]});
+  const opts=COURSES.map(c=>'<option value="'+c.id+'"'+(d.cid===c.id?' selected':'')+'>'+esc(c.name)+'</option>').join('');
+  let notice='';
+  if(CAP.ready&&!CAP.db)notice='<div class="feedback"><b>Quizzes can not be saved in this view.</b><p>Open this page in claude.ai while signed in.</p></div>';
+  const qs=d.qs.map((x,i)=>'<div class="qb"><div class="row"><h3 class="grow">Question '+(i+1)+'</h3>'+(d.qs.length>1?'<button type="button" class="btn small" data-a="delQ" data-i="'+i+'">Remove</button>':'')+'</div>'
+    +'<label for="q'+i+'-q">Question<input id="q'+i+'-q" value="'+esc(x.q)+'" placeholder="Type the question"></label>'
+    +'<div class="form">'+[0,1,2,3].map(j=>'<label for="q'+i+'-o'+j+'">Option '+'ABCD'[j]+(j>1?' (optional)':'')+'<input id="q'+i+'-o'+j+'" value="'+esc(x.o[j])+'"></label>').join('')+'</div>'
+    +'<div class="form"><label for="q'+i+'-a">Correct answer<select id="q'+i+'-a">'+[0,1,2,3].map(j=>'<option value="'+j+'"'+(x.a===j?' selected':'')+'>Option '+'ABCD'[j]+'</option>').join('')+'</select></label><label for="q'+i+'-w">Explanation shown after answering (optional)<input id="q'+i+'-w" value="'+esc(x.w)+'"></label></div></div>').join('');
+  const list=QDB.map(q=>{const c=COURSE(q.cid)||COURSES[0];return '<div class="item" style="cursor:default"><span class="dot" style="--cc:var('+c.c+')"></span><span class="grow"><b>'+esc(q.t)+'</b><small>'+esc(c.name)+' · '+q.qs.length+' questions</small></span>'+(U.confirmQ===q.id?'<button class="btn small" style="color:var(--bad)" data-a="qDelDo" data-id="'+esc(q.id)+'">Confirm delete</button><button class="btn small" data-a="qDelCancel">Cancel</button>':'<button class="btn small" data-a="qDelAsk" data-id="'+esc(q.id)+'">Delete</button>')+'</div>'}).join('');
+  return '<h1>Quizzes</h1><p class="muted">Each student gets one try per quiz. While a student is in a quiz, the lectures stay locked for them.</p>'+notice
+    +'<section class="card stack" style="gap:14px" id="q-form"><h2>New quiz</h2><div class="form"><label for="q-course">Subject<select id="q-course">'+opts+'</select></label><label for="q-title">Quiz title<input id="q-title" value="'+esc(d.title)+'" placeholder="Example: Water cycle check"></label></div>'+qs
+    +'<div class="row"><button type="button" class="btn" data-a="addQ"'+(d.qs.length>=20?' disabled':'')+'>Add a question</button><button type="button" class="btn primary" data-a="pubQuiz">Publish quiz</button></div></section>'
+    +'<section class="card"><h2 style="margin-bottom:12px">Your published quizzes ('+QDB.length+')</h2><div class="stack">'+(list||'<p class="muted">Nothing published yet. The sample quizzes students already see are built in.</p>')+'</div></section>';
+}
+A.lt=d=>{collectQ();U.lt=d.m;render()};
+A.addQ=()=>{collectQ();if(U.qdraft.qs.length<20)U.qdraft.qs.push(blankQ());render()};
+A.delQ=d=>{collectQ();U.qdraft.qs.splice(+d.i,1);if(!U.qdraft.qs.length)U.qdraft.qs.push(blankQ());render()};
+A.pubQuiz=async()=>{
+  if(U.busy)return;collectQ();const d=U.qdraft;
+  if(!d.title.trim()){toast('Add a quiz title.');return}
+  const qs=[];
+  for(let i=0;i<d.qs.length;i++){
+    const x=d.qs[i],text=x.q.trim(),opts=x.o.map((s,j)=>({s:s.trim(),j})).filter(z=>z.s);
+    if(!text){toast('Question '+(i+1)+' needs text.');return}
+    if(opts.length<2){toast('Question '+(i+1)+' needs at least two options.');return}
+    const ai=opts.findIndex(z=>z.j===x.a);
+    if(ai<0){toast('Question '+(i+1)+': the correct answer points to an empty option.');return}
+    qs.push({q:text,o:opts.map(z=>z.s),a:ai,w:x.w.trim()||'The correct answer is '+opts[ai].s+'.'});
+  }
+  if(!CAP.db){toast('Quizzes can not be saved in this view.');return}
+  U.busy=true;
+  try{
+    await CAP.db.collection('quizzes').add({cid:d.cid,title:d.title.trim(),qs,ts:Date.now(),by:U.user.name});
+    U.qdraft={cid:d.cid,title:'',qs:[blankQ()]};toast('Quiz published. Students can see it now.');
+  }catch(e){toast(errText(e))}
+  U.busy=false;render();
+};
+A.qDelAsk=d=>{U.confirmQ=d.id;render()};
+A.qDelCancel=()=>{U.confirmQ=null;render()};
+A.qDelDo=async d=>{
+  U.confirmQ=null;
+  try{await CAP.db.doc('quizzes/'+d.id).delete();toast('Quiz deleted.')}catch(e){toast(errText(e))}
+  render();
+};
+A.calNav=d=>{const now=new Date(),c=U.cal||{y:now.getFullYear(),m:now.getMonth()},n=new Date(c.y,c.m+(+d.d),1);U.cal={y:n.getFullYear(),m:n.getMonth()};render()};
+A.calToday=()=>{U.cal=null;render()};
+A.playQuiz=d=>{if(S.quizBest[d.id]){toast('You already took this quiz.');return}U.startQuiz=d.id;render()};
+A.cancelStart=()=>{U.startQuiz=null;render()};
+A.beginQuiz=()=>{
+  const q=QUIZZES.find(x=>x.id===U.startQuiz);U.startQuiz=null;
+  if(!q){render();return}
+  if(S.quizBest[q.id]){toast('You already took this quiz.');render();return}
+  U.quiz={id:q.id,snap:{id:q.id,cid:q.cid,t:q.t,qs:q.qs},i:0,picked:null,score:0,res:[]};
+  S.active=U.quiz;U.view='quizzes';U.course=null;U.sel=null;U.modal=null;save();render();window.scrollTo(0,0);
+};
+A.pick=d=>{
+  const Q=U.quiz;if(!Q||Q.done||Q.picked!==null)return;
+  const cur=Q.snap.qs[Q.i];Q.picked=+d.i;const ok=Q.picked===cur.a;Q.res[Q.i]=ok;if(ok)Q.score++;
+  S.active=Q;save();render();
+};
+A.nextQ=()=>{
+  const Q=U.quiz;if(!Q||Q.done||Q.picked===null)return;const q=Q.snap;
+  if(Q.i+1<q.qs.length){Q.i++;Q.picked=null;S.active=Q;save();render();return}
+  const gained=Q.score*5;
+  S.quizBest[q.id]={score:Q.score,total:q.qs.length};Q.done=true;Q.gained=gained;S.active=null;
+  if(gained)gain(gained);
+  if(Q.score===q.qs.length){award('whiz');confetti(120)}else if(Q.score/q.qs.length>=.8)confetti(60);
+  save();render();
+};
+document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('#q-form'))collectQ()});
+
+/* keep the teacher's draft while the page re-renders, and accept dropped files */
+document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('#l-form')&&e.target.id!=='l-files')U.draft={cid:val('l-course'),title:val('l-title'),body:val('l-body')}});
+document.addEventListener('change',e=>{
+  if(e.target.id==='l-course'){U.draft={cid:val('l-course'),title:val('l-title'),body:val('l-body')}}
+  if(e.target.id==='l-files'){stage(Array.from(e.target.files||[]));e.target.value=''}
+});
+document.addEventListener('dragover',e=>{const z=e.target.closest&&e.target.closest('#dz');if(z){e.preventDefault();z.classList.add('over')}});
+document.addEventListener('dragleave',e=>{const z=e.target.closest&&e.target.closest('#dz');if(z)z.classList.remove('over')});
+document.addEventListener('drop',e=>{const z=e.target.closest&&e.target.closest('#dz');if(z){e.preventDefault();z.classList.remove('over');stage(Array.from(e.dataTransfer.files||[]))}});
+(async function init(){
+  syncStudents();
+  initCaps();
+  await ensureDemo();
+  let em=null;try{em=localStorage.getItem(SESSION)}catch(e){}
+  const acc=em&&S.accounts.find(x=>x.email===em);
+  if(acc)startSession(acc,true);else render();
+})();
+})();
+</script>
 </body>
 </html>
