@@ -155,8 +155,8 @@
      
     const SUPABASE_CONFIG = {
      
-      url: '', // e.g., 'https://xyzcompany.supabase.co'
-      anonKey: '' // e.g., 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+      url: 'https://ujxdkgkvypwytvckqnaf.supabase.co", 
+      anonKey: 'sb_publishable_teZW3t8ZDhBzZepLnSIb0w_fd2w9Fhk', 
     };
 
     const MENU_FLAVORS = [
@@ -916,7 +916,7 @@
          
           <div id="sf-gcash-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/70 p-3.5 sm:p-4 overflow-y-auto">
             <div class="bg-white border-2 border-puto-brown shadow-pop-lg rounded-3xl w-full max-w-sm overflow-hidden my-auto">
-              <!-- Official GCash Blue Header -->
+             
               <div class="bg-[#007DFE] text-white px-4 py-3.5 flex items-center justify-between border-b-2 border-puto-brown">
                 <div class="flex items-center gap-2">
                   <span class="w-8 h-8 rounded-xl bg-white text-[#007DFE] font-display font-extrabold text-lg flex items-center justify-center">G</span>
@@ -938,7 +938,7 @@
                 
                 <div class="bg-cream-50 border-2 border-puto-brown rounded-2xl p-4 text-center space-y-2">
                   <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#007DFE]">SEND GCASH PAYMENT TO</div>
-                  <div class="font-display text-lg font-bold text-puto-brown">PUTOLOGY PH (Carlo D.)</div>
+                  <div class="font-display text-lg font-bold text-puto-brown">PUTOLOGY PH (Gerald D.)</div>
                   <div class="bg-white border-2 border-[#007DFE] rounded-xl p-2.5 flex items-center justify-between gap-2">
                     <span id="sf-gcash-number" class="font-mono font-extrabold text-base sm:text-lg text-[#007DFE] tracking-wide">0917-884-7886</span>
                     <button type="button" onclick="StorefrontApp.copyGcashNumber()" class="px-3 py-2 rounded-lg bg-puto-yellow border-2 border-puto-brown text-xs font-extrabold shrink-0 active:scale-95">
@@ -1478,7 +1478,7 @@
         });
 
         root.innerHTML = `
-          <!-- ADMIN HEADER -->
+        
           <header class="sticky top-0 z-30 bg-puto-brown text-cream-100 px-4 py-3 border-b-2 border-puto-dark">
             <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
               <div>
@@ -1515,7 +1515,7 @@
               </div>
             </div>
 
-            <!-- ACTIVE STEAMER TALLY -->
+          
             <section class="admin-portal-card p-4 bg-cream-50">
               <div class="flex items-center justify-between mb-2.5">
                 <h2 class="font-display text-base font-bold">♨️ Active Steamer Batch Tally</h2>
@@ -1531,7 +1531,7 @@
               </div>
             </section>
 
-            <!-- ADMIN NAVIGATION TABS -->
+            
             <div class="grid grid-cols-3 gap-2">
               <button onclick="AdminPortalApp.setTab('orders')" class="admin-portal-btn py-2.5 text-xs ${adminState.activeTab === 'orders' ? 'bg-puto-brown text-puto-yellow' : 'bg-white'}">
                 📋 Orders (${orders.length})
@@ -1545,7 +1545,7 @@
             </div>
 
             ${adminState.activeTab === 'orders' ? `
-              <!-- SEARCH & STATUS FILTERS -->
+             
               <div class="space-y-2.5">
                 <div class="flex gap-2">
                   <input type="text" value="${adminState.searchQuery}" oninput="AdminPortalApp.setSearch(this.value)" placeholder="Search customer, PUTO-###, or GCash Ref..." class="flex-1 min-h-[44px] px-3.5 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold" />
