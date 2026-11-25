@@ -48,7 +48,9 @@
     };
   </script>
   <style>
-    
+    /* =========================================================
+       GLOBAL MOBILE-FIRST BASE & ZERO OVERFLOW GUARDRAILS
+       ========================================================= */
     *, *::before, *::after {
       box-sizing: border-box;
     }
@@ -66,7 +68,9 @@
       font-family: 'Fredoka', sans-serif;
     }
 
-  
+    /* =========================================================
+       STOREFRONT NAMESPACE (.storefront-*)
+       ========================================================= */
     .storefront-card {
       border: 2px solid #3E2216;
       box-shadow: 4px 4px 0px #3E2216;
@@ -101,7 +105,9 @@
     .storefront-steam-1 { animation: steamFloat 2.2s infinite ease-in-out; }
     .storefront-steam-2 { animation: steamFloat 2.2s infinite ease-in-out 0.7s; }
 
-   
+    /* =========================================================
+       ISOLATED ADMIN PORTAL NAMESPACE (.admin-portal-*)
+       ========================================================= */
     .admin-portal-shell {
       background-color: #F4F1EA;
       color: #26130B;
@@ -129,34 +135,47 @@
       transform: scale(0.98);
     }
 
-   
+    /* Hide scrollbars cleanly on horizontal pill scrollers */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="antialiased selection:bg-ube-600 selection:text-white">
 
-  
+  <!-- Global Toast Feedback Banner -->
   <div id="global-toast-root" class="fixed top-4 left-1/2 -translate-x-1/2 z-[120] w-[92vw] max-w-sm pointer-events-none flex flex-col gap-2"></div>
 
- 
+  <!-- =====================================================================
+       VIEW 1: CUSTOMER STOREFRONT MOUNT POINT (#/)
+       ===================================================================== -->
   <div id="storefront-root" class="w-full max-w-full overflow-x-hidden pb-24 md:pb-0"></div>
 
-  
+  <!-- =====================================================================
+       VIEW 2: STANDALONE ADMIN PORTAL MOUNT POINT (#/admin)
+       ===================================================================== -->
   <div id="admin-portal-root" class="hidden admin-portal-shell"></div>
 
   <script>
-    
+    /**
+     * =====================================================================
+     * 0. PRIVATE ADMIN SECURITY & LAUNCH CONFIGURATION
+     * =====================================================================
+     */
     const ADMIN_CONFIG = {
-      PIN: '882154'
+      PIN: '8824'
     };
 
-   
-     
+    // First day of puto production & customer pickup: November 27, 2026 (00:00:00 PHT)
+    const BATCH_START_DATE = new Date('2026-11-27T00:00:00+08:00');
+
+    /**
+     * =====================================================================
+     * 1. SHARED DOMAIN DATA & SUPABASE-READY STORAGE BRIDGE
+     * =====================================================================
+     */
     const SUPABASE_CONFIG = {
-     
-      url: 'https://ujxdkgkvypwytvckqnaf.supabase.co', 
-      anonKey: 'sb_publishable_teZW3t8ZDhBzZepLnSIb0w_fd2w9Fhk', 
+      url: '', // e.g., 'https://ujxdkgkvypwytvckqnaf.supabase.co'
+      anonKey: '' // Your Supabase Publishable key
     };
 
     const MENU_FLAVORS = [
@@ -165,7 +184,7 @@
         name: 'Ube Coco',
         category: 'Sweet',
         priceSingle: 13,
-        priceBox: 85,
+        priceBox: 75,
         badge: 'Best Seller',
         badgeClass: 'bg-ube-600 text-white',
         colorTop: '#7E3AF2',
@@ -179,7 +198,7 @@
         name: 'Cookies & Cream',
         category: 'Sweet',
         priceSingle: 13,
-        priceBox: 100,
+        priceBox: 75,
         badge: 'Student Fave',
         badgeClass: 'bg-puto-brown text-puto-yellow',
         colorTop: '#3E2216',
@@ -193,7 +212,7 @@
         name: 'Pandan Coco',
         category: 'Sweet',
         priceSingle: 13,
-        priceBox: 85,
+        priceBox: 75,
         badge: 'Fresh Aroma',
         badgeClass: 'bg-puto-pandan text-white',
         colorTop: '#16A34A',
@@ -207,13 +226,13 @@
         name: 'Peanut Crunch',
         category: 'Sweet',
         priceSingle: 13,
-        priceBox: 90,
+        priceBox: 75,
         badge: 'Nutty Crunch',
         badgeClass: 'bg-puto-amber text-white',
         colorTop: '#D97706',
         colorAccent: '#FEF3C7',
-        ingredients: ['Peanut butter', 'Crushed roasted peanuts', 'Coconut flakes (optional)'],
-        optionalTopping: 'Coconut flakes',
+        ingredients: ['Peanut butter', 'Crushed roasted peanuts'],
+        optionalTopping: null,
         desc: 'Creamy peanut butter swirl finished with crunchy roasted peanuts.'
       },
       {
@@ -221,13 +240,13 @@
         name: 'Salted Egg',
         category: 'Savory',
         priceSingle: 13,
-        priceBox: 100,
+        priceBox: 75,
         badge: 'Classic Twist',
         badgeClass: 'bg-puto-yellow text-puto-brown',
         colorTop: '#EAB308',
         colorAccent: '#FEF9C3',
-        ingredients: ['Chopped salted egg', 'Black pepper', 'Spring onions (optional)'],
-        optionalTopping: 'Spring onions',
+        ingredients: ['Chopped salted egg', 'Black pepper'],
+        optionalTopping: null,
         desc: 'Rich chopped itlog na maalat with a subtle dash of cracked black pepper.'
       },
       {
@@ -235,32 +254,69 @@
         name: 'Tuna Mayo',
         category: 'Savory',
         priceSingle: 13,
-        priceBox: 110,
+        priceBox: 75,
         badge: 'Savory Hit',
         badgeClass: 'bg-rose-600 text-white',
         colorTop: '#E11D48',
         colorAccent: '#FFE4E6',
-        ingredients: ['Canned tuna', 'Mayonnaise', 'Black pepper', 'Minced onions (optional)'],
-        optionalTopping: 'Minced onions',
+        ingredients: ['Canned tuna', 'Mayonnaise', 'Black pepper'],
+        optionalTopping: null,
         desc: 'Creamy seasoned tuna mayo tucked over soft, warm steamed puto.'
       }
     ];
 
+    /**
+     * Exact Tiered Pricing Calculator:
+     * 1 pc = ₱13 | 2 pcs = ₱25 | 4 pcs = ₱50 | 6 pcs = ₱75 | 12 pcs = ₱125
+     */
+    function calculateTieredPutoPrice(totalPieces) {
+      const qty = Math.max(0, Math.floor(Number(totalPieces) || 0));
+      const dozens = Math.floor(qty / 12);
+      const remainderAfterDozens = qty % 12;
+      const pairs = Math.floor(remainderAfterDozens / 2);
+      const singles = remainderAfterDozens % 2;
+      return (dozens * 125) + (pairs * 25) + (singles * 13);
+    }
+
+    /**
+     * Packaging Fee Rules:
+     * 1–3 pcs: Free paper/siomai plate (₱0)
+     * 4–6 pcs: 1 Box Packaging (+₱5)
+     * 7+ pcs: +₱5 per 6-pc box needed
+     */
+    function calculatePackagingFee(totalPieces) {
+      const qty = Math.max(0, Math.floor(Number(totalPieces) || 0));
+      if (qty <= 3) return 0;
+      return Math.ceil(qty / 6) * 5;
+    }
+
     const BUNDLE_DEALS = [
       {
-        id: 'bundle-student',
-        name: 'Student Merienda Trio',
-        price: 45,
-        badge: 'Save ₱4',
-        desc: '3 pcs: 1 Ube Coco + 1 Cookies & Cream + 1 Pandan Coco',
-        itemsSummary: '1x Ube Coco, 1x Cookies & Cream, 1x Pandan Coco',
-        breakdown: { 'ube-coco': 1, 'cookies-cream': 1, 'pandan-coco': 1 }
+        id: 'bundle-duo',
+        name: 'Student Pair (2 pcs)',
+        pieces: 2,
+        price: calculateTieredPutoPrice(2),
+        badge: '2 Pcs • ₱25',
+        desc: '2 pcs: 1 Ube Coco + 1 Cookies & Cream',
+        itemsSummary: '1x Ube Coco, 1x Cookies & Cream',
+        breakdown: { 'ube-coco': 1, 'cookies-cream': 1 }
+      },
+      {
+        id: 'bundle-squad',
+        name: 'Merienda Squad (4 pcs)',
+        pieces: 4,
+        price: calculateTieredPutoPrice(4),
+        badge: '4 Pcs • ₱50',
+        desc: '4 pcs: 1 Ube Coco + 1 Cookies & Cream + 1 Pandan Coco + 1 Salted Egg',
+        itemsSummary: '1x Ube Coco, 1x Cookies & Cream, 1x Pandan Coco, 1x Salted Egg',
+        breakdown: { 'ube-coco': 1, 'cookies-cream': 1, 'pandan-coco': 1, 'salted-egg': 1 }
       },
       {
         id: 'bundle-sweet-savory',
-        name: 'Sweet & Savory Duo Box',
-        price: 95,
-        badge: 'Most Popular',
+        name: 'Sweet & Savory Box (6 pcs)',
+        pieces: 6,
+        price: calculateTieredPutoPrice(6),
+        badge: '6 Pcs • ₱75',
         desc: '6 pcs: 3 Sweet Favorites + 3 Savory Hits (Salted Egg & Tuna Mayo)',
         itemsSummary: '1x Ube Coco, 1x Cookies & Cream, 1x Peanut Crunch, 2x Salted Egg, 1x Tuna Mayo',
         breakdown: { 'ube-coco': 1, 'cookies-cream': 1, 'peanut-crunch': 1, 'salted-egg': 2, 'tuna-mayo': 1 }
@@ -268,238 +324,244 @@
       {
         id: 'bundle-barkada',
         name: 'Barkada Fiesta Box (12 pcs)',
-        price: 180,
-        badge: 'Best Value',
+        pieces: 12,
+        price: calculateTieredPutoPrice(12),
+        badge: '12 Pcs • ₱125',
         desc: '12 pcs: 2 pieces of ALL 6 official PUTOLOGY flavors!',
         itemsSummary: '2x Ube Coco, 2x Cookies & Cream, 2x Pandan Coco, 2x Peanut Crunch, 2x Salted Egg, 2x Tuna Mayo',
         breakdown: { 'ube-coco': 2, 'cookies-cream': 2, 'pandan-coco': 2, 'peanut-crunch': 2, 'salted-egg': 2, 'tuna-mayo': 2 }
       }
     ];
 
-    const BATTER_INGREDIENTS = [
-      'All-purpose flour',
-      'White sugar',
-      'Baking powder',
-      'Eggs',
-      'Evaporated milk',
-      'Water',
-      'Cooking oil',
-      'Salt'
-    ];
+    const OrderStorageService = (() => {
+      const ORDERS_KEY = 'putology_orders_v3';
+      const FEEDBACK_KEY = 'putology_feedback_v3';
 
-    const STORAGE_KEYS = {
-      ORDERS: 'putology_orders_v3',
-      FEEDBACK: 'putology_feedback_v3'
-    };
+      const SEED_ORDERS = [
+        {
+          id: 'PTL-2041',
+          customerName: 'Alyssa Reyes',
+          contact: '0917-432-1190',
+          customerType: 'Student',
+          pickupDate: '2026-11-27',
+          pickupTime: '15:00',
+          paymentMethod: 'GCash',
+          gcashRef: '6012 889 441209',
+          gcashVerified: true,
+          notes: 'Extra coconut flakes on Ube Coco please!',
+          totalAmount: 100,
+          status: 'Preparing',
+          createdAt: '2026-11-27T09:15:00+08:00',
+          items: [
+            { name: 'Sweet & Savory Box (6 pcs)', qty: 1, unitPrice: 75, breakdown: { 'ube-coco': 1, 'cookies-cream': 1, 'peanut-crunch': 1, 'salted-egg': 2, 'tuna-mayo': 1 } },
+            { name: 'Ube Coco (2 pcs Pair)', qty: 1, unitPrice: 25, breakdown: { 'ube-coco': 2 } }
+          ]
+        }
+      ];
 
-    const OrderStorageService = {
-      isSupabaseReady() {
+      const SEED_FEEDBACK = [
+        {
+          id: 'FB-101',
+          customerName: 'Marco Santos',
+          flavorIdea: 'Choco Hazelnut Cheese',
+          message: 'Would love a Nutella or chocolate hazelnut puto topped with cheddar!',
+          status: 'New',
+          createdAt: '2026-11-25T14:20:00+08:00'
+        }
+      ];
+
+      function isSupabaseConfigured() {
         return Boolean(SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey);
-      },
-
-      seedDefaultsIfEmpty() {
-        if (!localStorage.getItem(STORAGE_KEYS.ORDERS)) {
-          const today = new Date().toISOString().split('T')[0];
-          const sampleOrders = [
-            {
-              id: 'ord-101',
-              orderCode: 'PUTO-101',
-              customerName: 'Alyssa Reyes',
-              contact: '0917-555-0192',
-              customerType: 'Student',
-              pickupDate: today,
-              pickupTime: '15:30',
-              paymentMethod: 'GCash',
-              gcashRef: '6012345678901',
-              gcashVerified: false,
-              notes: 'Extra napkins please!',
-              totalAmount: 95,
-              status: 'Pending',
-              createdAt: new Date(Date.now() - 1800000).toISOString(),
-              items: [
-                {
-                  name: 'Sweet & Savory Duo Box (6 pcs)',
-                  qty: 1,
-                  unitPrice: 95,
-                  breakdown: { 'ube-coco': 1, 'cookies-cream': 1, 'peanut-crunch': 1, 'salted-egg': 2, 'tuna-mayo': 1 }
-                }
-              ]
-            },
-            {
-              id: 'ord-102',
-              orderCode: 'PUTO-102',
-              customerName: 'Sir Marco Santos',
-              contact: '0928-441-8820',
-              customerType: 'Teacher / School Staff',
-              pickupDate: today,
-              pickupTime: '16:00',
-              paymentMethod: 'Cash on Pickup',
-              gcashRef: '',
-              gcashVerified: false,
-              notes: 'Faculty room pickup',
-              totalAmount: 185,
-              status: 'Preparing',
-              createdAt: new Date(Date.now() - 3600000).toISOString(),
-              items: [
-                {
-                  name: 'Ube Coco (Box of 6)',
-                  qty: 1,
-                  unitPrice: 85,
-                  breakdown: { 'ube-coco': 6 }
-                },
-                {
-                  name: 'Salted Egg (Box of 6 • +Spring onions)',
-                  qty: 1,
-                  unitPrice: 100,
-                  breakdown: { 'salted-egg': 6 }
-                }
-              ]
-            }
-          ];
-          localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(sampleOrders));
-        }
-
-        if (!localStorage.getItem(STORAGE_KEYS.FEEDBACK)) {
-          const sampleFeedback = [
-            {
-              id: 'fb-1',
-              customerName: 'Bea Morales',
-              flavorIdea: 'Mango Graham Puto',
-              message: 'Sweet mango bits with crushed graham on top would be amazing for summer!',
-              status: 'New',
-              createdAt: new Date(Date.now() - 7200000).toISOString()
-            }
-          ];
-          localStorage.setItem(STORAGE_KEYS.FEEDBACK, JSON.stringify(sampleFeedback));
-        }
-      },
-
-      getOrders() {
-        this.seedDefaultsIfEmpty();
-        try {
-          return JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS)) || [];
-        } catch (err) {
-          return [];
-        }
-      },
-
-      saveOrders(orders) {
-        localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
-      },
-
-      async addOrder(orderObj) {
-        const orders = this.getOrders();
-        orders.unshift(orderObj);
-        this.saveOrders(orders);
-
-        if (this.isSupabaseReady()) {
-          try {
-            await fetch(`${SUPABASE_CONFIG.url}/rest/v1/pre_orders`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'apikey': SUPABASE_CONFIG.anonKey,
-                'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
-              },
-              body: JSON.stringify({
-                order_code: orderObj.orderCode,
-                customer_name: orderObj.customerName,
-                contact: orderObj.contact,
-                customer_type: orderObj.customerType,
-                pickup_date: orderObj.pickupDate,
-                pickup_time: orderObj.pickupTime,
-                payment_method: orderObj.paymentMethod,
-                gcash_ref: orderObj.gcashRef || '',
-                notes: orderObj.notes || '',
-                total_amount: orderObj.totalAmount,
-                status: orderObj.status,
-                items: orderObj.items
-              })
-            });
-          } catch (e) {
-            console.warn('Supabase sync fallback to localStorage:', e);
-          }
-        }
-        return orderObj;
-      },
-
-      updateOrderStatus(orderId, newStatus) {
-        const orders = this.getOrders().map(o =>
-          o.id === orderId ? { ...o, status: newStatus } : o
-        );
-        this.saveOrders(orders);
-      },
-
-      toggleGcashVerified(orderId) {
-        const orders = this.getOrders().map(o =>
-          o.id === orderId ? { ...o, gcashVerified: !o.gcashVerified } : o
-        );
-        this.saveOrders(orders);
-      },
-
-      deleteOrder(orderId) {
-        const orders = this.getOrders().filter(o => o.id !== orderId);
-        this.saveOrders(orders);
-      },
-
-      getFeedback() {
-        this.seedDefaultsIfEmpty();
-        try {
-          return JSON.parse(localStorage.getItem(STORAGE_KEYS.FEEDBACK)) || [];
-        } catch (err) {
-          return [];
-        }
-      },
-
-      saveFeedback(list) {
-        localStorage.setItem(STORAGE_KEYS.FEEDBACK, JSON.stringify(list));
-      },
-
-      async addFeedback(entry) {
-        const list = this.getFeedback();
-        list.unshift(entry);
-        this.saveFeedback(list);
-
-        if (this.isSupabaseReady()) {
-          try {
-            await fetch(`${SUPABASE_CONFIG.url}/rest/v1/flavor_suggestions`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'apikey': SUPABASE_CONFIG.anonKey,
-                'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
-              },
-              body: JSON.stringify({
-                customer_name: entry.customerName,
-                flavor_idea: entry.flavorIdea,
-                message: entry.message,
-                status: entry.status
-              })
-            });
-          } catch (e) {
-            console.warn('Supabase feedback fallback:', e);
-          }
-        }
-      },
-
-      toggleFeedbackShortlist(id) {
-        const list = this.getFeedback().map(f =>
-          f.id === id ? { ...f, status: f.status === 'Shortlisted' ? 'New' : 'Shortlisted' } : f
-        );
-        this.saveFeedback(list);
-      },
-
-      deleteFeedback(id) {
-        const list = this.getFeedback().filter(f => f.id !== id);
-        this.saveFeedback(list);
       }
-    };
+
+      async function supabaseFetch(path, options = {}) {
+        const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/${path}`, {
+          ...options,
+          headers: {
+            'apikey': SUPABASE_CONFIG.anonKey,
+            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation',
+            ...(options.headers || {})
+          }
+        });
+        if (!res.ok) throw new Error(`Supabase error: ${res.status}`);
+        return res.status === 204 ? null : res.json();
+      }
+
+      function getLocalOrders() {
+        const raw = localStorage.getItem(ORDERS_KEY);
+        if (!raw) {
+          localStorage.setItem(ORDERS_KEY, JSON.stringify(SEED_ORDERS));
+          return [...SEED_ORDERS];
+        }
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return [...SEED_ORDERS];
+        }
+      }
+
+      function saveLocalOrders(orders) {
+        localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+      }
+
+      function getLocalFeedback() {
+        const raw = localStorage.getItem(FEEDBACK_KEY);
+        if (!raw) {
+          localStorage.setItem(FEEDBACK_KEY, JSON.stringify(SEED_FEEDBACK));
+          return [...SEED_FEEDBACK];
+        }
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return [...SEED_FEEDBACK];
+        }
+      }
+
+      function saveLocalFeedback(items) {
+        localStorage.setItem(FEEDBACK_KEY, JSON.stringify(items));
+      }
+
+      return {
+        isSupabaseConfigured,
+        async getOrders() {
+          if (isSupabaseConfigured()) {
+            try {
+              const rows = await supabaseFetch('pre_orders?select=*&order=created_at.desc');
+              return rows.map(r => ({
+                id: r.order_code,
+                dbId: r.id,
+                customerName: r.customer_name,
+                contact: r.contact,
+                customerType: r.customer_type || 'Customer',
+                pickupDate: r.pickup_date,
+                pickupTime: r.pickup_time,
+                paymentMethod: r.payment_method,
+                gcashRef: r.gcash_ref || '',
+                gcashVerified: Boolean(r.gcash_ref),
+                notes: r.notes || '',
+                totalAmount: Number(r.total_amount || 0),
+                status: r.status || 'Pending',
+                createdAt: r.created_at,
+                items: r.items || []
+              }));
+            } catch (err) {
+              console.warn('Falling back to local orders:', err);
+            }
+          }
+          return getLocalOrders();
+        },
+        async addOrder(order) {
+          if (isSupabaseConfigured()) {
+            try {
+              await supabaseFetch('pre_orders', {
+                method: 'POST',
+                body: JSON.stringify({
+                  order_code: order.id,
+                  customer_name: order.customerName,
+                  contact: order.contact,
+                  customer_type: order.customerType,
+                  pickup_date: order.pickupDate,
+                  pickup_time: order.pickupTime,
+                  payment_method: order.paymentMethod,
+                  gcash_ref: order.gcashRef || null,
+                  notes: order.notes || null,
+                  total_amount: order.totalAmount,
+                  status: order.status,
+                  items: order.items
+                })
+              });
+            } catch (err) {
+              console.warn('Supabase insert failed, saving locally:', err);
+            }
+          }
+          const current = getLocalOrders();
+          current.unshift(order);
+          saveLocalOrders(current);
+          return order;
+        },
+        async updateOrder(orderId, patch) {
+          if (isSupabaseConfigured() && patch.status) {
+            try {
+              await supabaseFetch(`pre_orders?order_code=eq.${encodeURIComponent(orderId)}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: patch.status })
+              });
+            } catch (err) {
+              console.warn('Supabase update failed:', err);
+            }
+          }
+          const current = getLocalOrders().map(o => o.id === orderId ? { ...o, ...patch } : o);
+          saveLocalOrders(current);
+        },
+        async deleteOrder(orderId) {
+          if (isSupabaseConfigured()) {
+            try {
+              await supabaseFetch(`pre_orders?order_code=eq.${encodeURIComponent(orderId)}`, {
+                method: 'DELETE'
+              });
+            } catch (err) {
+              console.warn('Supabase delete failed:', err);
+            }
+          }
+          const current = getLocalOrders().filter(o => o.id !== orderId);
+          saveLocalOrders(current);
+        },
+        async getFeedback() {
+          if (isSupabaseConfigured()) {
+            try {
+              const rows = await supabaseFetch('flavor_suggestions?select=*&order=created_at.desc');
+              return rows.map(r => ({
+                id: r.id,
+                customerName: r.customer_name,
+                flavorIdea: r.flavor_idea || '',
+                message: r.message,
+                status: r.status || 'New',
+                createdAt: r.created_at
+              }));
+            } catch (err) {
+              console.warn('Falling back to local feedback:', err);
+            }
+          }
+          return getLocalFeedback();
+        },
+        async addFeedback(entry) {
+          if (isSupabaseConfigured()) {
+            try {
+              await supabaseFetch('flavor_suggestions', {
+                method: 'POST',
+                body: JSON.stringify({
+                  customer_name: entry.customerName,
+                  flavor_idea: entry.flavorIdea,
+                  message: entry.message,
+                  status: 'New'
+                })
+              });
+            } catch (err) {
+              console.warn('Supabase feedback insert failed:', err);
+            }
+          }
+          const current = getLocalFeedback();
+          current.unshift(entry);
+          saveLocalFeedback(current);
+        },
+        async updateFeedback(id, patch) {
+          const current = getLocalFeedback().map(f => f.id === id ? { ...f, ...patch } : f);
+          saveLocalFeedback(current);
+        },
+        async deleteFeedback(id) {
+          const current = getLocalFeedback().filter(f => f.id !== id);
+          saveLocalFeedback(current);
+        }
+      };
+    })();
 
     function showToast(message, isError = false) {
       const root = document.getElementById('global-toast-root');
       if (!root) return;
       const el = document.createElement('div');
-      el.className = `pointer-events-auto px-4 py-3 rounded-2xl border-2 border-puto-brown shadow-pop text-xs font-extrabold flex items-center justify-between gap-2 transition-all ${
+      el.className = `px-4 py-3 rounded-2xl border-2 border-puto-brown shadow-pop text-xs font-extrabold flex items-center justify-between gap-2 transition-all ${
         isError ? 'bg-rose-600 text-white' : 'bg-puto-brown text-puto-yellow'
       }`;
       el.innerHTML = `<span>${message}</span>`;
@@ -510,26 +572,32 @@
       }, 2800);
     }
 
-    function renderPutoIllustration(topColor, accentColor) {
+    function renderSteamedPutoSVG(topColor = '#7E3AF2', accentColor = '#F3E8FF', sizeClass = 'w-14 h-14') {
       return `
-        <svg viewBox="0 0 120 96" class="w-24 h-20 mx-auto overflow-visible" aria-hidden="true">
-          <path d="M44 18 Q40 10 45 4" fill="none" stroke="#9C7A65" stroke-width="2.5" stroke-linecap="round" class="storefront-steam-1"/>
-          <path d="M74 18 Q78 10 73 4" fill="none" stroke="#9C7A65" stroke-width="2.5" stroke-linecap="round" class="storefront-steam-2"/>
-          <ellipse cx="60" cy="82" rx="44" ry="8" fill="#E5D2B0"/>
-          <path d="M24 54 C24 34, 96 34, 96 54 L90 76 C88 81, 32 81, 30 76 Z" fill="#FFFDF9" stroke="#3E2216" stroke-width="3"/>
-          <path d="M26 52 C28 33, 92 33, 94 52 C82 57, 70 50, 60 55 C50 50, 38 57, 26 52 Z" fill="${topColor}" stroke="#3E2216" stroke-width="3"/>
-          <circle cx="48" cy="43" r="3" fill="${accentColor}"/>
-          <circle cx="62" cy="40" r="3.5" fill="${accentColor}"/>
-          <circle cx="74" cy="44" r="2.5" fill="${accentColor}"/>
+        <svg viewBox="0 0 80 80" class="${sizeClass} shrink-0" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="storefront-steam-1" d="M28 18C28 13 32 12 32 7" stroke="#7E3AF2" stroke-width="2.5" stroke-linecap="round"/>
+          <path class="storefront-steam-2" d="M48 16C48 11 52 10 52 5" stroke="#E58E26" stroke-width="2.5" stroke-linecap="round"/>
+          <ellipse cx="40" cy="61" rx="28" ry="8" fill="#D97706" stroke="#3E2216" stroke-width="2.5"/>
+          <path d="M14 48C14 33 25 23 40 23C55 23 66 33 66 48C66 55 55 60 40 60C25 60 14 55 14 48Z" fill="${accentColor}" stroke="#3E2216" stroke-width="2.5"/>
+          <path d="M18 42C20 30 29 23 40 23C51 23 60 30 62 42C56 46 48 44 40 46C32 44 24 46 18 42Z" fill="${topColor}" stroke="#3E2216" stroke-width="2.5"/>
+          <circle cx="34" cy="33" r="2.2" fill="#FFFDF9"/>
+          <circle cx="45" cy="31" r="2" fill="#FFFDF9"/>
+          <circle cx="41" cy="38" r="2.2" fill="#FFFDF9"/>
         </svg>
       `;
     }
 
+    /**
+     * =====================================================================
+     * 2. CUSTOMER STOREFRONT APPLICATION (#/)
+     * =====================================================================
+     */
     const StorefrontApp = (() => {
       const state = {
         activeCategory: 'All',
         cardPackChoice: {},
         cardToppingChoice: {},
+        customBoxTarget: 6,
         customBoxCounts: {
           'ube-coco': 0,
           'cookies-cream': 0,
@@ -539,16 +607,28 @@
           'tuna-mayo': 0
         },
         cart: [],
-        gcashRef: '',
-        gcashProofDataUrl: ''
+        gcashRef: ''
       };
 
-      function getCartCount() {
-        return state.cart.reduce((sum, item) => sum + item.qty, 0);
+      let countdownInterval = null;
+
+      function getCartTotalPieces() {
+        let pieces = 0;
+        state.cart.forEach(item => {
+          if (item.breakdown) {
+            const itemPieces = Object.values(item.breakdown).reduce((sum, n) => sum + Number(n || 0), 0);
+            pieces += itemPieces * item.qty;
+          }
+        });
+        return pieces;
       }
 
-      function getCartTotal() {
-        return state.cart.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
+      function getCartPricingSummary() {
+        const totalPieces = getCartTotalPieces();
+        const subtotalAmount = calculateTieredPutoPrice(totalPieces);
+        const packagingFee = calculatePackagingFee(totalPieces);
+        const totalAmount = subtotalAmount + packagingFee;
+        return { totalPieces, subtotalAmount, packagingFee, totalAmount };
       }
 
       function getCustomBoxTotalCount() {
@@ -558,108 +638,111 @@
       function mount() {
         const root = document.getElementById('storefront-root');
         if (!root) return;
-        const today = new Date().toISOString().split('T')[0];
 
         root.innerHTML = `
-         
-          <header class="sticky top-0 z-40 bg-cream-100/95 backdrop-blur-md border-b-2 border-puto-brown px-3.5 py-2.5">
-            <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
-              <a href="#sf-top" class="flex items-center gap-2.5 min-w-0">
-                <div class="w-11 h-11 rounded-2xl bg-puto-yellow border-2 border-puto-brown shadow-pop flex items-center justify-center shrink-0 p-1">
-                
-                  <svg viewBox="0 0 64 64" class="w-full h-full overflow-visible" aria-hidden="true">
-                    
-                    <path class="storefront-steam-1" d="M22 14 Q19 9 22 4" fill="none" stroke="#3E2216" stroke-width="2.5" stroke-linecap="round"/>
-                    <path class="storefront-steam-2" d="M32 11 Q35 6 32 1" fill="none" stroke="#3E2216" stroke-width="2.5" stroke-linecap="round"/>
-                    <path class="storefront-steam-1" d="M42 14 Q39 9 42 4" fill="none" stroke="#3E2216" stroke-width="2.5" stroke-linecap="round"/>
-                    
-                    <path d="M12 40 C12 22, 52 22, 52 40 Z" fill="#FFFDF9" stroke="#3E2216" stroke-width="3" stroke-linejoin="round"/>
-                  
-                    <path d="M22 28 Q32 21 42 28 Q37 33 32 30 Q27 33 22 28 Z" fill="#7E3AF2" stroke="#3E2216" stroke-width="2.2" stroke-linejoin="round"/>
-                    <circle cx="29" cy="26" r="1.3" fill="#F6B93B"/>
-                    <circle cx="35" cy="26" r="1.3" fill="#F6B93B"/>
-                   
-                    <rect x="8" y="39" width="48" height="9" rx="4.5" fill="#E58E26" stroke="#3E2216" stroke-width="3"/>
-                    <rect x="11" y="48" width="42" height="7" rx="3.5" fill="#C97316" stroke="#3E2216" stroke-width="2.8"/>
-                    
-                    <path d="M29 43 Q32 45.5 35 43" fill="none" stroke="#3E2216" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                </div>
+          <!-- STICKY HEADER -->
+          <header class="sticky top-0 z-40 bg-cream-50/95 backdrop-blur border-b-2 border-puto-brown">
+            <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+              <a href="#/" class="flex items-center gap-2.5 min-w-0">
+                ${renderSteamedPutoSVG('#7E3AF2', '#F3E8FF', 'w-11 h-11')}
                 <div class="truncate">
                   <span class="font-display text-xl sm:text-2xl font-bold tracking-tight text-puto-brown block leading-none">PUTOLOGY</span>
-                  <span class="text-[10px] font-bold text-ube-600 uppercase tracking-wider">Puto, But Make It Better.</span>
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-ube-600 block mt-0.5">Puto, But Make It Better.</span>
                 </div>
               </a>
 
-              <div class="flex items-center gap-2 shrink-0">
-                <button onclick="StorefrontApp.openCart()" class="storefront-btn relative px-3.5 py-2 rounded-xl bg-ube-600 text-white text-xs font-extrabold flex items-center gap-1.5">
-                  <span>🧺</span>
-                  <span>Order</span>
-                  <span id="sf-header-cart-badge" class="bg-puto-yellow text-puto-brown px-1.5 py-0.5 rounded-full text-[11px] font-black border border-puto-brown">${getCartCount()}</span>
-                </button>
-              </div>
+              <nav class="hidden md:flex items-center gap-5 text-xs font-extrabold text-puto-brown">
+                <a href="#menu" class="hover:text-ube-600">Menu</a>
+                <a href="#bundles" class="hover:text-ube-600">Bundles & Box</a>
+                <a href="#story" class="hover:text-ube-600">Our Story</a>
+                <a href="#feedback" class="hover:text-ube-600">Suggest Flavor</a>
+              </nav>
+
+              <button onclick="StorefrontApp.openCart()" class="storefront-btn px-3.5 py-2 rounded-2xl bg-puto-yellow text-puto-brown text-xs font-extrabold flex items-center gap-2 shrink-0">
+                <span>🧺 Pre-Order</span>
+                <span id="sf-header-cart-badge" class="px-2 py-0.5 rounded-full bg-puto-brown text-puto-yellow text-[11px]">0 pcs</span>
+              </button>
             </div>
           </header>
 
-        
-          <section id="sf-top" class="storefront-polka px-4 pt-6 pb-8 border-b-2 border-puto-brown">
+          <!-- LAUNCH COUNTDOWN & ORDER WINDOW BANNER -->
+          <div class="bg-ube-600 text-white border-b-2 border-puto-brown px-4 py-2.5">
+            <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 text-center sm:text-left">
+              <div class="text-xs font-extrabold flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-full bg-puto-yellow text-puto-brown text-[10px] uppercase">Pre-Orders Open Now</span>
+                <span>First fresh batch & pickups start <strong>November 27, 2026</strong>!</span>
+              </div>
+              <div id="sf-countdown-display" class="font-mono text-xs font-extrabold text-puto-yellow">
+                Checking batch timer...
+              </div>
+            </div>
+          </div>
+
+          <!-- HERO SECTION -->
+          <section class="storefront-polka px-4 pt-8 pb-10 border-b-2 border-puto-brown">
             <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-              <div class="md:col-span-7 text-center md:text-left">
-                <h1 class="font-display text-4xl sm:text-5xl font-bold leading-[1.08] text-puto-brown">
+              <div class="md:col-span-7 space-y-4">
+                <h1 class="font-display text-4xl sm:text-5xl font-bold text-puto-brown leading-[1.08]">
                   Puto, But <span class="text-ube-600 underline decoration-puto-yellow decoration-4 underline-offset-4">Make It Better.</span>
                 </h1>
-                <p class="mt-3 text-sm sm:text-base text-puto-brown/85 max-w-lg mx-auto md:mx-0 font-medium leading-relaxed">
-                  Soft, freshly steamed Filipino rice cakes elevated with bold sweet and savory twists—from <strong>Ube Coco</strong> & <strong>Cookies & Cream</strong> to <strong>Salted Egg</strong> & <strong>Tuna Mayo</strong>.
+                <p class="text-sm sm:text-base text-puto-brown/85 leading-relaxed max-w-xl">
+                  Soft, freshly steamed Filipino rice cakes reinvented with bold sweet & savory toppings—crafted for students, teachers, and barkada merienda budgets.
                 </p>
-                <div class="mt-5 flex flex-col sm:flex-row gap-2.5 justify-center md:justify-start">
-                  <a href="#menu" class="storefront-btn px-5 py-3 rounded-2xl bg-puto-yellow text-puto-brown font-display font-bold text-base flex items-center justify-center gap-2">
-                    <span>Explore Official Menu</span>
-                    <span>↓</span>
+
+                <!-- TIERED PRICING PILLS -->
+                <div class="flex flex-wrap gap-1.5 pt-1">
+                  <span class="px-2.5 py-1 rounded-xl bg-white border-2 border-puto-brown text-[11px] font-extrabold">1 pc • ₱13</span>
+                  <span class="px-2.5 py-1 rounded-xl bg-puto-yellow border-2 border-puto-brown text-[11px] font-extrabold">2 pcs • ₱25</span>
+                  <span class="px-2.5 py-1 rounded-xl bg-puto-yellow border-2 border-puto-brown text-[11px] font-extrabold">4 pcs • ₱50</span>
+                  <span class="px-2.5 py-1 rounded-xl bg-puto-yellow border-2 border-puto-brown text-[11px] font-extrabold">6 pcs • ₱75</span>
+                  <span class="px-2.5 py-1 rounded-xl bg-ube-600 text-white border-2 border-puto-brown text-[11px] font-extrabold">12 pcs • ₱125</span>
+                </div>
+
+                <div class="flex flex-wrap gap-3 pt-2">
+                  <a href="#menu" class="storefront-btn px-5 py-3 rounded-2xl bg-ube-600 text-white text-xs sm:text-sm font-extrabold inline-flex items-center justify-center">
+                    Explore 6 Flavors
                   </a>
-                  <a href="#sf-builder" class="storefront-btn px-5 py-3 rounded-2xl bg-white text-puto-brown font-display font-bold text-base flex items-center justify-center gap-2">
-                    <span>Build Mix & Match Box</span>
+                  <a href="#sf-builder" class="storefront-btn px-5 py-3 rounded-2xl bg-white text-puto-brown text-xs sm:text-sm font-extrabold inline-flex items-center justify-center">
+                    Build Assorted Box
                   </a>
                 </div>
               </div>
 
-              <div class="md:col-span-5 storefront-card bg-cream-50 rounded-3xl p-5 sm:p-6">
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-extrabold uppercase tracking-wider text-ube-600">Signature Favorites</span>
-                  <span class="px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 border border-green-700 text-[11px] font-extrabold">● Accepting Pre-Orders</span>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                  <div class="bg-ube-50 border-2 border-puto-brown rounded-2xl p-3 text-center">
-                    ${renderPutoIllustration('#7E3AF2', '#F3E8FF')}
-                    <div class="font-display font-bold text-sm mt-1">Ube Coco</div>
-                    <div class="text-[11px] font-bold text-ube-700">₱15 pc • ₱85 box</div>
+              <div class="md:col-span-5">
+                <div class="storefront-card bg-cream-50 rounded-3xl p-5 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-ube-600">Signature Lineup</span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-puto-yellow border border-puto-brown text-[10px] font-extrabold">Sweet & Savory</span>
                   </div>
-                  <div class="bg-amber-50 border-2 border-puto-brown rounded-2xl p-3 text-center">
-                    ${renderPutoIllustration('#EAB308', '#FEF9C3')}
-                    <div class="font-display font-bold text-sm mt-1">Salted Egg</div>
-                    <div class="text-[11px] font-bold text-amber-800">₱18 pc • ₱100 box</div>
+                  <div class="grid grid-cols-3 gap-2 text-center">
+                    ${MENU_FLAVORS.map(f => `
+                      <div class="p-2 rounded-2xl bg-cream-100 border border-puto-brown/20 flex flex-col items-center">
+                        ${renderSteamedPutoSVG(f.colorTop, f.colorAccent, 'w-11 h-11')}
+                        <span class="text-[11px] font-extrabold leading-tight mt-1">${f.name}</span>
+                      </div>
+                    `).join('')}
                   </div>
+                  <button type="button" onclick="StorefrontApp.toggleBatterModal(true)" class="w-full py-2.5 rounded-xl bg-cream-200 border border-puto-brown text-[11px] font-extrabold text-puto-brown hover:bg-puto-yellow/40">
+                    🥣 View Common Puto Batter Ingredients
+                  </button>
                 </div>
-                <button onclick="StorefrontApp.openBatterModal()" class="mt-4 w-full py-2.5 px-3 rounded-xl bg-cream-200 border-2 border-puto-brown text-xs font-extrabold flex items-center justify-between">
-                  <span>🥣 View Common Puto Batter Ingredients</span>
-                  <span>→</span>
-                </button>
               </div>
             </div>
           </section>
 
-          
-          <section id="menu" class="max-w-5xl mx-auto px-4 py-10">
-            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+          <!-- OFFICIAL MENU SECTION -->
+          <section id="menu" class="max-w-5xl mx-auto px-4 py-10 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
               <div>
                 <span class="text-xs font-extrabold uppercase tracking-wider text-ube-600">Official Menu</span>
                 <h2 class="font-display text-3xl font-bold text-puto-brown">Sweet & Savory Collection</h2>
               </div>
-              <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1" id="sf-category-filters">
+              <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                 ${['All', 'Sweet', 'Savory'].map(cat => `
-                  <button onclick="StorefrontApp.setCategory('${cat}')" class="storefront-btn px-4 py-2 rounded-xl text-xs font-extrabold shrink-0 ${
-                    state.activeCategory === cat ? 'bg-puto-brown text-puto-yellow' : 'bg-white text-puto-brown'
+                  <button type="button" data-cat="${cat}" onclick="StorefrontApp.setCategory('${cat}')" class="sf-cat-btn px-4 py-2 rounded-xl border-2 border-puto-brown text-xs font-extrabold shrink-0 ${
+                    cat === 'All' ? 'bg-puto-brown text-puto-yellow' : 'bg-white text-puto-brown'
                   }">
-                    ${cat === 'All' ? '🍽️ All (6)' : cat === 'Sweet' ? '🟣 Sweet (4)' : '🟡 Savory (2)'}
+                    ${cat === 'All' ? 'All Flavors (6)' : cat + ' Collection'}
                   </button>
                 `).join('')}
               </div>
@@ -668,13 +751,20 @@
             <div id="sf-menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
           </section>
 
-          
+          <!-- BUNDLES & MIX-AND-MATCH BOX BUILDER -->
           <section id="bundles" class="bg-cream-200/70 border-y-2 border-puto-brown px-4 py-10">
             <div class="max-w-5xl mx-auto space-y-8">
               <div>
-                <span class="text-xs font-extrabold uppercase tracking-wider text-ube-600">Value Deals</span>
-                <h2 class="font-display text-3xl font-bold text-puto-brown">Barkada & Student Bundles</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-ube-600">Value Deals</span>
+                    <h2 class="font-display text-3xl font-bold text-puto-brown">Barkada & Student Bundles</h2>
+                  </div>
+                  <span class="px-3 py-1 rounded-full bg-puto-yellow border-2 border-puto-brown text-[11px] font-extrabold">
+                    1 pc ₱13 • 2 pcs ₱25 • 4 pcs ₱50 • 6 pcs ₱75 • 12 pcs ₱125
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                   ${BUNDLE_DEALS.map(b => `
                     <div class="storefront-card bg-white rounded-3xl p-5 flex flex-col justify-between">
                       <div>
@@ -686,15 +776,29 @@
                         <p class="text-xs text-puto-brown/80 mt-1.5 leading-relaxed">${b.desc}</p>
                       </div>
                       <button onclick="StorefrontApp.addBundleToCart('${b.id}')" class="storefront-btn w-full mt-4 py-2.5 rounded-xl bg-ube-600 text-white text-xs font-extrabold">
-                        + Add Bundle to Cart
+                        + Add Bundle (₱${b.price})
                       </button>
                     </div>
                   `).join('')}
                 </div>
               </div>
 
-            
+              <!-- CUSTOM MIX & MATCH BUILDER (6 PCS = ₱75 OR 12 PCS = ₱125) -->
               <div id="sf-builder" class="storefront-card bg-white rounded-3xl p-5 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-puto-brown/15">
+                  <div>
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-ube-600">Custom Assorted Box</span>
+                    <h3 class="font-display text-2xl font-bold text-puto-brown">Mix & Match Box Builder</h3>
+                    <div class="flex gap-2 mt-2">
+                      <button type="button" id="sf-box-size-6" onclick="StorefrontApp.setCustomBoxTarget(6)" class="px-3 py-1.5 rounded-xl border-2 border-puto-brown text-xs font-extrabold bg-puto-brown text-puto-yellow">
+                        Box of 6 (₱75)
+                      </button>
+                      <button type="button" id="sf-box-size-12" onclick="StorefrontApp.setCustomBoxTarget(12)" class="px-3 py-1.5 rounded-xl border-2 border-puto-brown text-xs font-extrabold bg-cream-100 text-puto-brown">
+                        Box of 12 (₱125)
+                      </button>
+                    </div>
+                  </div>
+                  <div class="text-left sm:text-right">
                     <div class="text-[10px] font-extrabold uppercase text-puto-brown/70">Selected</div>
                     <div id="sf-box-counter" class="font-display text-2xl font-bold text-ube-600">0 / 6 pcs</div>
                   </div>
@@ -707,343 +811,351 @@
                     Reset Selection
                   </button>
                   <button id="sf-add-box-btn" type="button" onclick="StorefrontApp.addCustomBoxToCart()" disabled class="storefront-btn w-full sm:w-auto px-6 py-3 rounded-xl bg-puto-yellow text-xs font-extrabold disabled:opacity-45">
-                    Add Custom Box (₱95) to Cart
+                    Add Custom Box of 6 (₱75) to Cart
                   </button>
                 </div>
               </div>
             </div>
           </section>
 
-         
+          <!-- BRAND STORY & VISION/MISSION -->
           <section id="story" class="max-w-5xl mx-auto px-4 py-10 space-y-6">
-            <div class="text-center max-w-2xl mx-auto">
-              <span class="text-xs font-extrabold uppercase tracking-wider text-ube-600">About PUTOLOGY</span>
-              <h2 class="font-display text-3xl font-bold mt-1">A Fresh Twist on a Filipino Classic</h2>
-              <p class="text-xs sm:text-sm text-puto-brown/80 mt-2 leading-relaxed">
-                PUTOLOGY is more than just a traditional puto business. We combine familiar Filipino ingredients with creative sweet and savory flavors—keeping every serving affordable, approachable, and freshly steamed.
+            <div class="storefront-card bg-white rounded-3xl p-6 space-y-4">
+              <span class="px-3 py-1 rounded-full bg-ube-100 text-ube-700 text-[11px] font-extrabold uppercase">About PUTOLOGY</span>
+              <h2 class="font-display text-3xl font-bold text-puto-brown">A Modern Take on a Filipino Classic</h2>
+              <p class="text-sm text-puto-brown/85 leading-relaxed">
+                PUTOLOGY is more than just a traditional puto business. It is a modern take on a Filipino favorite, offering creative sweet and savory flavors that cater to different tastes and preferences—from Ube Coco and Pandan Coco to Salted Egg and Tuna Mayo.
               </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="storefront-card bg-ube-50 rounded-3xl p-5">
-                <div class="text-2xl mb-2">🎯</div>
-                <h3 class="font-display text-xl font-bold text-ube-700">Our Mission</h3>
-                <p class="text-xs text-puto-brown/85 mt-1.5 leading-relaxed">
-                  To provide freshly prepared, delicious, and affordable puto through creative sweet and savory flavors while maintaining quality, good taste, and customer satisfaction.
-                </p>
-              </div>
-              <div class="storefront-card bg-amber-50 rounded-3xl p-5">
-                <div class="text-2xl mb-2">🌟</div>
-                <h3 class="font-display text-xl font-bold text-amber-900">Our Vision</h3>
-                <p class="text-xs text-puto-brown/85 mt-1.5 leading-relaxed">
-                  To become a recognizable and trusted snack brand known for offering affordable, creative, and quality puto flavors while giving a modern touch to a traditional Filipino delicacy.
-                </p>
-              </div>
-              <div class="storefront-card bg-white rounded-3xl p-5">
-                <div class="text-2xl mb-2">💡</div>
-                <h3 class="font-display text-xl font-bold text-puto-brown">Why PUTOLOGY?</h3>
-                <p class="text-xs text-puto-brown/85 mt-1.5 leading-relaxed">
-                  Sweet and savory flavors in one menu—from Ube Coco & Peanut Crunch to Salted Egg & Tuna Mayo—priced right for students, school staff, and families.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          
-          <section id="feedback" class="max-w-3xl mx-auto px-4 pb-12">
-            <div class="storefront-card bg-ube-600 text-white rounded-3xl p-5 sm:p-7">
-              <div class="text-center mb-5">
-                <span class="px-3 py-1 rounded-full bg-puto-yellow text-puto-brown text-[11px] font-extrabold">Co-Create With Us</span>
-                <h2 class="font-display text-2xl sm:text-3xl font-bold mt-2">Suggest a New Puto Flavor!</h2>
-                <p class="text-xs text-ube-100 mt-1">Have a dream sweet or savory puto topping? Tell our kitchen team!</p>
-              </div>
-
-              <form onsubmit="StorefrontApp.submitFeedback(event)" class="space-y-3 text-puto-brown">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input type="text" id="sf-fb-name" required placeholder="Your Name *" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold" />
-                  <input type="text" id="sf-fb-flavor" required placeholder="Flavor Idea (e.g. Cheese Bacon) *" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold" />
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div class="p-4 rounded-2xl bg-cream-100 border-2 border-puto-brown">
+                  <h3 class="font-display text-lg font-bold text-ube-600">Our Vision</h3>
+                  <p class="text-xs text-puto-brown/85 mt-1 leading-relaxed">
+                    To become a recognizable and trusted snack brand known for offering affordable, creative, and quality puto flavors while giving a modern touch to a traditional Filipino delicacy.
+                  </p>
                 </div>
-                <textarea id="sf-fb-msg" rows="2" required placeholder="Tell us what toppings or fillings would make it awesome! *" class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold"></textarea>
-                <button type="submit" class="storefront-btn w-full py-3 rounded-xl bg-puto-yellow text-puto-brown text-xs sm:text-sm font-extrabold">
-                  ✨ Send Flavor Idea to PUTOLOGY
-                </button>
-              </form>
+                <div class="p-4 rounded-2xl bg-cream-100 border-2 border-puto-brown">
+                  <h3 class="font-display text-lg font-bold text-ube-600">Our Mission</h3>
+                  <p class="text-xs text-puto-brown/85 mt-1 leading-relaxed">
+                    To provide freshly prepared, delicious, and affordable puto through creative sweet and savory flavors—giving customers more choices while maintaining quality and satisfaction.
+                  </p>
+                </div>
+              </div>
             </div>
           </section>
 
-         
-          <footer class="bg-puto-brown text-cream-100 px-4 py-8 text-center">
+          <!-- CUSTOMER FLAVOR SUGGESTION SECTION -->
+          <section id="feedback" class="max-w-5xl mx-auto px-4 pb-12">
+            <div class="storefront-card bg-ube-600 text-white rounded-3xl p-6">
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div class="md:col-span-5 space-y-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-puto-yellow text-puto-brown text-[10px] font-extrabold uppercase">Co-Create With Us</span>
+                  <h2 class="font-display text-3xl font-bold">Suggest a New Flavor!</h2>
+                  <p class="text-xs text-white/90 leading-relaxed">
+                    Have a dream puto topping in mind? Send your flavor idea straight to our kitchen team!
+                  </p>
+                </div>
+                <form id="sf-feedback-form" onsubmit="StorefrontApp.submitFeedback(event)" class="md:col-span-7 bg-white text-puto-brown rounded-2xl p-4 border-2 border-puto-brown space-y-3">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input id="sf-fb-name" type="text" required placeholder="Your Name" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-puto-brown text-xs font-bold" />
+                    <input id="sf-fb-flavor" type="text" required placeholder="Flavor Idea (e.g. Mango Graham)" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-puto-brown text-xs font-bold" />
+                  </div>
+                  <textarea id="sf-fb-msg" rows="2" required placeholder="Tell us what toppings or fillings would make it awesome..." class="w-full px-3.5 py-2.5 rounded-xl border-2 border-puto-brown text-xs font-semibold"></textarea>
+                  <button type="submit" class="storefront-btn w-full py-2.5 rounded-xl bg-puto-yellow text-puto-brown text-xs font-extrabold">
+                    Send Flavor Suggestion
+                  </button>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          <!-- FOOTER -->
+          <footer class="bg-puto-brown text-cream-100 px-4 py-8 border-t-2 border-puto-brown text-center space-y-1.5">
             <div class="font-display text-2xl font-bold text-puto-yellow">PUTOLOGY</div>
-            <p class="text-xs text-cream-200/80 mt-1">“Puto, But Make It Better.” • Fresh Filipino Steamed Rice Cakes</p>
-            <p class="text-[11px] font-bold text-puto-yellow/90 mt-3 pt-3 border-t border-white/15">
-              Created by Carlo Dela Cruz
-            </p>
+            <p class="text-xs text-cream-200">“Puto, But Make It Better.”</p>
+            <p class="text-[11px] text-cream-300/80 pt-2">Created by Carlo Dela Cruz</p>
           </footer>
 
-        
-          <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-cream-100/95 backdrop-blur border-t-2 border-puto-brown px-2 py-1.5 grid grid-cols-4 gap-1 text-[10px] font-extrabold text-center">
-            <a href="#menu" class="py-1.5 rounded-xl hover:bg-cream-200 flex flex-col items-center justify-center">
-              <span class="text-base">🧁</span>
-              <span>Menu</span>
+          <!-- MOBILE STICKY BOTTOM BAR -->
+          <div class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-cream-50/95 backdrop-blur border-t-2 border-puto-brown px-3 py-2 flex items-center justify-around gap-1">
+            <a href="#menu" class="flex flex-col items-center text-[11px] font-extrabold text-puto-brown py-1 px-3">
+              <span>🍽️</span><span>Menu</span>
             </a>
-            <a href="#bundles" class="py-1.5 rounded-xl hover:bg-cream-200 flex flex-col items-center justify-center">
-              <span class="text-base">🎁</span>
-              <span>Bundles</span>
+            <a href="#bundles" class="flex flex-col items-center text-[11px] font-extrabold text-puto-brown py-1 px-3">
+              <span>🎁</span><span>Bundles</span>
             </a>
-            <a href="#feedback" class="py-1.5 rounded-xl hover:bg-cream-200 flex flex-col items-center justify-center">
-              <span class="text-base">💡</span>
-              <span>Suggest</span>
-            </a>
-            <button onclick="StorefrontApp.openCart()" class="py-1.5 rounded-xl bg-puto-yellow border border-puto-brown flex flex-col items-center justify-center">
-              <span class="text-base">🧺</span>
-              <span id="sf-mobile-cart-badge">Cart (${getCartCount()})</span>
+            <button onclick="StorefrontApp.openCart()" class="storefront-btn px-4 py-2 rounded-2xl bg-ube-600 text-white text-xs font-extrabold flex items-center gap-1.5">
+              <span>🧺 Cart</span>
+              <span id="sf-bottom-cart-badge" class="px-2 py-0.5 rounded-full bg-puto-yellow text-puto-brown text-[10px]">0 pcs</span>
             </button>
-          </nav>
+            <a href="#feedback" class="flex flex-col items-center text-[11px] font-extrabold text-puto-brown py-1 px-3">
+              <span>💡</span><span>Suggest</span>
+            </a>
+          </div>
 
-          
-          <div id="sf-cart-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/65 p-0 sm:p-4">
-            <div class="bg-cream-50 border-t-2 sm:border-2 border-puto-brown rounded-t-3xl sm:rounded-3xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden">
-              <div class="px-5 py-4 bg-puto-yellow border-b-2 border-puto-brown flex items-center justify-between">
-                <div>
-                  <h3 class="font-display text-xl font-bold">Your Pre-Order Basket</h3>
-                  <p class="text-[11px] font-bold text-puto-brown/80">Review items & schedule your pickup</p>
-                </div>
-                <button onclick="StorefrontApp.closeCart()" class="w-9 h-9 rounded-full bg-white border-2 border-puto-brown font-bold">✕</button>
+          <!-- COMMON BATTER INGREDIENTS MODAL -->
+          <div id="sf-batter-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="storefront-card bg-cream-50 rounded-3xl max-w-md w-full p-6 space-y-4">
+              <div class="flex items-center justify-between">
+                <h3 class="font-display text-2xl font-bold text-puto-brown">Common Puto Batter</h3>
+                <button onclick="StorefrontApp.toggleBatterModal(false)" class="w-9 h-9 rounded-full bg-cream-200 border-2 border-puto-brown font-extrabold">✕</button>
               </div>
+              <p class="text-xs text-puto-brown/80">Every PUTOLOGY cake starts with our signature soft, fluffy steamed batter base:</p>
+              <ul class="grid grid-cols-2 gap-2 text-xs font-bold">
+                ${['All-purpose flour', 'White sugar', 'Baking powder', 'Eggs', 'Evaporated milk', 'Water', 'Cooking oil', 'Salt'].map(ing => `
+                  <li class="px-3 py-2 rounded-xl bg-white border border-puto-brown/30">• ${ing}</li>
+                `).join('')}
+              </ul>
+              <button onclick="StorefrontApp.toggleBatterModal(false)" class="storefront-btn w-full py-2.5 rounded-xl bg-puto-yellow text-xs font-extrabold">Got It!</button>
+            </div>
+          </div>
 
-              <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1">
+          <!-- PRE-ORDER CART & CHECKOUT DRAWER -->
+          <div id="sf-cart-drawer" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex justify-end">
+            <div class="bg-cream-50 w-full max-w-md h-full border-l-2 border-puto-brown flex flex-col justify-between overflow-y-auto">
+              <div class="p-5 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-puto-brown">
+                  <div>
+                    <h3 class="font-display text-2xl font-bold text-puto-brown">Your Pre-Order Basket</h3>
+                    <p class="text-[11px] font-bold text-ube-600">Auto-discounts apply: 2 pcs ₱25 • 4 pcs ₱50 • 6 pcs ₱75 • 12 pcs ₱125</p>
+                  </div>
+                  <button onclick="StorefrontApp.closeCart()" class="w-9 h-9 rounded-full bg-cream-200 border-2 border-puto-brown font-extrabold">✕</button>
+                </div>
+
+                <!-- PICKUP SCHEDULE NOTICE INSIDE CART -->
+                <div class="p-3.5 rounded-2xl bg-ube-50 border-2 border-puto-brown text-xs font-bold text-puto-brown">
+                  📅 <strong>Pre-Orders Open Anytime:</strong> Place your order today! Pickups start on <strong>November 27, 2026</strong> onwards.
+                </div>
+
                 <div id="sf-cart-items-list" class="space-y-2.5"></div>
 
-                <div class="bg-white border-2 border-puto-brown rounded-2xl p-3.5 flex items-center justify-between">
-                  <span class="text-xs font-extrabold uppercase">Total Pre-Order Amount</span>
-                  <span id="sf-cart-total" class="font-display text-2xl font-bold text-ube-600">₱0</span>
+                <div class="p-4 rounded-2xl bg-white border-2 border-puto-brown space-y-2">
+                  <div class="flex items-center justify-between text-xs font-bold text-puto-brown/80">
+                    <span>Puto Subtotal (<span id="sf-cart-total-pcs">0 pcs</span>)</span>
+                    <span id="sf-cart-subtotal-price">₱0</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs font-bold text-puto-brown/80">
+                    <span id="sf-cart-packaging-label">Packaging (1–3 pcs Free Plate)</span>
+                    <span id="sf-cart-packaging-fee" class="text-emerald-700 font-extrabold">FREE</span>
+                  </div>
+                  <div class="pt-2 border-t border-puto-brown/15 flex items-center justify-between">
+                    <div class="font-display text-lg font-bold text-puto-brown">Total Amount Due</div>
+                    <div id="sf-cart-total-price" class="font-display text-3xl font-bold text-ube-600">₱0</div>
+                  </div>
                 </div>
 
-                <form id="sf-checkout-form" onsubmit="StorefrontApp.submitPreOrder(event)" class="space-y-3">
+                <!-- CHECKOUT FORM -->
+                <form id="sf-checkout-form" onsubmit="StorefrontApp.submitPreOrder(event)" class="space-y-3 pt-1">
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
                       <label class="block text-[11px] font-extrabold mb-1">Full Name *</label>
-                      <input type="text" id="sf-co-name" required placeholder="Juan Dela Cruz" class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold" />
+                      <input id="sf-co-name" type="text" required placeholder="Juan Dela Cruz" class="w-full px-3 py-2.5 rounded-xl border-2 border-puto-brown text-xs font-bold bg-white" />
                     </div>
                     <div>
                       <label class="block text-[11px] font-extrabold mb-1">Mobile / Messenger *</label>
-                      <input type="text" id="sf-co-contact" required placeholder="09XX-XXX-XXXX" class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold" />
+                      <input id="sf-co-contact" type="text" required placeholder="09XX-XXX-XXXX" class="w-full px-3 py-2.5 rounded-xl border-2 border-puto-brown text-xs font-bold bg-white" />
                     </div>
                   </div>
 
                   <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                     <div>
-                      <label class="block text-[11px] font-extrabold mb-1">Customer Group</label>
-                      <select id="sf-co-type" class="w-full min-h-[44px] px-2.5 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold">
+                      <label class="block text-[11px] font-extrabold mb-1">Customer Type</label>
+                      <select id="sf-co-type" class="w-full px-3 py-2.5 rounded-xl border-2 border-puto-brown text-xs font-bold bg-white">
                         <option value="Student">Student</option>
-                        <option value="Teacher / School Staff">Teacher / Staff</option>
-                        <option value="Family / Barkada">Family / Barkada</option>
-                        <option value="Individual">Individual</option>
+                        <option value="Teacher / Staff">Teacher / Staff</option>
+                        <option value="Barkada / Family">Barkada / Family</option>
                       </select>
                     </div>
                     <div>
                       <label class="block text-[11px] font-extrabold mb-1">Pickup Date *</label>
-                      <input type="date" id="sf-co-date" value="${today}" required class="w-full min-h-[44px] px-2.5 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold" />
+                      <input id="sf-co-date" type="date" min="2026-11-27" value="2026-11-27" required class="w-full px-3 py-2.5 rounded-xl border-2 border-puto-brown text-xs font-bold bg-white" />
                     </div>
                     <div>
                       <label class="block text-[11px] font-extrabold mb-1">Pickup Time *</label>
-                      <input type="time" id="sf-co-time" value="15:30" required class="w-full min-h-[44px] px-2.5 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold" />
+                      <input id="sf-co-time" type="time" value="15:00" required class="w-full px-3 py-2.5 rounded-xl border-2 border-puto-brown text-xs font-bold bg-white" />
                     </div>
                   </div>
 
-                  <div>
-                    <label class="block text-[11px] font-extrabold mb-1">Payment Method *</label>
-                    <select id="sf-co-payment" onchange="StorefrontApp.handlePaymentMethodChange(this.value)" class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold">
-                      <option value="Cash on Pickup">💵 Cash on Pickup</option>
-                      <option value="GCash">📱 GCash (Send Money + Ref #)</option>
-                    </select>
-
-                    <!-- Dynamic GCash Status Strip inside Checkout -->
-                    <div id="sf-gcash-status-box" class="hidden mt-2.5 p-3 rounded-xl border-2 border-blue-600 bg-blue-50/90 space-y-2">
-                      <div class="flex items-center justify-between gap-2">
-                        <div class="text-xs font-extrabold text-blue-900" id="sf-gcash-status-label">
-                          📱 GCash Selected — Tap to view GCash Number & attach Ref #
+                  <!-- PAYMENT METHOD -->
+                  <div class="space-y-2">
+                    <label class="block text-[11px] font-extrabold">Payment Method *</label>
+                    <div class="grid grid-cols-2 gap-2">
+                      <label class="cursor-pointer">
+                        <input type="radio" name="sf-payment" value="Cash on Pickup" checked onchange="StorefrontApp.onPaymentChange(this.value)" class="peer hidden" />
+                        <div class="p-3 rounded-xl border-2 border-puto-brown text-center text-xs font-extrabold bg-white peer-checked:bg-puto-yellow">
+                          💵 Cash on Pickup
                         </div>
-                        <button type="button" onclick="StorefrontApp.openGcashModal()" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-[11px] font-extrabold shrink-0">
-                          GCash Details
-                        </button>
-                      </div>
+                      </label>
+                      <label class="cursor-pointer">
+                        <input type="radio" name="sf-payment" value="GCash" onchange="StorefrontApp.onPaymentChange(this.value)" class="peer hidden" />
+                        <div class="p-3 rounded-xl border-2 border-puto-brown text-center text-xs font-extrabold bg-white peer-checked:bg-sky-500 peer-checked:text-white">
+                          📱 GCash
+                        </div>
+                      </label>
+                    </div>
+                    <div id="sf-gcash-status-pill" class="hidden px-3 py-2 rounded-xl bg-sky-50 border-2 border-sky-600 text-xs font-extrabold text-sky-900 flex items-center justify-between">
+                      <span id="sf-gcash-status-text">⚠️ GCash Reference # needed</span>
+                      <button type="button" onclick="StorefrontApp.openGcashModal()" class="underline text-sky-700">Edit</button>
                     </div>
                   </div>
 
                   <div>
                     <label class="block text-[11px] font-extrabold mb-1">Special Notes (Optional)</label>
-                    <input type="text" id="sf-co-notes" placeholder="e.g., Campus gate pickup, extra napkins..." class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold" />
+                    <input id="sf-co-notes" type="text" placeholder="Any requests or pickup landmarks..." class="w-full px-3 py-2.5 rounded-xl border-2 border-puto-brown text-xs font-semibold bg-white" />
                   </div>
 
-                  <button type="submit" class="storefront-btn w-full py-3.5 rounded-2xl bg-ube-600 text-white font-display text-base font-bold">
-                    🚀 Submit Pre-Order Now
+                  <button id="sf-submit-order-btn" type="submit" class="storefront-btn w-full py-3.5 rounded-2xl bg-ube-600 text-white text-sm font-extrabold">
+                    Confirm Pre-Order
                   </button>
                 </form>
               </div>
             </div>
           </div>
 
-          
-          <div id="sf-batter-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/65 p-4">
-            <div class="bg-white border-2 border-puto-brown shadow-pop-lg rounded-3xl w-full max-w-sm p-5">
-              <div class="flex items-center justify-between mb-3">
-                <h3 class="font-display text-xl font-bold">Common Puto Batter</h3>
-                <button onclick="StorefrontApp.closeBatterModal()" class="w-8 h-8 rounded-full bg-cream-100 border-2 border-puto-brown font-bold">✕</button>
+          <!-- GCASH SEND MONEY MODAL (NO QR CODE) -->
+          <div id="sf-gcash-modal" class="hidden fixed inset-0 z-[60] bg-black/65 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="storefront-card bg-white rounded-3xl max-w-sm w-full p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-xl bg-sky-600 text-white text-xs font-extrabold">GCash</span>
+                  <h3 class="font-display text-xl font-bold text-puto-brown">Send GCash Payment</h3>
+                </div>
+                <button type="button" onclick="StorefrontApp.closeGcashModal()" class="w-8 h-8 rounded-full bg-cream-200 border border-puto-brown font-extrabold">✕</button>
               </div>
-              <p class="text-xs text-puto-brown/75 mb-3">Every PUTOLOGY flavor starts with our signature soft steamed rice cake batter:</p>
-              <ul class="grid grid-cols-2 gap-2 text-xs font-bold">
-                ${BATTER_INGREDIENTS.map(item => `
-                  <li class="px-3 py-2 rounded-xl bg-cream-100 border border-puto-brown/30">✓ ${item}</li>
-                `).join('')}
-              </ul>
-            </div>
-          </div>
 
-          
-          <div id="sf-receipt-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/65 p-4">
-            <div class="bg-white border-2 border-puto-brown shadow-pop-lg rounded-3xl w-full max-w-sm p-6 text-center">
-              <div class="w-14 h-14 rounded-2xl bg-green-500 text-white border-2 border-puto-brown flex items-center justify-center text-2xl mx-auto mb-3">🎉</div>
-              <h3 class="font-display text-2xl font-bold">Pre-Order Sent!</h3>
-              <p class="text-xs text-puto-brown/75 mt-1">Your order is now queued in the PUTOLOGY kitchen.</p>
-              <div id="sf-receipt-body" class="my-4 bg-cream-100 border-2 border-dashed border-puto-brown rounded-2xl p-3.5 text-left text-xs space-y-1.5"></div>
-              <button onclick="StorefrontApp.closeReceipt()" class="storefront-btn w-full py-3 rounded-xl bg-puto-yellow text-xs font-extrabold">
-                Back to Menu / Done
+              <div class="p-4 rounded-2xl bg-sky-50 border-2 border-sky-600 space-y-2">
+                <div class="text-[11px] font-extrabold uppercase text-sky-800">Send Exact Amount To:</div>
+                <div class="flex items-center justify-between gap-2 bg-white p-3 rounded-xl border border-sky-300">
+                  <div>
+                    <div class="text-xs font-extrabold text-puto-brown">PUTOLOGY (Gerald Daluz)</div>
+                    <div id="sf-gcash-number" class="font-mono text-base font-extrabold text-sky-700">0917-884-7886</div>
+                  </div>
+                  <button type="button" onclick="StorefrontApp.copyGcashNumber()" class="px-3 py-2 rounded-xl bg-sky-600 text-white text-xs font-extrabold">
+                    Copy
+                  </button>
+                </div>
+                <div class="flex items-center justify-between pt-1 text-xs font-extrabold">
+                  <span class="text-sky-900">Amount Due:</span>
+                  <span id="sf-gcash-due-amount" class="font-display text-xl text-sky-700">₱0</span>
+                </div>
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="block text-xs font-extrabold text-puto-brown">13-Digit GCash Reference Number *</label>
+                <input id="sf-gcash-ref-input" type="text" inputmode="numeric" maxlength="20" placeholder="e.g. 6012 345 678901" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-puto-brown font-mono text-sm font-extrabold" />
+                <p class="text-[11px] text-puto-brown/75">Found at the bottom of your GCash receipt (Ref No.).</p>
+              </div>
+
+              <button type="button" onclick="StorefrontApp.saveGcashDetails()" class="storefront-btn w-full py-3 rounded-xl bg-sky-600 text-white text-xs font-extrabold">
+                Save GCash Reference
               </button>
             </div>
           </div>
 
-         
-          <div id="sf-gcash-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/70 p-3.5 sm:p-4 overflow-y-auto">
-            <div class="bg-white border-2 border-puto-brown shadow-pop-lg rounded-3xl w-full max-w-sm overflow-hidden my-auto">
-             
-              <div class="bg-[#007DFE] text-white px-4 py-3.5 flex items-center justify-between border-b-2 border-puto-brown">
-                <div class="flex items-center gap-2">
-                  <span class="w-8 h-8 rounded-xl bg-white text-[#007DFE] font-display font-extrabold text-lg flex items-center justify-center">G</span>
-                  <div>
-                    <div class="font-display text-lg font-bold leading-none">GCash Express Pay</div>
-                    <div class="text-[11px] text-blue-100 font-semibold">Send Money via GCash App</div>
-                  </div>
-                </div>
-                <button type="button" onclick="StorefrontApp.closeGcashModal()" class="w-9 h-9 rounded-full bg-white/20 text-white font-bold">✕</button>
+          <!-- ORDER CONFIRMATION RECEIPT MODAL -->
+          <div id="sf-receipt-modal" class="hidden fixed inset-0 z-[70] bg-black/65 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="storefront-card bg-cream-50 rounded-3xl max-w-sm w-full p-6 text-center space-y-4">
+              <div class="w-14 h-14 mx-auto rounded-full bg-puto-pandan text-white border-2 border-puto-brown flex items-center justify-center text-2xl font-extrabold">✓</div>
+              <div>
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-ube-600">Pre-Order Received!</span>
+                <h3 id="sf-receipt-id" class="font-display text-3xl font-bold text-puto-brown mt-0.5">PTL-0000</h3>
               </div>
-
-              <div class="p-4 space-y-3.5 max-h-[82vh] overflow-y-auto">
-               
-                <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-3 flex items-center justify-between">
-                  <span class="text-xs font-extrabold text-blue-950 uppercase">Exact Amount Due:</span>
-                  <span id="sf-gcash-modal-amount" class="font-display text-2xl font-bold text-[#007DFE]">₱0</span>
-                </div>
-
-                
-                <div class="bg-cream-50 border-2 border-puto-brown rounded-2xl p-4 text-center space-y-2">
-                  <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#007DFE]">SEND GCASH PAYMENT TO</div>
-                  <div class="font-display text-lg font-bold text-puto-brown">PUTOLOGY PH (Gerald Daluz.)</div>
-                  <div class="bg-white border-2 border-[#007DFE] rounded-xl p-2.5 flex items-center justify-between gap-2">
-                    <span id="sf-gcash-number" class="font-mono font-extrabold text-base sm:text-lg text-[#007DFE] tracking-wide">0917-884-7886</span>
-                    <button type="button" onclick="StorefrontApp.copyGcashNumber()" class="px-3 py-2 rounded-lg bg-puto-yellow border-2 border-puto-brown text-xs font-extrabold shrink-0 active:scale-95">
-                      📋 Copy Number
-                    </button>
-                  </div>
-                  <p class="text-[11px] text-puto-brown/75 leading-snug pt-1">
-                    1. Open your <strong>GCash App</strong> → Tap <strong>Send</strong> → <strong>Express Send</strong>.<br/>
-                    2. Paste the number above and send the exact amount.<br/>
-                    3. Copy the <strong>13-digit Ref No.</strong> from the bottom of your GCash receipt below.
-                  </p>
-                </div>
-
-                
-                <div>
-                  <label class="block text-[11px] font-extrabold uppercase text-puto-brown mb-1">
-                    GCash 13-Digit Reference No. *
-                  </label>
-                  <input type="text" id="sf-gcash-ref-input" inputmode="numeric" maxlength="16" placeholder="e.g. 6012345678901" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-cream-50 border-2 border-puto-brown font-mono text-sm font-bold" />
-                </div>
-
-               
-                <div>
-                  <label class="block text-[11px] font-extrabold uppercase text-puto-brown mb-1">
-                    Attach Receipt Screenshot (Optional)
-                  </label>
-                  <input type="file" id="sf-gcash-file-input" accept="image/*" onchange="StorefrontApp.handleGcashProofUpload(event)" class="w-full text-xs file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-2 file:border-puto-brown file:bg-cream-200 file:font-extrabold file:text-xs" />
-                  <div id="sf-gcash-proof-preview" class="hidden mt-2"></div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 pt-1">
-                  <button type="button" onclick="StorefrontApp.closeGcashModal()" class="storefront-btn py-2.5 rounded-xl bg-cream-100 text-xs font-extrabold">
-                    Cancel
-                  </button>
-                  <button type="button" onclick="StorefrontApp.confirmGcashDetails()" class="storefront-btn py-2.5 rounded-xl bg-[#007DFE] text-white text-xs font-extrabold">
-                    ✓ Save GCash Ref
-                  </button>
-                </div>
-              </div>
+              <div id="sf-receipt-summary" class="p-4 rounded-2xl bg-white border-2 border-puto-brown text-left text-xs space-y-1.5"></div>
+              <button type="button" onclick="StorefrontApp.closeReceiptModal()" class="storefront-btn w-full py-3 rounded-xl bg-puto-yellow text-puto-brown text-xs font-extrabold">
+                Done & Back to Shop
+              </button>
             </div>
           </div>
         `;
 
-        renderMenuCards();
+        renderMenuGrid();
         renderBoxBuilderRows();
         updateCartBadges();
+        startBatchCountdown();
       }
 
-      function renderMenuCards() {
+      function startBatchCountdown() {
+        if (countdownInterval) clearInterval(countdownInterval);
+        const updateTimer = () => {
+          const display = document.getElementById('sf-countdown-display');
+          const now = new Date();
+          const diff = BATCH_START_DATE - now;
+
+          if (diff <= 0) {
+            if (display) display.textContent = '🟢 FRESH BATCHES SERVING NOW!';
+            return;
+          }
+
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+          const mins = Math.floor((diff / (1000 * 60)) % 60);
+          const secs = Math.floor((diff / 1000) % 60);
+          if (display) {
+            display.textContent = `First batch in ${days}d ${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+          }
+        };
+        updateTimer();
+        countdownInterval = setInterval(updateTimer, 1000);
+      }
+
+      function renderMenuGrid() {
         const grid = document.getElementById('sf-menu-grid');
         if (!grid) return;
-
         const filtered = state.activeCategory === 'All'
           ? MENU_FLAVORS
           : MENU_FLAVORS.filter(f => f.category === state.activeCategory);
 
         grid.innerHTML = filtered.map(flavor => {
-          const pack = state.cardPackChoice[flavor.id] || 'single';
-          const optChecked = Boolean(state.cardToppingChoice[flavor.id]);
-          const displayPrice = pack === 'box' ? flavor.priceBox : flavor.priceSingle;
+          const selectedPack = state.cardPackChoice[flavor.id] || 'single';
+          const includeOptional = Boolean(state.cardToppingChoice[flavor.id]);
+          const packLabels = {
+            single: { label: '1 pc', price: 13 },
+            pair: { label: '2 pcs', price: 25 },
+            box6: { label: '6 pcs', price: 75 }
+          };
+          const activePrice = packLabels[selectedPack].price;
 
           return `
-            <div class="storefront-card bg-white rounded-3xl p-4 sm:p-5 flex flex-col justify-between">
+            <div class="storefront-card bg-white rounded-3xl p-5 flex flex-col justify-between gap-4">
               <div>
-                <div class="flex items-center justify-between gap-2 mb-2">
-                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${flavor.badgeClass}">${flavor.badge}</span>
-                  <span class="text-[11px] font-extrabold text-puto-brown/70">${flavor.category}</span>
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-center gap-3">
+                    ${renderSteamedPutoSVG(flavor.colorTop, flavor.colorAccent, 'w-14 h-14')}
+                    <div>
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${flavor.badgeClass}">${flavor.badge}</span>
+                      <h3 class="font-display text-xl font-bold text-puto-brown mt-1">${flavor.name}</h3>
+                    </div>
+                  </div>
+                  <span class="font-display text-2xl font-bold text-ube-600">₱${activePrice}</span>
                 </div>
 
-                <div class="bg-cream-100 border border-puto-brown/20 rounded-2xl py-3 mb-3">
-                  ${renderPutoIllustration(flavor.colorTop, flavor.colorAccent)}
-                </div>
+                <p class="text-xs text-puto-brown/80 mt-2.5 leading-relaxed">${flavor.desc}</p>
 
-                <div class="flex items-baseline justify-between gap-2">
-                  <h3 class="font-display text-xl font-bold">${flavor.name}</h3>
-                  <span class="font-display text-xl font-bold text-ube-600">₱${displayPrice}</span>
-                </div>
-                <p class="text-xs text-puto-brown/80 mt-1 leading-relaxed">${flavor.desc}</p>
-
-                <div class="flex flex-wrap gap-1 mt-2.5">
+                <div class="flex flex-wrap gap-1.5 mt-3">
                   ${flavor.ingredients.map(ing => `
-                    <span class="px-2 py-0.5 rounded-md bg-cream-100 text-[10px] font-bold text-puto-brown/85">${ing}</span>
+                    <span class="px-2 py-0.5 rounded-lg bg-cream-100 border border-puto-brown/20 text-[10px] font-bold">${ing}</span>
                   `).join('')}
                 </div>
 
                 ${flavor.optionalTopping ? `
-                  <label class="mt-3 flex items-center gap-2 p-2 rounded-xl bg-amber-50 border border-amber-300 text-[11px] font-extrabold cursor-pointer">
-                    <input type="checkbox" ${optChecked ? 'checked' : ''} onchange="StorefrontApp.toggleFlavorTopping('${flavor.id}', this.checked)" class="w-4 h-4 accent-ube-600" />
-                    <span>+ Free ${flavor.optionalTopping}</span>
+                  <label class="mt-3 flex items-center gap-2 text-xs font-extrabold text-puto-brown cursor-pointer bg-cream-100 px-3 py-2 rounded-xl border border-puto-brown/25">
+                    <input type="checkbox" ${includeOptional ? 'checked' : ''} onchange="StorefrontApp.toggleFlavorTopping('${flavor.id}', this.checked)" class="accent-ube-600 w-4 h-4" />
+                    <span>Add Free ${flavor.optionalTopping}</span>
                   </label>
                 ` : ''}
               </div>
 
-              <div class="mt-4 pt-3 border-t border-puto-brown/15 space-y-2.5">
-                <div class="grid grid-cols-2 gap-1.5 bg-cream-100 p-1 rounded-xl border border-puto-brown/30 text-[11px] font-extrabold">
-                  <button type="button" onclick="StorefrontApp.setPackChoice('${flavor.id}', 'single')" class="py-1.5 rounded-lg ${pack === 'single' ? 'bg-puto-brown text-puto-yellow' : 'text-puto-brown'}">
-                    1 Pc (₱${flavor.priceSingle})
-                  </button>
-                  <button type="button" onclick="StorefrontApp.setPackChoice('${flavor.id}', 'box')" class="py-1.5 rounded-lg ${pack === 'box' ? 'bg-puto-brown text-puto-yellow' : 'text-puto-brown'}">
-                    Box of 6 (₱${flavor.priceBox})
-                  </button>
+              <div class="space-y-2.5 pt-2 border-t border-puto-brown/15">
+                <div class="grid grid-cols-3 gap-1.5">
+                  ${Object.entries(packLabels).map(([key, info]) => `
+                    <button type="button" onclick="StorefrontApp.setFlavorPack('${flavor.id}', '${key}')" class="py-1.5 rounded-xl border-2 border-puto-brown text-[11px] font-extrabold ${
+                      selectedPack === key ? 'bg-puto-brown text-puto-yellow' : 'bg-cream-50 text-puto-brown'
+                    }">
+                      ${info.label} (₱${info.price})
+                    </button>
+                  `).join('')}
                 </div>
-
-                <button type="button" onclick="StorefrontApp.addFlavorToCart('${flavor.id}')" class="storefront-btn w-full py-2.5 rounded-xl bg-puto-yellow text-xs font-extrabold">
-                  + Add to Cart • ₱${displayPrice}
+                <button type="button" onclick="StorefrontApp.addFlavorToCart('${flavor.id}')" class="storefront-btn w-full py-2.5 rounded-xl bg-puto-yellow text-puto-brown text-xs font-extrabold">
+                  + Add to Basket (₱${activePrice})
                 </button>
               </div>
             </div>
@@ -1058,74 +1170,115 @@
         container.innerHTML = MENU_FLAVORS.map(f => {
           const count = state.customBoxCounts[f.id] || 0;
           return `
-            <div class="flex items-center justify-between p-3 rounded-2xl bg-cream-50 border-2 border-puto-brown/25">
-              <div>
-                <div class="font-display font-bold text-sm">${f.name}</div>
-                <div class="text-[10px] font-bold text-puto-brown/65">${f.category}</div>
+            <div class="p-3 rounded-2xl bg-cream-100 border-2 border-puto-brown flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                ${renderSteamedPutoSVG(f.colorTop, f.colorAccent, 'w-9 h-9')}
+                <div class="truncate">
+                  <div class="text-xs font-extrabold truncate">${f.name}</div>
+                  <div class="text-[10px] font-bold text-puto-brown/70">${f.category}</div>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="StorefrontApp.adjustCustomBox('${f.id}', -1)" class="w-9 h-9 rounded-xl bg-white border-2 border-puto-brown font-extrabold">-</button>
-                <span class="w-5 text-center font-display font-bold text-base">${count}</span>
-                <button type="button" onclick="StorefrontApp.adjustCustomBox('${f.id}', 1)" class="w-9 h-9 rounded-xl bg-puto-yellow border-2 border-puto-brown font-extrabold">+</button>
+              <div class="flex items-center gap-2 shrink-0">
+                <button type="button" onclick="StorefrontApp.adjustCustomBox('${f.id}', -1)" class="w-8 h-8 rounded-xl bg-white border-2 border-puto-brown font-extrabold text-sm">−</button>
+                <span class="w-5 text-center font-display text-base font-bold">${count}</span>
+                <button type="button" onclick="StorefrontApp.adjustCustomBox('${f.id}', 1)" class="w-8 h-8 rounded-xl bg-puto-yellow border-2 border-puto-brown font-extrabold text-sm">+</button>
               </div>
             </div>
           `;
         }).join('');
 
         const total = getCustomBoxTotalCount();
+        const target = state.customBoxTarget;
+        const targetPrice = calculateTieredPutoPrice(target);
         const counterEl = document.getElementById('sf-box-counter');
         const addBtn = document.getElementById('sf-add-box-btn');
-        if (counterEl) counterEl.textContent = `${total} / 6 pcs`;
-        if (addBtn) addBtn.disabled = total !== 6;
+        const btn6 = document.getElementById('sf-box-size-6');
+        const btn12 = document.getElementById('sf-box-size-12');
+
+        if (btn6) {
+          btn6.className = `px-3 py-1.5 rounded-xl border-2 border-puto-brown text-xs font-extrabold ${
+            target === 6 ? 'bg-puto-brown text-puto-yellow' : 'bg-cream-100 text-puto-brown'
+          }`;
+        }
+        if (btn12) {
+          btn12.className = `px-3 py-1.5 rounded-xl border-2 border-puto-brown text-xs font-extrabold ${
+            target === 12 ? 'bg-puto-brown text-puto-yellow' : 'bg-cream-100 text-puto-brown'
+          }`;
+        }
+        if (counterEl) counterEl.textContent = `${total} / ${target} pcs`;
+        if (addBtn) {
+          addBtn.textContent = `Add Custom Box of ${target} (₱${targetPrice}) to Cart`;
+          addBtn.disabled = total !== target;
+        }
       }
 
       function updateCartBadges() {
-        const count = getCartCount();
-        const hBadge = document.getElementById('sf-header-cart-badge');
-        const mBadge = document.getElementById('sf-mobile-cart-badge');
-        if (hBadge) hBadge.textContent = count;
-        if (mBadge) mBadge.textContent = `Cart (${count})`;
-      }
+        const { totalPieces, subtotalAmount, packagingFee, totalAmount } = getCartPricingSummary();
+        const headerBadge = document.getElementById('sf-header-cart-badge');
+        const bottomBadge = document.getElementById('sf-bottom-cart-badge');
+        if (headerBadge) headerBadge.textContent = `${totalPieces} pcs`;
+        if (bottomBadge) bottomBadge.textContent = `${totalPieces} pcs`;
 
-      function renderCartContents() {
         const listEl = document.getElementById('sf-cart-items-list');
-        const totalEl = document.getElementById('sf-cart-total');
-        if (!listEl || !totalEl) return;
+        const pcsEl = document.getElementById('sf-cart-total-pcs');
+        const subtotalEl = document.getElementById('sf-cart-subtotal-price');
+        const pkgLabelEl = document.getElementById('sf-cart-packaging-label');
+        const pkgFeeEl = document.getElementById('sf-cart-packaging-fee');
+        const priceEl = document.getElementById('sf-cart-total-price');
+        const gcashDueEl = document.getElementById('sf-gcash-due-amount');
 
-        if (state.cart.length === 0) {
-          listEl.innerHTML = `
-            <div class="text-center py-6 bg-white rounded-2xl border-2 border-dashed border-puto-brown/30 text-xs font-bold text-puto-brown/70">
-              Your cart is empty. Add your favorite puto flavors first!
-            </div>
-          `;
-        } else {
-          listEl.innerHTML = state.cart.map((item, idx) => `
-            <div class="bg-white border-2 border-puto-brown rounded-2xl p-3 flex items-center justify-between gap-2">
-              <div class="min-w-0">
-                <div class="font-display font-bold text-sm truncate">${item.name}</div>
-                <div class="text-[11px] font-bold text-ube-600">₱${item.unitPrice} each</div>
-              </div>
-              <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" onclick="StorefrontApp.changeCartQty(${idx}, -1)" class="w-8 h-8 rounded-lg bg-cream-100 border border-puto-brown font-extrabold">-</button>
-                <span class="w-5 text-center text-xs font-extrabold">${item.qty}</span>
-                <button type="button" onclick="StorefrontApp.changeCartQty(${idx}, 1)" class="w-8 h-8 rounded-lg bg-puto-yellow border border-puto-brown font-extrabold">+</button>
-              </div>
-            </div>
-          `).join('');
+        if (pcsEl) pcsEl.textContent = `${totalPieces} pcs`;
+        if (subtotalEl) subtotalEl.textContent = `₱${subtotalAmount}`;
+        if (pkgLabelEl) {
+          pkgLabelEl.textContent = totalPieces <= 3
+            ? 'Packaging (1–3 pcs Free Plate)'
+            : 'Box Packaging (4+ pcs)';
         }
+        if (pkgFeeEl) {
+          pkgFeeEl.textContent = packagingFee === 0 ? 'FREE' : `+₱${packagingFee}`;
+          pkgFeeEl.className = packagingFee === 0
+            ? 'text-emerald-700 font-extrabold'
+            : 'text-amber-700 font-extrabold';
+        }
+        if (priceEl) priceEl.textContent = `₱${totalAmount}`;
+        if (gcashDueEl) gcashDueEl.textContent = `₱${totalAmount}`;
 
-        totalEl.textContent = `₱${getCartTotal()}`;
+        if (listEl) {
+          if (state.cart.length === 0) {
+            listEl.innerHTML = `<div class="p-6 text-center text-xs font-bold text-puto-brown/60 bg-white rounded-2xl border-2 border-dashed border-puto-brown/30">Your pre-order basket is empty. Add flavors or bundles!</div>`;
+          } else {
+            listEl.innerHTML = state.cart.map((item, idx) => `
+              <div class="p-3 rounded-2xl bg-white border-2 border-puto-brown flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="text-xs font-extrabold text-puto-brown leading-snug">${item.name}</div>
+                  <div class="text-[11px] font-bold text-ube-600">Qty: ${item.qty}</div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button type="button" onclick="StorefrontApp.updateCartQty(${idx}, -1)" class="w-7 h-7 rounded-lg bg-cream-100 border border-puto-brown font-extrabold text-xs">−</button>
+                  <span class="w-5 text-center text-xs font-extrabold">${item.qty}</span>
+                  <button type="button" onclick="StorefrontApp.updateCartQty(${idx}, 1)" class="w-7 h-7 rounded-lg bg-puto-yellow border border-puto-brown font-extrabold text-xs">+</button>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
       }
 
       return {
         mount,
         setCategory(cat) {
           state.activeCategory = cat;
-          mount();
+          document.querySelectorAll('.sf-cat-btn').forEach(btn => {
+            const active = btn.dataset.cat === cat;
+            btn.className = `sf-cat-btn px-4 py-2 rounded-xl border-2 border-puto-brown text-xs font-extrabold shrink-0 ${
+              active ? 'bg-puto-brown text-puto-yellow' : 'bg-white text-puto-brown'
+            }`;
+          });
+          renderMenuGrid();
         },
-        setPackChoice(id, pack) {
+        setFlavorPack(id, pack) {
           state.cardPackChoice[id] = pack;
-          renderMenuCards();
+          renderMenuGrid();
         },
         toggleFlavorTopping(id, checked) {
           state.cardToppingChoice[id] = checked;
@@ -1134,47 +1287,57 @@
           const flavor = MENU_FLAVORS.find(f => f.id === id);
           if (!flavor) return;
           const pack = state.cardPackChoice[id] || 'single';
-          const hasOpt = Boolean(state.cardToppingChoice[id]) && flavor.optionalTopping;
-          const unitPrice = pack === 'box' ? flavor.priceBox : flavor.priceSingle;
-          const pieces = pack === 'box' ? 6 : 1;
-          const label = `${flavor.name} (${pack === 'box' ? 'Box of 6' : '1 pc'}${hasOpt ? ` • +${flavor.optionalTopping}` : ''})`;
+          const piecesMap = { single: 1, pair: 2, box6: 6 };
+          const pcs = piecesMap[pack];
+          const withTopping = Boolean(state.cardToppingChoice[id] && flavor.optionalTopping);
+          const toppingTag = withTopping ? ` + ${flavor.optionalTopping}` : '';
+          const packTag = pack === 'single' ? '1 pc' : `${pcs} pcs`;
+          const itemName = `${flavor.name} (${packTag}${toppingTag})`;
 
-          const existing = state.cart.find(i => i.name === label);
+          const existing = state.cart.find(c => c.name === itemName);
           if (existing) {
             existing.qty += 1;
           } else {
             state.cart.push({
-              name: label,
+              name: itemName,
               qty: 1,
-              unitPrice,
-              breakdown: { [flavor.id]: pieces }
+              unitPrice: calculateTieredPutoPrice(pcs),
+              breakdown: { [flavor.id]: pcs }
             });
           }
           updateCartBadges();
-          showToast(`Added ${label}!`);
+          showToast(`Added ${itemName} to basket!`);
         },
         addBundleToCart(bundleId) {
-          const b = BUNDLE_DEALS.find(x => x.id === bundleId);
-          if (!b) return;
-          const existing = state.cart.find(i => i.name === b.name);
+          const bundle = BUNDLE_DEALS.find(b => b.id === bundleId);
+          if (!bundle) return;
+          const existing = state.cart.find(c => c.name === bundle.name);
           if (existing) {
             existing.qty += 1;
           } else {
             state.cart.push({
-              name: b.name,
+              name: bundle.name,
               qty: 1,
-              unitPrice: b.price,
-              breakdown: { ...b.breakdown }
+              unitPrice: bundle.price,
+              breakdown: { ...bundle.breakdown }
             });
           }
           updateCartBadges();
-          showToast(`Added ${b.name}!`);
+          showToast(`Added ${bundle.name}!`);
+        },
+        setCustomBoxTarget(targetSize) {
+          state.customBoxTarget = targetSize;
+          if (getCustomBoxTotalCount() > targetSize) {
+            Object.keys(state.customBoxCounts).forEach(k => { state.customBoxCounts[k] = 0; });
+          }
+          renderBoxBuilderRows();
         },
         adjustCustomBox(id, delta) {
           const currentTotal = getCustomBoxTotalCount();
+          const target = state.customBoxTarget;
           const currentVal = state.customBoxCounts[id] || 0;
-          if (delta > 0 && currentTotal >= 6) {
-            showToast('Box of 6 is already full!', true);
+          if (delta > 0 && currentTotal >= target) {
+            showToast(`Box of ${target} is already full!`, true);
             return;
           }
           if (delta < 0 && currentVal <= 0) return;
@@ -1186,7 +1349,9 @@
           renderBoxBuilderRows();
         },
         addCustomBoxToCart() {
-          if (getCustomBoxTotalCount() !== 6) return;
+          const target = state.customBoxTarget;
+          if (getCustomBoxTotalCount() !== target) return;
+          const boxPrice = calculateTieredPutoPrice(target);
           const summaryParts = [];
           const breakdown = {};
           MENU_FLAVORS.forEach(f => {
@@ -1197,133 +1362,109 @@
             }
           });
           state.cart.push({
-            name: `Mix & Match Box (${summaryParts.join(', ')})`,
+            name: `Mix & Match Box of ${target} (${summaryParts.join(', ')})`,
             qty: 1,
-            unitPrice: 95,
+            unitPrice: boxPrice,
             breakdown
           });
           this.resetCustomBox();
           updateCartBadges();
-          showToast('Added Custom Box of 6!');
+          showToast(`Added Custom Box of ${target} (₱${boxPrice})!`);
         },
-        openCart() {
-          renderCartContents();
-          const modal = document.getElementById('sf-cart-modal');
-          if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-          }
-        },
-        closeCart() {
-          const modal = document.getElementById('sf-cart-modal');
-          if (modal) {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-          }
-        },
-        changeCartQty(idx, delta) {
-          if (!state.cart[idx]) return;
-          state.cart[idx].qty += delta;
-          if (state.cart[idx].qty <= 0) {
-            state.cart.splice(idx, 1);
+        updateCartQty(index, delta) {
+          if (!state.cart[index]) return;
+          state.cart[index].qty += delta;
+          if (state.cart[index].qty <= 0) {
+            state.cart.splice(index, 1);
           }
           updateCartBadges();
-          renderCartContents();
         },
-        handlePaymentMethodChange(method) {
-          const box = document.getElementById('sf-gcash-status-box');
-          if (!box) return;
-          if (method === 'GCash') {
-            box.classList.remove('hidden');
+        openCart() {
+          updateCartBadges();
+          startBatchCountdown();
+          document.getElementById('sf-cart-drawer')?.classList.remove('hidden');
+        },
+        closeCart() {
+          document.getElementById('sf-cart-drawer')?.classList.add('hidden');
+        },
+        toggleBatterModal(show) {
+          const el = document.getElementById('sf-batter-modal');
+          if (!el) return;
+          el.classList.toggle('hidden', !show);
+        },
+        onPaymentChange(val) {
+          const pill = document.getElementById('sf-gcash-status-pill');
+          if (val === 'GCash') {
+            pill?.classList.remove('hidden');
             this.openGcashModal();
           } else {
-            box.classList.add('hidden');
+            pill?.classList.add('hidden');
           }
         },
         openGcashModal() {
-          const modal = document.getElementById('sf-gcash-modal');
-          const amtEl = document.getElementById('sf-gcash-modal-amount');
-          const refInput = document.getElementById('sf-gcash-ref-input');
-          if (amtEl) amtEl.textContent = `₱${getCartTotal()}`;
-          if (refInput) refInput.value = state.gcashRef || '';
-          if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-          }
+          updateCartBadges();
+          const input = document.getElementById('sf-gcash-ref-input');
+          if (input) input.value = state.gcashRef;
+          document.getElementById('sf-gcash-modal')?.classList.remove('hidden');
         },
         closeGcashModal() {
-          const modal = document.getElementById('sf-gcash-modal');
-          if (modal) {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-          }
+          document.getElementById('sf-gcash-modal')?.classList.add('hidden');
         },
         copyGcashNumber() {
-          const rawNum = '09178847886';
+          const num = '09178847886';
           const temp = document.createElement('textarea');
-          temp.value = rawNum;
+          temp.value = num;
           document.body.appendChild(temp);
           temp.select();
           document.execCommand('copy');
-          document.body.removeChild(temp);
-          showToast('GCash Number 0917-884-7886 copied!');
+          temp.remove();
+          showToast('Copied GCash number: 0917-884-7886');
         },
-        handleGcashProofUpload(e) {
-          const file = e.target.files && e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = ev => {
-            state.gcashProofDataUrl = ev.target.result;
-            const prev = document.getElementById('sf-gcash-proof-preview');
-            if (prev) {
-              prev.classList.remove('hidden');
-              prev.innerHTML = `<img src="${state.gcashProofDataUrl}" alt="GCash Receipt Preview" class="h-24 rounded-xl border-2 border-puto-brown mx-auto object-cover" />`;
-            }
-          };
-          reader.readAsDataURL(file);
-        },
-        confirmGcashDetails() {
-          const refVal = (document.getElementById('sf-gcash-ref-input').value || '').trim();
-          if (refVal.length < 6) {
+        saveGcashDetails() {
+          const ref = (document.getElementById('sf-gcash-ref-input')?.value || '').trim();
+          if (ref.length < 6) {
             showToast('Please enter your GCash Reference Number.', true);
             return;
           }
-          state.gcashRef = refVal;
-          const statusLabel = document.getElementById('sf-gcash-status-label');
-          if (statusLabel) {
-            statusLabel.textContent = `✅ GCash Ref #${refVal} Attached`;
-          }
+          state.gcashRef = ref;
+          const statusText = document.getElementById('sf-gcash-status-text');
+          if (statusText) statusText.textContent = `✅ GCash Ref #${ref} Attached`;
           this.closeGcashModal();
           showToast('GCash Reference saved!');
         },
         async submitPreOrder(e) {
           e.preventDefault();
           if (state.cart.length === 0) {
-            showToast('Please add at least 1 item to your cart first.', true);
+            showToast('Please add at least 1 puto item to your basket.', true);
             return;
           }
-
-          const paymentMethod = document.getElementById('sf-co-payment').value;
+          const paymentMethod = document.querySelector('input[name="sf-payment"]:checked')?.value || 'Cash on Pickup';
           if (paymentMethod === 'GCash' && !state.gcashRef) {
             showToast('Please enter your GCash Reference Number first.', true);
             this.openGcashModal();
             return;
           }
 
-          const orderCode = `PUTO-${Math.floor(100 + Math.random() * 900)}`;
+          const pickupDate = document.getElementById('sf-co-date').value;
+          if (pickupDate < '2026-11-27') {
+            showToast('Pickup date must be November 27, 2026 or later.', true);
+            return;
+          }
+
+          const { totalPieces, subtotalAmount, packagingFee, totalAmount } = getCartPricingSummary();
+          const orderCode = 'PTL-' + Math.floor(1000 + Math.random() * 9000);
           const newOrder = {
-            id: `ord-${Date.now()}`,
-            orderCode,
+            id: orderCode,
             customerName: document.getElementById('sf-co-name').value.trim(),
             contact: document.getElementById('sf-co-contact').value.trim(),
             customerType: document.getElementById('sf-co-type').value,
-            pickupDate: document.getElementById('sf-co-date').value,
+            pickupDate,
             pickupTime: document.getElementById('sf-co-time').value,
             paymentMethod,
             gcashRef: paymentMethod === 'GCash' ? state.gcashRef : '',
             gcashVerified: false,
             notes: document.getElementById('sf-co-notes').value.trim(),
-            totalAmount: getCartTotal(),
+            totalAmount,
             status: 'Pending',
             createdAt: new Date().toISOString(),
             items: JSON.parse(JSON.stringify(state.cart))
@@ -1333,51 +1474,29 @@
 
           state.cart = [];
           state.gcashRef = '';
-          state.gcashProofDataUrl = '';
           updateCartBadges();
           this.closeCart();
 
-          const receiptBody = document.getElementById('sf-receipt-body');
-          if (receiptBody) {
-            receiptBody.innerHTML = `
-              <div class="flex justify-between"><span>Order Code:</span><strong>${newOrder.orderCode}</strong></div>
-              <div class="flex justify-between"><span>Name:</span><strong>${newOrder.customerName}</strong></div>
-              <div class="flex justify-between"><span>Pickup:</span><strong>${newOrder.pickupDate} @ ${newOrder.pickupTime}</strong></div>
-              <div class="flex justify-between"><span>Payment:</span><strong>${newOrder.paymentMethod}${newOrder.gcashRef ? ` (Ref: ${newOrder.gcashRef})` : ''}</strong></div>
-              <div class="flex justify-between border-t border-puto-brown/20 pt-1.5 text-sm"><span>Total Due:</span><strong class="text-ube-600">₱${newOrder.totalAmount}</strong></div>
+          const receiptId = document.getElementById('sf-receipt-id');
+          const receiptSummary = document.getElementById('sf-receipt-summary');
+          if (receiptId) receiptId.textContent = orderCode;
+          if (receiptSummary) {
+            receiptSummary.innerHTML = `
+              <div><strong>Customer:</strong> ${newOrder.customerName}</div>
+              <div><strong>Pickup:</strong> ${newOrder.pickupDate} at ${newOrder.pickupTime}</div>
+              <div><strong>Total Pieces:</strong> ${totalPieces} pcs (Subtotal ₱${subtotalAmount} + ${packagingFee === 0 ? 'Free Plate' : `₱${packagingFee} Box`})</div>
+              <div><strong>Total Due:</strong> ₱${newOrder.totalAmount} (${newOrder.paymentMethod}${newOrder.gcashRef ? ` • Ref #${newOrder.gcashRef}` : ''})</div>
             `;
           }
-          const rModal = document.getElementById('sf-receipt-modal');
-          if (rModal) {
-            rModal.classList.remove('hidden');
-            rModal.classList.add('flex');
-          }
+          document.getElementById('sf-receipt-modal')?.classList.remove('hidden');
         },
-        closeReceipt() {
-          const rModal = document.getElementById('sf-receipt-modal');
-          if (rModal) {
-            rModal.classList.add('hidden');
-            rModal.classList.remove('flex');
-          }
-        },
-        openBatterModal() {
-          const m = document.getElementById('sf-batter-modal');
-          if (m) {
-            m.classList.remove('hidden');
-            m.classList.add('flex');
-          }
-        },
-        closeBatterModal() {
-          const m = document.getElementById('sf-batter-modal');
-          if (m) {
-            m.classList.add('hidden');
-            m.classList.remove('flex');
-          }
+        closeReceiptModal() {
+          document.getElementById('sf-receipt-modal')?.classList.add('hidden');
         },
         async submitFeedback(e) {
           e.preventDefault();
           const entry = {
-            id: `fb-${Date.now()}`,
+            id: 'FB-' + Math.floor(100 + Math.random() * 900),
             customerName: document.getElementById('sf-fb-name').value.trim(),
             flavorIdea: document.getElementById('sf-fb-flavor').value.trim(),
             message: document.getElementById('sf-fb-msg').value.trim(),
@@ -1386,433 +1505,334 @@
           };
           await OrderStorageService.addFeedback(entry);
           e.target.reset();
-          showToast('Thank you! Your flavor idea was sent to PUTOLOGY.');
+          showToast('Thank you! Your flavor suggestion was sent to PUTOLOGY.');
         }
       };
     })();
 
-
+    /**
+     * =====================================================================
+     * 3. STANDALONE ADMIN PORTAL APPLICATION (#/admin)
+     * =====================================================================
+     */
     const AdminPortalApp = (() => {
-      const adminState = {
+      const state = {
         authenticated: false,
         activeTab: 'orders',
         statusFilter: 'All',
-        searchQuery: ''
+        orders: [],
+        feedback: []
       };
 
-      function computeSteamerTally(orders) {
-        const tally = {};
-        MENU_FLAVORS.forEach(f => { tally[f.id] = 0; });
+      async function mount() {
+        const root = document.getElementById('admin-portal-root');
+        if (!root) return;
 
-        orders
-          .filter(o => o.status === 'Pending' || o.status === 'Preparing')
-          .forEach(order => {
-            (order.items || []).forEach(item => {
-              const qty = item.qty || 1;
-              if (item.breakdown) {
-                Object.entries(item.breakdown).forEach(([flavorId, pcs]) => {
-                  if (tally[flavorId] !== undefined) {
-                    tally[flavorId] += pcs * qty;
-                  }
-                });
-              }
-            });
-          });
-
-        return tally;
-      }
-
-      function renderLoginView(root) {
-        root.innerHTML = `
-          <div class="min-h-screen flex flex-col justify-between p-4 sm:p-6 max-w-md mx-auto">
-            <div class="flex items-center justify-between">
-              <button onclick="AppRouter.navigate('storefront')" class="admin-portal-btn px-3.5 py-2 bg-white text-xs flex items-center gap-1.5">
-                <span>← Back to Storefront</span>
-              </button>
-              <span class="px-2.5 py-1 rounded-lg bg-puto-brown text-puto-yellow font-display text-xs font-bold">RESTRICTED</span>
-            </div>
-
-            <div class="admin-portal-card p-6 sm:p-8 text-center my-auto">
-              <div class="w-16 h-16 rounded-2xl bg-ube-600 text-white border-2 border-puto-brown flex items-center justify-center text-3xl mx-auto mb-4">
-                🔐
-              </div>
-              <h1 class="font-display text-2xl sm:text-3xl font-bold text-puto-brown">PUTOLOGY Admin</h1>
-              <p class="text-xs sm:text-sm text-puto-brown/75 mt-1 mb-6">
-                Authorized Staff & Kitchen Access Only
-              </p>
-
-              <form onsubmit="AdminPortalApp.handlePinSubmit(event)" class="space-y-3">
-                <input type="password" id="ap-pin-input" inputmode="numeric" maxlength="8" required placeholder="Enter Secret PIN" class="w-full min-h-[48px] text-center font-mono text-xl tracking-widest px-4 py-2.5 rounded-xl bg-cream-50 border-2 border-puto-brown" />
-                <button type="submit" class="admin-portal-btn w-full py-3 bg-ube-600 text-white font-display text-base">
-                  Unlock Admin Panel
-                </button>
-              </form>
-            </div>
-
-            <div class="text-center text-[11px] font-bold text-puto-brown/60">
-              PUTOLOGY Admin Module • Created by Carlo Dela Cruz
-            </div>
-          </div>
-        `;
-      }
-
-      function renderDashboardView(root) {
-        const orders = OrderStorageService.getOrders();
-        const feedback = OrderStorageService.getFeedback();
-        const tally = computeSteamerTally(orders);
-
-        const activeCount = orders.filter(o => o.status === 'Pending' || o.status === 'Preparing').length;
-        const readyCount = orders.filter(o => o.status === 'Ready').length;
-        const totalRevenue = orders
-          .filter(o => o.status !== 'Cancelled')
-          .reduce((sum, o) => sum + (Number(o.totalAmount) || 0), 0);
-
-        const filteredOrders = orders.filter(o => {
-          const matchesStatus = adminState.statusFilter === 'All' || o.status === adminState.statusFilter;
-          const q = adminState.searchQuery.toLowerCase();
-          const matchesQuery = !q ||
-            (o.customerName || '').toLowerCase().includes(q) ||
-            (o.orderCode || '').toLowerCase().includes(q) ||
-            (o.gcashRef || '').toLowerCase().includes(q);
-          return matchesStatus && matchesQuery;
-        });
-
-        root.innerHTML = `
-        
-          <header class="sticky top-0 z-30 bg-puto-brown text-cream-100 px-4 py-3 border-b-2 border-puto-dark">
-            <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
-              <div>
-                <div class="font-display text-lg sm:text-xl font-bold text-puto-yellow leading-none">PUTOLOGY Kitchen & Admin</div>
-                <div class="text-[10px] text-cream-200/80 mt-0.5">
-                  ${OrderStorageService.isSupabaseReady() ? '🟢 Connected to Supabase' : '🟡 Local Browser Storage Mode'}
+        if (!state.authenticated) {
+          root.innerHTML = `
+            <div class="min-h-screen flex items-center justify-center p-4">
+              <div class="admin-portal-card max-w-sm w-full p-6 space-y-5 text-center">
+                <div class="flex justify-center">
+                  ${renderSteamedPutoSVG('#7E3AF2', '#F3E8FF', 'w-16 h-16')}
                 </div>
+                <div>
+                  <span class="px-2.5 py-0.5 rounded-full bg-ube-100 text-ube-700 text-[10px] font-extrabold uppercase">Authorized Staff Only</span>
+                  <h1 class="font-display text-2xl font-bold text-puto-brown mt-1">PUTOLOGY Kitchen Admin</h1>
+                  <p class="text-xs text-puto-brown/75 mt-1">Enter your private staff PIN to manage pre-orders.</p>
+                </div>
+                <form onsubmit="AdminPortalApp.login(event)" class="space-y-3">
+                  <input id="admin-pin-input" type="password" inputmode="numeric" maxlength="6" required placeholder="••••" class="w-full px-4 py-3 rounded-xl border-2 border-puto-brown text-center font-mono text-xl font-extrabold tracking-widest" />
+                  <button type="submit" class="admin-portal-btn w-full py-3 bg-ube-600 text-white text-sm">
+                    Unlock Dashboard
+                  </button>
+                </form>
+                <a href="#/" class="inline-block text-xs font-extrabold text-puto-brown/70 hover:text-puto-brown">← Back to Customer Storefront</a>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        state.orders = await OrderStorageService.getOrders();
+        state.feedback = await OrderStorageService.getFeedback();
+
+        root.innerHTML = `
+          <header class="sticky top-0 z-40 bg-puto-brown text-cream-50 px-4 py-3 border-b-2 border-puto-dark">
+            <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-display text-xl font-bold text-puto-yellow">PUTOLOGY ADMIN</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                  OrderStorageService.isSupabaseConfigured() ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-puto-brown'
+                }">
+                  ${OrderStorageService.isSupabaseConfigured() ? 'Supabase Live' : 'Local Mode'}
+                </span>
               </div>
               <div class="flex items-center gap-2">
-                <button onclick="AppRouter.navigate('storefront')" class="px-3 py-2 rounded-xl bg-white/10 text-xs font-extrabold">
-                  Storefront
-                </button>
-                <button onclick="AdminPortalApp.logout()" class="px-3 py-2 rounded-xl bg-rose-600 text-white text-xs font-extrabold">
-                  Lock
-                </button>
+                <button onclick="AdminPortalApp.refresh()" class="px-3 py-1.5 rounded-xl bg-white/10 text-xs font-extrabold">↻ Refresh</button>
+                <button onclick="AdminPortalApp.logout()" class="px-3 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-extrabold">Lock</button>
               </div>
             </div>
           </header>
 
-          <main class="max-w-4xl mx-auto p-4 space-y-5 pb-12">
+          <main class="max-w-5xl mx-auto p-4 space-y-5">
            
-            <div class="grid grid-cols-3 gap-2.5">
-              <div class="admin-portal-card p-3.5 text-center">
-                <div class="text-[10px] font-extrabold uppercase text-puto-brown/65">Active Queue</div>
-                <div class="font-display text-2xl font-bold text-ube-600">${activeCount}</div>
+            <div id="admin-kpi-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+
+           
+            <div class="admin-portal-card p-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <h2 class="font-display text-lg font-bold text-puto-brown">♨️ Active Steamer Tally (Pending + Preparing)</h2>
+                <span class="text-[11px] font-extrabold text-ube-600">Auto-Batch Counter</span>
               </div>
-              <div class="admin-portal-card p-3.5 text-center">
-                <div class="text-[10px] font-extrabold uppercase text-puto-brown/65">Ready Pickup</div>
-                <div class="font-display text-2xl font-bold text-green-600">${readyCount}</div>
-              </div>
-              <div class="admin-portal-card p-3.5 text-center">
-                <div class="text-[10px] font-extrabold uppercase text-puto-brown/65">Gross Sales</div>
-                <div class="font-display text-2xl font-bold text-puto-brown">₱${totalRevenue}</div>
-              </div>
+              <div id="admin-steamer-tally" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2"></div>
             </div>
 
-          
-            <section class="admin-portal-card p-4 bg-cream-50">
-              <div class="flex items-center justify-between mb-2.5">
-                <h2 class="font-display text-base font-bold">♨️ Active Steamer Batch Tally</h2>
-                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-puto-yellow">Pending + Preparing</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                ${MENU_FLAVORS.map(f => `
-                  <div class="bg-white border border-puto-brown/25 rounded-xl px-3 py-2 flex items-center justify-between">
-                    <span class="text-xs font-bold truncate pr-1">${f.name}</span>
-                    <span class="font-display text-sm font-bold ${tally[f.id] > 0 ? 'text-ube-600' : 'text-puto-brown/40'}">${tally[f.id]} pcs</span>
-                  </div>
-                `).join('')}
-              </div>
-            </section>
-
-            
-            <div class="grid grid-cols-3 gap-2">
-              <button onclick="AdminPortalApp.setTab('orders')" class="admin-portal-btn py-2.5 text-xs ${adminState.activeTab === 'orders' ? 'bg-puto-brown text-puto-yellow' : 'bg-white'}">
-                📋 Orders (${orders.length})
+           
+            <div class="flex gap-2 overflow-x-auto no-scrollbar">
+              <button onclick="AdminPortalApp.setTab('orders')" class="admin-portal-btn px-4 py-2 text-xs ${state.activeTab === 'orders' ? 'bg-puto-yellow text-puto-brown' : 'bg-white text-puto-brown'}">
+                📋 Pre-Orders (${state.orders.length})
               </button>
-              <button onclick="AdminPortalApp.setTab('feedback')" class="admin-portal-btn py-2.5 text-xs ${adminState.activeTab === 'feedback' ? 'bg-puto-brown text-puto-yellow' : 'bg-white'}">
-                💡 Ideas (${feedback.length})
-              </button>
-              <button onclick="AdminPortalApp.setTab('deploy')" class="admin-portal-btn py-2.5 text-xs ${adminState.activeTab === 'deploy' ? 'bg-puto-brown text-puto-yellow' : 'bg-white'}">
-                ☁️ Cloud Setup
+              <button onclick="AdminPortalApp.setTab('feedback')" class="admin-portal-btn px-4 py-2 text-xs ${state.activeTab === 'feedback' ? 'bg-puto-yellow text-puto-brown' : 'bg-white text-puto-brown'}">
+                💡 Flavor Ideas (${state.feedback.length})
               </button>
             </div>
 
-            ${adminState.activeTab === 'orders' ? `
-             
-              <div class="space-y-2.5">
-                <div class="flex gap-2">
-                  <input type="text" value="${adminState.searchQuery}" oninput="AdminPortalApp.setSearch(this.value)" placeholder="Search customer, PUTO-###, or GCash Ref..." class="flex-1 min-h-[44px] px-3.5 py-2 rounded-xl bg-white border-2 border-puto-brown text-xs font-bold" />
-                  <button onclick="AdminPortalApp.exportCsv()" class="admin-portal-btn px-3.5 bg-puto-yellow text-xs shrink-0">
-                    ⬇ CSV
-                  </button>
-                </div>
-                <div class="flex gap-1.5 overflow-x-auto no-scrollbar">
-                  ${['All', 'Pending', 'Preparing', 'Ready', 'Completed'].map(st => `
-                    <button onclick="AdminPortalApp.setStatusFilter('${st}')" class="px-3.5 py-2 rounded-xl border-2 border-puto-brown text-xs font-extrabold shrink-0 ${
-                      adminState.statusFilter === st ? 'bg-ube-600 text-white' : 'bg-white'
-                    }">
-                      ${st}
-                    </button>
-                  `).join('')}
-                </div>
-              </div>
-
-              
-              <div class="space-y-3">
-                ${filteredOrders.length === 0 ? `
-                  <div class="admin-portal-card p-8 text-center text-xs font-bold text-puto-brown/65">
-                    No matching pre-orders found.
-                  </div>
-                ` : filteredOrders.map(order => {
-                  const statusBadge = {
-                    Pending: 'bg-amber-100 text-amber-900 border-amber-500',
-                    Preparing: 'bg-ube-100 text-ube-800 border-ube-600',
-                    Ready: 'bg-green-100 text-green-800 border-green-600',
-                    Completed: 'bg-gray-200 text-gray-800 border-gray-500'
-                  }[order.status] || 'bg-cream-100';
-
-                  return `
-                    <div class="admin-portal-card p-4 space-y-3">
-                      <div class="flex items-start justify-between gap-2">
-                        <div>
-                          <div class="flex items-center gap-2">
-                            <span class="font-display font-bold text-base">${order.orderCode}</span>
-                            <span class="px-2.5 py-0.5 rounded-full border text-[10px] font-extrabold ${statusBadge}">${order.status}</span>
-                          </div>
-                          <div class="text-sm font-extrabold mt-0.5">${order.customerName} <span class="text-xs font-normal text-puto-brown/70">(${order.customerType})</span></div>
-                          <div class="text-[11px] font-bold text-puto-brown/75">📞 ${order.contact} • 🕒 ${order.pickupDate} @ ${order.pickupTime}</div>
-                        </div>
-                        <div class="text-right">
-                          <div class="font-display text-xl font-bold text-ube-600">₱${order.totalAmount}</div>
-                          <div class="text-[10px] font-extrabold">${order.paymentMethod}</div>
-                        </div>
-                      </div>
-
-                      ${order.paymentMethod === 'GCash' ? `
-                        <div class="p-2.5 rounded-xl bg-blue-50 border border-blue-300 flex items-center justify-between gap-2 text-xs">
-                          <div>
-                            <span class="font-extrabold text-blue-950">GCash Ref:</span>
-                            <span class="font-mono font-bold text-blue-700">${order.gcashRef || 'N/A'}</span>
-                          </div>
-                          <button onclick="AdminPortalApp.toggleGcash('${order.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold border ${
-                            order.gcashVerified ? 'bg-green-600 text-white border-green-700' : 'bg-white text-blue-800 border-blue-500'
-                          }">
-                            ${order.gcashVerified ? '✓ Verified' : 'Verify GCash'}
-                          </button>
-                        </div>
-                      ` : ''}
-
-                      <div class="bg-cream-50 rounded-xl p-2.5 space-y-1 text-xs">
-                        ${(order.items || []).map(it => `
-                          <div class="flex justify-between font-bold">
-                            <span>${it.qty}x ${it.name}</span>
-                            <span>₱${it.unitPrice * it.qty}</span>
-                          </div>
-                        `).join('')}
-                        ${order.notes ? `<div class="text-[11px] text-rose-700 font-bold pt-1 border-t border-puto-brown/15">📝 Note: ${order.notes}</div>` : ''}
-                      </div>
-
-                      <div class="flex flex-wrap gap-2 pt-1">
-                        ${order.status === 'Pending' ? `
-                          <button onclick="AdminPortalApp.setOrderStatus('${order.id}', 'Preparing')" class="admin-portal-btn flex-1 px-3 py-2 bg-ube-600 text-white text-xs">
-                            🔥 Accept & Prepare
-                          </button>
-                        ` : ''}
-                        ${order.status === 'Preparing' ? `
-                          <button onclick="AdminPortalApp.setOrderStatus('${order.id}', 'Ready')" class="admin-portal-btn flex-1 px-3 py-2 bg-green-600 text-white text-xs">
-                            ✅ Mark Ready for Pickup
-                          </button>
-                        ` : ''}
-                        ${order.status === 'Ready' ? `
-                          <button onclick="AdminPortalApp.setOrderStatus('${order.id}', 'Completed')" class="admin-portal-btn flex-1 px-3 py-2 bg-puto-yellow text-xs">
-                            🎉 Complete Pickup
-                          </button>
-                        ` : ''}
-                        <button onclick="AdminPortalApp.removeOrder('${order.id}')" class="admin-portal-btn px-3 py-2 bg-rose-100 text-rose-800 text-xs">
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            ` : ''}
-
-            ${adminState.activeTab === 'feedback' ? `
-              <div class="space-y-3">
-                ${feedback.length === 0 ? `
-                  <div class="admin-portal-card p-8 text-center text-xs font-bold text-puto-brown/65">
-                    No customer flavor suggestions yet.
-                  </div>
-                ` : feedback.map(fb => `
-                  <div class="admin-portal-card p-4 space-y-2">
-                    <div class="flex items-center justify-between gap-2">
-                      <div>
-                        <span class="font-display font-bold text-base text-ube-700">${fb.flavorIdea}</span>
-                        <span class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-extrabold ${fb.status === 'Shortlisted' ? 'bg-puto-yellow' : 'bg-cream-200'}">${fb.status}</span>
-                      </div>
-                      <span class="text-[11px] font-bold text-puto-brown/65">by ${fb.customerName}</span>
-                    </div>
-                    <p class="text-xs text-puto-brown/85 leading-relaxed">${fb.message}</p>
-                    <div class="flex gap-2 pt-1">
-                      <button onclick="AdminPortalApp.toggleShortlist('${fb.id}')" class="admin-portal-btn px-3 py-1.5 bg-puto-yellow text-xs">
-                        ${fb.status === 'Shortlisted' ? '★ Shortlisted' : '☆ Shortlist Idea'}
-                      </button>
-                      <button onclick="AdminPortalApp.removeFeedback('${fb.id}')" class="admin-portal-btn px-3 py-1.5 bg-rose-100 text-rose-800 text-xs">
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            ` : ''}
-
-            ${adminState.activeTab === 'deploy' ? `
-              <div class="admin-portal-card p-5 space-y-3 text-xs">
-                <h3 class="font-display text-lg font-bold">☁️ Supabase + Vercel Live Sync</h3>
-                <p class="text-puto-brown/80 leading-relaxed">
-                  Paste your Supabase Project URL and Anon Key into <code>SUPABASE_CONFIG</code> at the top of <code>index.html</code> to persist all customer pre-orders and flavor ideas in the cloud across devices.
-                </p>
-                <div class="p-3 rounded-xl bg-cream-100 border border-puto-brown/30 font-mono text-[11px] overflow-x-auto">
-                  Admin Direct URL: <strong>your-domain.vercel.app/#/admin</strong>
-                </div>
-              </div>
-            ` : ''}
+            <div id="admin-tab-content"></div>
           </main>
         `;
+
+        renderDashboardContent();
       }
 
-      function mount() {
-        const root = document.getElementById('admin-portal-root');
-        if (!root) return;
-        if (!adminState.authenticated) {
-          renderLoginView(root);
+      function renderDashboardContent() {
+        const kpiGrid = document.getElementById('admin-kpi-grid');
+        const tallyEl = document.getElementById('admin-steamer-tally');
+        const tabContent = document.getElementById('admin-tab-content');
+        if (!kpiGrid || !tallyEl || !tabContent) return;
+
+        const activeOrders = state.orders.filter(o => o.status === 'Pending' || o.status === 'Preparing');
+        const completedRevenue = state.orders
+          .filter(o => o.status !== 'Cancelled')
+          .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+
+        kpiGrid.innerHTML = `
+          <div class="admin-portal-card p-3.5">
+            <div class="text-[10px] font-extrabold uppercase text-puto-brown/65">Total Pre-Orders</div>
+            <div class="font-display text-2xl font-bold text-puto-brown mt-0.5">${state.orders.length}</div>
+          </div>
+          <div class="admin-portal-card p-3.5">
+            <div class="text-[10px] font-extrabold uppercase text-puto-brown/65">Active in Kitchen</div>
+            <div class="font-display text-2xl font-bold text-ube-600 mt-0.5">${activeOrders.length}</div>
+          </div>
+          <div class="admin-portal-card p-3.5">
+            <div class="text-[10px] font-extrabold uppercase text-puto-brown/65">Projected Sales</div>
+            <div class="font-display text-2xl font-bold text-emerald-700 mt-0.5">₱${completedRevenue}</div>
+          </div>
+          <div class="admin-portal-card p-3.5">
+            <div class="text-[10px] font-extrabold uppercase text-puto-brown/65">Flavor Ideas</div>
+            <div class="font-display text-2xl font-bold text-amber-600 mt-0.5">${state.feedback.length}</div>
+          </div>
+        `;
+
+        const flavorCounts = {};
+        MENU_FLAVORS.forEach(f => { flavorCounts[f.id] = 0; });
+        activeOrders.forEach(order => {
+          (order.items || []).forEach(item => {
+            if (item.breakdown) {
+              Object.entries(item.breakdown).forEach(([fid, count]) => {
+                flavorCounts[fid] = (flavorCounts[fid] || 0) + (Number(count) * Number(item.qty || 1));
+              });
+            }
+          });
+        });
+
+        tallyEl.innerHTML = MENU_FLAVORS.map(f => `
+          <div class="p-2.5 rounded-xl bg-cream-100 border border-puto-brown/25 text-center">
+            <div class="text-[11px] font-extrabold truncate">${f.name}</div>
+            <div class="font-display text-xl font-bold text-ube-600">${flavorCounts[f.id] || 0} pcs</div>
+          </div>
+        `).join('');
+
+        if (state.activeTab === 'orders') {
+          const statuses = ['All', 'Pending', 'Preparing', 'Ready', 'Completed'];
+          const visibleOrders = state.statusFilter === 'All'
+            ? state.orders
+            : state.orders.filter(o => o.status === state.statusFilter);
+
+          tabContent.innerHTML = `
+            <div class="space-y-4">
+              <div class="flex gap-1.5 overflow-x-auto no-scrollbar">
+                ${statuses.map(st => `
+                  <button onclick="AdminPortalApp.setStatusFilter('${st}')" class="px-3.5 py-2 rounded-xl border-2 border-puto-brown text-xs font-extrabold shrink-0 ${
+                    state.statusFilter === st ? 'bg-puto-brown text-puto-yellow' : 'bg-white text-puto-brown'
+                  }">
+                    ${st}
+                  </button>
+                `).join('')}
+              </div>
+
+              ${visibleOrders.length === 0 ? `
+                <div class="admin-portal-card p-8 text-center text-xs font-bold text-puto-brown/60">No pre-orders in this status filter yet.</div>
+              ` : `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  ${visibleOrders.map(o => {
+                    const nextMap = {
+                      Pending: { label: 'Accept & Prepare', next: 'Preparing', cls: 'bg-ube-600 text-white' },
+                      Preparing: { label: 'Mark Ready', next: 'Ready', cls: 'bg-emerald-600 text-white' },
+                      Ready: { label: 'Complete Pickup', next: 'Completed', cls: 'bg-puto-brown text-puto-yellow' }
+                    };
+                    const action = nextMap[o.status];
+
+                    return `
+                      <div class="admin-portal-card p-4 space-y-3 flex flex-col justify-between">
+                        <div class="space-y-2.5">
+                          <div class="flex items-start justify-between gap-2">
+                            <div>
+                              <span class="font-mono text-xs font-extrabold text-ube-600">${o.id}</span>
+                              <h3 class="font-display text-xl font-bold text-puto-brown">${o.customerName}</h3>
+                              <div class="text-[11px] font-bold text-puto-brown/75">${o.contact} • ${o.customerType}</div>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full border border-puto-brown text-[11px] font-extrabold ${
+                              o.status === 'Pending' ? 'bg-amber-200' :
+                              o.status === 'Preparing' ? 'bg-purple-200' :
+                              o.status === 'Ready' ? 'bg-emerald-200' : 'bg-gray-200'
+                            }">${o.status}</span>
+                          </div>
+
+                          <div class="p-2.5 rounded-xl bg-cream-100 border border-puto-brown/20 text-xs space-y-1">
+                            <div><strong>📅 Pickup:</strong> ${o.pickupDate} at ${o.pickupTime}</div>
+                            <div><strong>💳 Payment:</strong> ${o.paymentMethod} — <strong class="text-ube-600">₱${o.totalAmount}</strong></div>
+                            ${o.gcashRef ? `
+                              <div class="flex items-center justify-between pt-1">
+                                <span class="font-mono text-[11px] font-extrabold text-sky-800">GCash Ref: ${o.gcashRef}</span>
+                                <button onclick="AdminPortalApp.toggleGcashVerify('${o.id}', ${!o.gcashVerified})" class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold border border-puto-brown ${
+                                  o.gcashVerified ? 'bg-emerald-500 text-white' : 'bg-amber-200 text-puto-brown'
+                                }">
+                                  ${o.gcashVerified ? '✓ Verified' : 'Verify GCash'}
+                                </button>
+                              </div>
+                            ` : ''}
+                            ${o.notes ? `<div class="text-rose-700 font-bold pt-1">📝 Note: ${o.notes}</div>` : ''}
+                          </div>
+
+                          <ul class="text-xs space-y-1 font-bold">
+                            ${(o.items || []).map(it => `<li>• ${it.qty}x ${it.name}</li>`).join('')}
+                          </ul>
+                        </div>
+
+                        <div class="flex gap-2 pt-2 border-t border-puto-brown/15">
+                          ${action ? `
+                            <button onclick="AdminPortalApp.advanceStatus('${o.id}', '${action.next}')" class="admin-portal-btn flex-1 py-2 text-xs ${action.cls}">
+                              ${action.label}
+                            </button>
+                          ` : `<div class="flex-1 text-center py-2 text-xs font-extrabold text-emerald-700">✓ Order Completed</div>`}
+                          <button onclick="AdminPortalApp.removeOrder('${o.id}')" class="admin-portal-btn px-3 py-2 bg-rose-100 text-rose-700 text-xs">
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              `}
+            </div>
+          `;
         } else {
-          renderDashboardView(root);
+          tabContent.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${state.feedback.length === 0 ? `
+                <div class="admin-portal-card p-8 text-center text-xs font-bold text-puto-brown/60 col-span-full">No customer flavor ideas submitted yet.</div>
+              ` : state.feedback.map(fb => `
+                <div class="admin-portal-card p-4 space-y-2.5">
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <span class="px-2 py-0.5 rounded-full bg-puto-yellow border border-puto-brown text-[10px] font-extrabold">${fb.status}</span>
+                      <h3 class="font-display text-lg font-bold text-ube-600 mt-1">${fb.flavorIdea}</h3>
+                      <div class="text-[11px] font-bold text-puto-brown/70">Suggested by ${fb.customerName}</div>
+                    </div>
+                    <button onclick="AdminPortalApp.removeFeedback('${fb.id}')" class="px-2.5 py-1 rounded-lg bg-rose-100 border border-puto-brown text-[11px] font-extrabold text-rose-700">Delete</button>
+                  </div>
+                  <p class="text-xs text-puto-brown/85 bg-cream-100 p-3 rounded-xl border border-puto-brown/20">${fb.message}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
         }
       }
 
       return {
         mount,
-        handlePinSubmit(e) {
+        login(e) {
           e.preventDefault();
-          const val = document.getElementById('ap-pin-input').value.trim();
-          if (val === ADMIN_CONFIG.PIN) {
-            adminState.authenticated = true;
+          const entered = (document.getElementById('admin-pin-input')?.value || '').trim();
+          if (entered === ADMIN_CONFIG.PIN) {
+            state.authenticated = true;
             mount();
-            showToast('Admin Panel Unlocked!');
+            showToast('Welcome back to PUTOLOGY Admin!');
           } else {
-            showToast('Incorrect PIN. Access denied.', true);
+            showToast('Incorrect Staff PIN.', true);
           }
         },
         logout() {
-          adminState.authenticated = false;
+          state.authenticated = false;
           mount();
+        },
+        refresh() {
+          mount();
+          showToast('Dashboard refreshed.');
         },
         setTab(tab) {
-          adminState.activeTab = tab;
-          mount();
+          state.activeTab = tab;
+          renderDashboardContent();
         },
         setStatusFilter(status) {
-          adminState.statusFilter = status;
-          mount();
+          state.statusFilter = status;
+          renderDashboardContent();
         },
-        setSearch(query) {
-          adminState.searchQuery = query;
-          mount();
+        async advanceStatus(orderId, nextStatus) {
+          await OrderStorageService.updateOrder(orderId, { status: nextStatus });
+          await mount();
+          showToast(`Order ${orderId} marked as ${nextStatus}.`);
         },
-        setOrderStatus(id, status) {
-          OrderStorageService.updateOrderStatus(id, status);
-          mount();
-          showToast(`Order marked ${status}`);
+        async toggleGcashVerify(orderId, verified) {
+          await OrderStorageService.updateOrder(orderId, { gcashVerified: verified });
+          await mount();
+          showToast(verified ? 'GCash Reference marked Verified!' : 'GCash verification unchecked.');
         },
-        toggleGcash(id) {
-          OrderStorageService.toggleGcashVerified(id);
-          mount();
-          showToast('GCash verification updated');
+        async removeOrder(orderId) {
+          await OrderStorageService.deleteOrder(orderId);
+          await mount();
+          showToast(`Deleted order ${orderId}.`);
         },
-        removeOrder(id) {
-          OrderStorageService.deleteOrder(id);
-          mount();
-          showToast('Order removed');
-        },
-        toggleShortlist(id) {
-          OrderStorageService.toggleFeedbackShortlist(id);
-          mount();
-        },
-        removeFeedback(id) {
-          OrderStorageService.deleteFeedback(id);
-          mount();
-          showToast('Suggestion deleted');
-        },
-        exportCsv() {
-          const orders = OrderStorageService.getOrders();
-          const rows = [
-            ['OrderCode', 'Customer', 'Contact', 'Type', 'PickupDate', 'PickupTime', 'Payment', 'GCashRef', 'Total', 'Status']
-          ];
-          orders.forEach(o => {
-            rows.push([
-              o.orderCode,
-              `"${(o.customerName || '').replace(/"/g, '""')}"`,
-              o.contact,
-              o.customerType,
-              o.pickupDate,
-              o.pickupTime,
-              o.paymentMethod,
-              o.gcashRef || '',
-              o.totalAmount,
-              o.status
-            ]);
-          });
-          const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(r => r.join(',')).join('\n');
-          const link = document.createElement('a');
-          link.setAttribute('href', encodeURI(csvContent));
-          link.setAttribute('download', `putology-orders-${new Date().toISOString().split('T')[0]}.csv`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          showToast('Exported orders CSV!');
+        async removeFeedback(id) {
+          await OrderStorageService.deleteFeedback(id);
+          await mount();
+          showToast('Flavor suggestion removed.');
         }
       };
     })();
 
-    const AppRouter = {
-      route() {
-        const isAdmin = window.location.hash.startsWith('#/admin');
-        const sfRoot = document.getElementById('storefront-root');
-        const apRoot = document.getElementById('admin-portal-root');
 
-        if (isAdmin) {
-          sfRoot.classList.add('hidden');
-          apRoot.classList.remove('hidden');
-          AdminPortalApp.mount();
-        } else {
-          apRoot.classList.add('hidden');
-          sfRoot.classList.remove('hidden');
+    function handleRoute() {
+      const hash = window.location.hash || '#/';
+      const storefrontEl = document.getElementById('storefront-root');
+      const adminEl = document.getElementById('admin-portal-root');
+
+      if (hash.startsWith('#/admin')) {
+        storefrontEl?.classList.add('hidden');
+        adminEl?.classList.remove('hidden');
+        AdminPortalApp.mount();
+      } else {
+        adminEl?.classList.add('hidden');
+        storefrontEl?.classList.remove('hidden');
+        if (!storefrontEl?.innerHTML.trim()) {
           StorefrontApp.mount();
         }
-      },
-      navigate(target) {
-        if (target === 'admin') {
-          window.location.hash = '#/admin';
-        } else {
-          window.location.hash = '#/';
-        }
       }
-    };
+    }
 
-    window.addEventListener('hashchange', () => AppRouter.route());
-    window.onload = function () {
-      OrderStorageService.seedDefaultsIfEmpty();
-      AppRouter.route();
-    };
+    window.addEventListener('hashchange', handleRoute);
+    window.addEventListener('DOMContentLoaded', handleRoute);
   </script>
 </body>
 </html>
